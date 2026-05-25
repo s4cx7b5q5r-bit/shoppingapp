@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #0d0f14;
@@ -30,10 +30,10 @@
       --amber-dim: rgba(245,166,35,0.15);
       --red: #f05454;
       --red-dim: rgba(240,84,84,0.15);
-      --purple: #a78bfa;
-      --purple-dim: rgba(167,139,250,0.15);
+      --orange: #ff8c42;
+      --orange-dim: rgba(255,140,66,0.15);
       --teal: #22d3ee;
-      --teal-dim: rgba(34,211,238,0.12);
+      --teal-dim: rgba(34,211,238,0.15);
       --radius: 16px;
       --radius-sm: 10px;
       --font: 'DM Sans', sans-serif;
@@ -54,7 +54,6 @@
       overscroll-behavior: none;
     }
 
-    /* ── SUBTLE BG TEXTURE ── */
     body::before {
       content: '';
       position: fixed;
@@ -74,7 +73,7 @@
       z-index: 1;
     }
 
-    /* ── HEADER ── */
+    /* HEADER */
     .header {
       margin: 14px 0 12px;
       background: var(--surface);
@@ -110,23 +109,10 @@
       font-size: 1.35rem;
       font-weight: 700;
       line-height: 1.15;
-      color: var(--text);
       letter-spacing: -0.02em;
     }
-    .header-sub {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--text3);
-      font-weight: 400;
-    }
-    .header-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-      flex-shrink: 0;
-      position: relative;
-    }
+    .header-sub { margin: 0; font-size: 0.8rem; color: var(--text3); }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; position: relative; }
     .header-badge {
       background: var(--accent-dim);
       border: 1px solid rgba(79,142,247,0.3);
@@ -135,22 +121,10 @@
       text-align: center;
       min-width: 58px;
     }
-    .header-badge .badge-num {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: var(--mono);
-      line-height: 1;
-    }
-    .header-badge .badge-lbl {
-      font-size: 0.65rem;
-      color: var(--text3);
-      margin-top: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
+    .header-badge .badge-num { font-size: 1.25rem; font-weight: 700; color: var(--accent); font-family: var(--mono); line-height: 1; }
+    .header-badge .badge-lbl { font-size: 0.62rem; color: var(--text2); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
 
-    /* ── NAV ── */
+    /* BOTTOM NAV (5 ITEMS) */
     .nav {
       position: fixed;
       bottom: 0;
@@ -171,16 +145,20 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 3px;
       border: none;
       background: none;
       color: var(--text3);
       cursor: pointer;
-      padding: 10px 4px 6px;
+      padding: 8px 2px 6px;
       transition: color 0.18s;
       position: relative;
+      min-width: 0;
     }
     .nav-btn.active { color: var(--accent); }
+    .nav-btn[data-panel="breakfast"].active { color: var(--orange); }
+    .nav-btn[data-panel="lunch"].active { color: var(--teal); }
+    .nav-btn[data-panel="dinner"].active { color: var(--amber); }
     .nav-btn::after {
       content: '';
       position: absolute;
@@ -189,38 +167,36 @@
       transform: translateX(-50%);
       width: 0;
       height: 2px;
-      background: var(--accent);
+      background: currentColor;
       border-radius: 0 0 2px 2px;
       transition: width 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .nav-btn.active::after { width: 32px; }
-    .nav-icon { font-size: 1.35rem; line-height: 1; }
-    .nav-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.04em; }
+    .nav-btn.active::after { width: 26px; }
+    .nav-icon { font-size: 1.15rem; line-height: 1; }
+    .nav-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.02em; }
     .nav-badge {
       position: absolute;
-      top: 6px;
-      right: calc(50% - 20px);
+      top: 4px;
+      right: calc(50% - 16px);
       background: var(--red);
       color: #fff;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: 700;
-      min-width: 16px;
-      height: 16px;
-      border-radius: 8px;
+      min-width: 14px;
+      height: 14px;
+      border-radius: 7px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 4px;
+      padding: 0 3px;
       font-family: var(--mono);
     }
     .nav-badge:empty { display: none; }
 
-    /* ── PANELS ── */
     .panel { display: none; }
     .panel.active { display: block; animation: fadeIn 0.18s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── CARDS ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -229,7 +205,7 @@
       margin-bottom: 12px;
     }
     .card-title {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -237,30 +213,9 @@
       margin: 0 0 12px;
       font-family: var(--mono);
     }
-    .card h2 {
-      margin: 0 0 4px;
-      font-size: 1.15rem;
-      font-weight: 700;
-    }
-    .card h3 {
-      margin: 0 0 4px;
-      font-size: 1rem;
-      font-weight: 700;
-    }
-    .card-sub {
-      color: var(--text2);
-      font-size: 0.84rem;
-      margin: 0 0 14px;
-      line-height: 1.5;
-    }
+    .card-sub { color: var(--text2); font-size: 0.84rem; margin: 0 0 14px; line-height: 1.5; }
 
-    /* ── BUTTONS ── */
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
     .btn-row:last-child { margin-bottom: 0; }
     .btn {
       border: none;
@@ -280,17 +235,11 @@
     .btn-primary { background: var(--accent); color: #fff; flex: 1; justify-content: center; }
     .btn-secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
     .btn-green { background: var(--green); color: #0a1a12; flex: 1; justify-content: center; }
-    .btn-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
     .btn-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(240,84,84,0.2); }
     .btn-ghost { background: transparent; color: var(--text3); border: 1px solid var(--border); }
-    .btn-icon { padding: 9px 10px; }
     .btn-sm { padding: 7px 10px; font-size: 0.8rem; }
 
-    /* ── INPUT ── */
-    .input-row {
-      display: flex;
-      gap: 8px;
-    }
+    .input-row { display: flex; gap: 8px; }
     input[type="text"], select, textarea {
       width: 100%;
       background: var(--surface2);
@@ -310,9 +259,8 @@
     }
     input[type="text"]::placeholder { color: var(--text3); }
     select { appearance: none; -webkit-appearance: none; cursor: pointer; }
-    textarea { min-height: 90px; resize: vertical; }
+    textarea { min-height: 100px; resize: vertical; }
 
-    /* ── SHOPPING LIST ITEMS ── */
     .shop-item {
       display: flex;
       align-items: center;
@@ -326,319 +274,151 @@
       cursor: pointer;
       user-select: none;
     }
-    .shop-item.ticked {
-      opacity: 0.45;
-    }
-    .shop-item.ticked .shop-item-name {
-      text-decoration: line-through;
-      color: var(--text3);
-    }
+    .shop-item.ticked { opacity: 0.45; }
+    .shop-item.ticked .shop-item-name { text-decoration: line-through; color: var(--text3); }
     .shop-check {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 2px solid var(--border2);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid var(--border2); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
       transition: background 0.15s, border-color 0.15s;
     }
-    .shop-item.ticked .shop-check {
-      background: var(--green);
-      border-color: var(--green);
-    }
+    .shop-item.ticked .shop-check { background: var(--green); border-color: var(--green); }
     .shop-check-tick { display: none; color: #fff; font-size: 0.75rem; font-weight: 700; }
     .shop-item.ticked .shop-check-tick { display: block; }
-    .shop-item-name { flex: 1; font-size: 0.95rem; color: var(--text); font-weight: 400; }
+    .shop-item-name { flex: 1; font-size: 0.95rem; }
     .shop-item-del {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      padding: 4px 6px;
-      border-radius: 6px;
-      font-size: 1rem;
-      transition: color 0.15s;
+      background: none; border: none; color: var(--text3);
+      cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 1rem;
     }
-    .shop-item-del:hover { color: var(--red); }
 
-    .empty-state {
-      text-align: center;
-      padding: 28px 16px;
-      color: var(--text3);
-      font-size: 0.9rem;
-    }
+    .empty-state { text-align: center; padding: 28px 16px; color: var(--text3); font-size: 0.9rem; }
     .empty-icon { font-size: 2rem; margin-bottom: 8px; }
 
-    /* ── CATEGORY PILLS LIBRARY ── */
-    .group-block {
-      margin-bottom: 8px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
+    .group-block { margin-bottom: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
     .group-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      background: var(--surface2);
-      cursor: pointer;
-      user-select: none;
-      gap: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; background: var(--surface2);
+      cursor: pointer; user-select: none; gap: 8px;
     }
-    .group-header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-    }
+    .group-header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
     .group-icon { font-size: 1.1rem; flex-shrink: 0; }
-    .group-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
-    .group-chevron {
-      color: var(--text3);
-      font-size: 0.8rem;
-      transition: transform 0.2s;
-    }
+    .group-name { font-size: 0.9rem; font-weight: 600; }
+    .group-chevron { color: var(--text3); font-size: 0.8rem; transition: transform 0.2s; }
     .group-block.open .group-chevron { transform: rotate(180deg); }
-    .group-body {
-      display: none;
-      padding: 12px 14px;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-    }
+    .group-body { display: none; padding: 12px 14px; background: var(--surface); border-top: 1px solid var(--border); }
     .group-block.open .group-body { display: block; }
-    .pill-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 10px;
-    }
+
+    .pill-cloud { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
     .pill {
-      border: 1px solid var(--border2);
-      border-radius: 999px;
-      padding: 7px 13px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      background: var(--surface2);
-      color: var(--text2);
-      cursor: pointer;
-      transition: all 0.15s;
+      border: 1px solid var(--border2); border-radius: 999px;
+      padding: 7px 13px; font-size: 0.82rem; font-weight: 500;
+      background: var(--surface2); color: var(--text2);
+      cursor: pointer; transition: all 0.15s;
     }
     .pill:active { transform: scale(0.95); }
-    .pill.added {
-      background: var(--green-dim);
-      border-color: rgba(62,207,142,0.4);
-      color: var(--green);
-    }
-    .group-add-row {
-      display: flex;
-      gap: 7px;
-      margin-top: 8px;
-    }
+    .pill.added { background: var(--green-dim); border-color: rgba(62,207,142,0.4); color: var(--green); }
+    .group-add-row { display: flex; gap: 7px; margin-top: 8px; }
     .group-add-row input { flex: 1; font-size: 0.85rem; padding: 8px 11px; }
 
-    /* ── DINNER PILLS ── */
-    .dinner-category-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text3);
-      font-family: var(--mono);
+    .meal-category-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text3); font-family: var(--mono);
       margin: 14px 0 8px;
+      display: flex; align-items: center; gap: 8px;
     }
-    .dinner-category-label:first-child { margin-top: 0; }
-    .dinner-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
+    .meal-category-label:first-child { margin-top: 0; }
+    .meal-category-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .meal-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+    .meal-pill {
+      border: 1px solid var(--border2); border-radius: 999px;
+      padding: 8px 14px; font-size: 0.85rem; font-weight: 500;
+      background: var(--surface2); color: var(--text2);
+      cursor: pointer; transition: all 0.18s;
     }
-    .dinner-pill {
-      border: 1px solid var(--border2);
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      background: var(--surface2);
-      color: var(--text2);
-      cursor: pointer;
-      transition: all 0.18s;
+    .meal-pill:active { transform: scale(0.96); }
+    .meal-pill.selected {
+      background: var(--accent-dim); border-color: rgba(79,142,247,0.4);
+      color: var(--accent); font-weight: 600;
     }
-    .dinner-pill:active { transform: scale(0.96); }
-    .dinner-pill.selected {
-      background: var(--accent-dim);
-      border-color: rgba(79,142,247,0.4);
-      color: var(--accent);
-      font-weight: 600;
+    .meal-pill.selected.theme-orange {
+      background: var(--orange-dim); border-color: rgba(255,140,66,0.4); color: var(--orange);
     }
-    .dinner-pill.maxed:not(.selected) {
-      opacity: 0.4;
-      cursor: default;
+    .meal-pill.selected.theme-teal {
+      background: var(--teal-dim); border-color: rgba(34,211,238,0.4); color: var(--teal);
     }
+    .meal-pill.maxed:not(.selected) { opacity: 0.4; cursor: default; }
 
-    /* ── WEEK PLAN ── */
-    .week-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .week-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 11px 13px;
-    }
-    .week-day {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text3);
-      min-width: 28px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      font-family: var(--mono);
-    }
-    .week-row select {
-      flex: 1;
-      padding: 6px 10px;
-      font-size: 0.88rem;
-      background: var(--surface3);
-      border-radius: 8px;
-    }
-    .week-row.has-meal { border-color: rgba(79,142,247,0.25); }
-    .week-row.has-meal .week-day { color: var(--accent); }
-
-    /* ── SELECTED DINNERS STRIP ── */
-    .selected-strip {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .selected-dinner-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 13px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+    .selected-strip { display: flex; flex-direction: column; gap: 6px; }
+    .selected-meal-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 13px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
       animation: slideIn 0.18s ease;
     }
     @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
-    .selected-dinner-num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: var(--mono);
-      min-width: 20px;
-    }
-    .selected-dinner-name { flex: 1; font-size: 0.9rem; color: var(--text); }
-    .selected-dinner-del {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 3px 6px;
-      border-radius: 6px;
-      transition: color 0.15s;
-    }
-    .selected-dinner-del:hover { color: var(--red); }
-
-    /* ── DINNER COUNTER ── */
-    .dinner-counter {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-    .dinner-counter-track {
-      flex: 1;
-      height: 4px;
-      background: var(--surface3);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .dinner-counter-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .dinner-counter-label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: var(--mono);
-      min-width: 32px;
-      text-align: right;
+    .selected-meal-num { font-size: 0.75rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 22px; }
+    .selected-meal-num.theme-orange { color: var(--orange); }
+    .selected-meal-num.theme-teal { color: var(--teal); }
+    .selected-meal-name { flex: 1; font-size: 0.9rem; }
+    .selected-meal-del {
+      background: none; border: none; color: var(--text3);
+      cursor: pointer; font-size: 1rem; padding: 3px 6px; border-radius: 6px;
     }
 
-    /* ── SECTION DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 14px 0;
-    }
+    .meal-counter { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .meal-counter-track { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .meal-counter-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .meal-counter-fill.theme-orange { background: var(--orange); }
+    .meal-counter-fill.theme-teal { background: var(--teal); }
+    .meal-counter-label { font-size: 0.78rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 32px; text-align: right; }
+    .meal-counter-label.theme-orange { color: var(--orange); }
+    .meal-counter-label.theme-teal { color: var(--teal); }
 
-    /* ── CHIP STAT ── */
-    .stat-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
+    .week-grid { display: flex; flex-direction: column; gap: 8px; }
+    .week-row {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 11px 13px;
     }
+    .week-day {
+      font-size: 0.78rem; font-weight: 700; color: var(--text3);
+      min-width: 34px; text-transform: uppercase;
+      letter-spacing: 0.07em; font-family: var(--mono);
+    }
+    .week-row select { flex: 1; padding: 6px 10px; font-size: 0.88rem; background: var(--surface3); border-radius: 8px; }
+    .week-row.has-meal { border-color: rgba(79,142,247,0.25); }
+    .week-row.has-meal .week-day { color: var(--accent); }
+
+    .stat-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .stat-chip {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      text-align: center;
+      flex: 1; min-width: 0;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 8px; text-align: center;
     }
-    .stat-chip .sv { font-size: 1.2rem; font-weight: 700; font-family: var(--mono); }
-    .stat-chip .sl { font-size: 0.68rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 1px; }
+    .stat-chip .sv { font-size: 1.15rem; font-weight: 700; font-family: var(--mono); line-height: 1; }
+    .stat-chip .sl { font-size: 0.62rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
     .stat-chip.accent .sv { color: var(--accent); }
-    .stat-chip.green .sv { color: var(--green); }
     .stat-chip.amber .sv { color: var(--amber); }
+    .stat-chip.orange .sv { color: var(--orange); }
+    .stat-chip.teal .sv { color: var(--teal); }
 
-    /* ── BACKUP CARD ── */
-    .backup-card { margin-top: 4px; }
+    .footer-note { text-align: center; color: var(--text3); font-size: 0.78rem; margin: 6px 0 14px; line-height: 1.5; }
 
-    /* ── FOOTER NOTE ── */
-    .footer-note {
-      text-align: center;
-      color: var(--text3);
-      font-size: 0.78rem;
-      margin: 6px 0 14px;
-      line-height: 1.5;
-    }
-
-    /* ── TOAST ── */
     .toast {
       position: fixed;
       bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: var(--surface3);
-      border: 1px solid var(--border2);
-      border-radius: 999px;
-      padding: 10px 18px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
-      z-index: 200;
-      opacity: 0;
+      background: var(--surface3); border: 1px solid var(--border2);
+      border-radius: 999px; padding: 10px 18px;
+      font-size: 0.85rem; font-weight: 600; color: var(--text);
+      z-index: 200; opacity: 0;
       transition: opacity 0.2s, transform 0.2s;
-      pointer-events: none;
-      white-space: nowrap;
+      pointer-events: none; white-space: nowrap;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ── SCROLL SPACING ── */
     .spacer { height: 8px; }
   </style>
 </head>
@@ -646,7 +426,6 @@
 
 <div class="app">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="header-title">
       <div class="header-eyebrow" id="headerDate"></div>
@@ -661,9 +440,8 @@
     </div>
   </div>
 
-  <!-- ═══ SHOPPING PANEL ═══ -->
+  <!-- SHOPPING -->
   <section id="panel-shopping" class="panel active">
-
     <div class="card">
       <div class="card-title">Quick actions</div>
       <div class="btn-row">
@@ -695,16 +473,67 @@
     <div class="spacer"></div>
   </section>
 
-  <!-- ═══ DINNERS PANEL ═══ -->
-  <section id="panel-dinners" class="panel">
+  <!-- BREAKFAST -->
+  <section id="panel-breakfast" class="panel">
+    <div class="card">
+      <div class="card-title">Breakfast ideas</div>
+      <div class="card-sub">Tap to select or deselect — pick your breakfasts for the week.</div>
+      <div class="meal-counter">
+        <div class="meal-counter-track">
+          <div class="meal-counter-fill theme-orange" id="breakfastCounterFill" style="width:0%"></div>
+        </div>
+        <div class="meal-counter-label theme-orange" id="breakfastCounterLabel">0 / 7</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" id="clearBreakfastsBtn">Clear selections</button>
+      </div>
+      <div id="selectedBreakfastsEl" class="selected-strip" style="margin-bottom:14px">
+        <div class="empty-state"><div class="empty-icon">🍳</div>No breakfasts selected yet</div>
+      </div>
+      <div class="input-row" style="margin-bottom:14px">
+        <input type="text" id="customBreakfastInput" placeholder="Add a breakfast idea…" />
+        <button class="btn btn-green" id="addBreakfastBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
+      </div>
+      <div id="breakfastChoicesEl"></div>
+    </div>
+    <div class="spacer"></div>
+  </section>
 
+  <!-- LUNCH -->
+  <section id="panel-lunch" class="panel">
+    <div class="card">
+      <div class="card-title">Lunch ideas</div>
+      <div class="card-sub">Tap to select or deselect — pick your lunches for the week.</div>
+      <div class="meal-counter">
+        <div class="meal-counter-track">
+          <div class="meal-counter-fill theme-teal" id="lunchCounterFill" style="width:0%"></div>
+        </div>
+        <div class="meal-counter-label theme-teal" id="lunchCounterLabel">0 / 7</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" id="clearLunchesBtn">Clear selections</button>
+      </div>
+      <div id="selectedLunchesEl" class="selected-strip" style="margin-bottom:14px">
+        <div class="empty-state"><div class="empty-icon">🥪</div>No lunches selected yet</div>
+      </div>
+      <div class="input-row" style="margin-bottom:14px">
+        <input type="text" id="customLunchInput" placeholder="Add a lunch idea…" />
+        <button class="btn btn-green" id="addLunchBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
+      </div>
+      <div id="lunchChoicesEl"></div>
+    </div>
+    <div class="spacer"></div>
+  </section>
+
+  <!-- DINNER -->
+  <section id="panel-dinner" class="panel">
     <div class="card">
       <div class="card-title">This week's dinners</div>
-      <div class="dinner-counter">
-        <div class="dinner-counter-track">
-          <div class="dinner-counter-fill" id="dinnerCounterFill" style="width:0%"></div>
+      <div class="meal-counter">
+        <div class="meal-counter-track">
+          <div class="meal-counter-fill" id="dinnerCounterFill" style="width:0%"></div>
         </div>
-        <div class="dinner-counter-label" id="dinnerCounterLabel">0 / 5</div>
+        <div class="meal-counter-label" id="dinnerCounterLabel">0 / 5</div>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="autoPickBtn">🎲 Auto pick 5</button>
@@ -732,23 +561,22 @@
       </div>
       <div id="dinnerChoicesEl"></div>
     </div>
-
     <div class="spacer"></div>
   </section>
 
-  <!-- ═══ SETTINGS PANEL ═══ -->
+  <!-- SETTINGS -->
   <section id="panel-settings" class="panel">
-
     <div class="card">
       <div class="card-title">Overview</div>
       <div class="stat-row">
-        <div class="stat-chip accent"><div class="sv" id="statShopItems">0</div><div class="sl">List items</div></div>
-        <div class="stat-chip green"><div class="sv" id="statDinnersSelected">0</div><div class="sl">Dinners</div></div>
-        <div class="stat-chip amber"><div class="sv" id="statDinnerTotal">47</div><div class="sl">In library</div></div>
+        <div class="stat-chip accent"><div class="sv" id="statShopItems">0</div><div class="sl">List</div></div>
+        <div class="stat-chip orange"><div class="sv" id="statBreakfastSelected">0</div><div class="sl">Breakfast</div></div>
+        <div class="stat-chip teal"><div class="sv" id="statLunchSelected">0</div><div class="sl">Lunch</div></div>
+        <div class="stat-chip amber"><div class="sv" id="statDinnersSelected">0</div><div class="sl">Dinner</div></div>
       </div>
     </div>
 
-    <div class="card backup-card">
+    <div class="card">
       <div class="card-title">Backup &amp; restore</div>
       <div class="card-sub">Export your data to keep a copy or transfer to another device. Paste it back in to restore.</div>
       <div class="btn-row">
@@ -775,292 +603,160 @@
 
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="nav">
   <button class="nav-btn active" data-panel="shopping">
-    <span class="nav-icon">🛒</span>
-    <span class="nav-label">Shopping</span>
+    <span class="nav-icon">🛒</span><span class="nav-label">Shop</span>
     <span class="nav-badge" id="navShopBadge"></span>
   </button>
-  <button class="nav-btn" data-panel="dinners">
-    <span class="nav-icon">🍴</span>
-    <span class="nav-label">Dinners</span>
+  <button class="nav-btn" data-panel="breakfast">
+    <span class="nav-icon">🍳</span><span class="nav-label">Breakfast</span>
+    <span class="nav-badge" id="navBreakfastBadge"></span>
+  </button>
+  <button class="nav-btn" data-panel="lunch">
+    <span class="nav-icon">🥪</span><span class="nav-label">Lunch</span>
+    <span class="nav-badge" id="navLunchBadge"></span>
+  </button>
+  <button class="nav-btn" data-panel="dinner">
+    <span class="nav-icon">🍴</span><span class="nav-label">Dinner</span>
     <span class="nav-badge" id="navDinnerBadge"></span>
   </button>
   <button class="nav-btn" data-panel="settings">
-    <span class="nav-icon">⚙️</span>
-    <span class="nav-label">Settings</span>
+    <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
   </button>
 </nav>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-  const STORE_KEY = 'shopDinnerPlannerV2';
+  const STORE_KEY = 'shopDinnerPlannerV3';
 
-  /* ── DEFAULTS ── */
   const DEFAULTS = {
     shoppingList: [],
     usualGroups: [
       { name: 'Bread & bakery', icon: '🍞', items: [
-        "Jason's sourdough sprouted grains bread",
-        "Warburtons farmhouse thick sliced white bread",
-        "Warburtons soft pittas",
-        "Brioche burger buns",
-        "Sesame brioche burger buns",
-        "Tortilla wraps",
-        "Italian flatbread wraps"
+        "Jason's sourdough sprouted grains bread","Warburtons farmhouse thick sliced white bread",
+        "Warburtons soft pittas","Brioche burger buns","Sesame brioche burger buns",
+        "Tortilla wraps","Italian flatbread wraps"
       ]},
       { name: 'Meat & protein', icon: '🥩', items: [
-        "Chicken breast fillets 1kg",
-        "Chicken breast fillets 640g",
-        "Chicken breast slices (pack of 8)",
-        "Beef mince 5% fat 500g",
-        "Beef mince 5% fat 750g",
-        "Beef mince 1kg",
-        "Pork mince 5% fat 500g",
-        "Pork sausages gluten free x6",
-        "Pork sausages gluten free chipolata x10",
-        "Taste the Difference pork sausages",
-        "Smoked streaky bacon",
-        "Smoked back bacon",
-        "Deli ham slices",
-        "Grilling cheese 200g",
-        "Garlic chicken Kyivs x2",
-        "Buttermilk chicken breast burgers",
-        "Cod fish fingers x18",
-        "Smoked haddock fishcakes",
-        "Mushy peas"
+        "Chicken breast fillets 1kg","Chicken breast fillets 640g","Chicken breast slices (pack of 8)",
+        "Beef mince 5% fat 500g","Beef mince 5% fat 750g","Beef mince 1kg","Pork mince 5% fat 500g",
+        "Pork sausages gluten free x6","Pork sausages gluten free chipolata x10","Taste the Difference pork sausages",
+        "Smoked streaky bacon","Smoked back bacon","Deli ham slices","Grilling cheese 200g",
+        "Garlic chicken Kyivs x2","Buttermilk chicken breast burgers","Cod fish fingers x18",
+        "Smoked haddock fishcakes","Mushy peas"
       ]},
       { name: 'Dairy & chilled', icon: '🧀', items: [
-        "Whole milk 4 pint",
-        "Butter salted 250g",
-        "Mild cheddar 400g",
-        "Extra mature cheddar 400g",
-        "Mild cheddar slices",
-        "Cathedral City extra mature 550g",
-        "Soft white cheese 300g",
-        "Mozzarella lighter",
-        "Fresh grated parmigiano 60g",
-        "Double cream 300ml",
-        "Kefir strawberry milk drink 1L",
-        "Müller Corner strawberry yogurts x6",
-        "Yeo Valley Greek style yogurt x4",
-        "Yeo Valley kefir mango & passion fruit yogurt",
-        "Yeo Valley fruity favourites yogurt",
-        "Arla Skyr natural yogurt 1kg",
-        "Cottage cheese 300g",
-        "Peppa Pig strawberry yogurt pots x6",
+        "Whole milk 4 pint","Butter salted 250g","Mild cheddar 400g","Extra mature cheddar 400g",
+        "Mild cheddar slices","Cathedral City extra mature 550g","Soft white cheese 300g",
+        "Mozzarella lighter","Fresh grated parmigiano 60g","Double cream 300ml",
+        "Kefir strawberry milk drink 1L","Müller Corner strawberry yogurts x6","Yeo Valley Greek style yogurt x4",
+        "Yeo Valley kefir mango & passion fruit yogurt","Yeo Valley fruity favourites yogurt",
+        "Arla Skyr natural yogurt 1kg","Cottage cheese 300g","Peppa Pig strawberry yogurt pots x6",
         "Free range eggs medium x12"
       ]},
       { name: 'Fruit & veg', icon: '🥦', items: [
-        "Bananas x5",
-        "Strawberries 250g",
-        "Strawberries 400g",
-        "Blueberries 150g",
-        "Blueberries 300g",
-        "Royal Gala apples x6",
-        "Red seedless grapes 500g",
-        "Easy peelers 600g",
-        "Mango fruit snacks",
-        "Medjool dates organic 200g",
-        "Baking potatoes",
-        "White potatoes 2kg",
-        "Broccoli",
-        "Cauliflower",
-        "Kale 200g",
-        "Spinach baby leaf",
-        "Garden peas 910g",
-        "Green beans 300g",
-        "Sugar snap peas 200g",
-        "Sweetcorn 1kg",
-        "Mushrooms chestnut 300g",
-        "Cucumber",
-        "Iceberg lettuce",
-        "Mixed leaf salad 180g",
-        "Peppers x3",
-        "Red peppers",
-        "Yellow peppers",
-        "Red onions x3",
-        "Chopped onions 500g",
-        "Courgettes 500g",
-        "Baby plum tomatoes 325g",
-        "Classic tomatoes x6",
-        "Avocados x2",
-        "Lemons unwaxed",
-        "Ginger 100g",
-        "Watermelon",
-        "Carrots 1kg"
+        "Bananas x5","Strawberries 250g","Strawberries 400g","Blueberries 150g","Blueberries 300g",
+        "Royal Gala apples x6","Red seedless grapes 500g","Easy peelers 600g","Mango fruit snacks",
+        "Medjool dates organic 200g","Baking potatoes","White potatoes 2kg","Broccoli","Cauliflower",
+        "Kale 200g","Spinach baby leaf","Garden peas 910g","Green beans 300g","Sugar snap peas 200g",
+        "Sweetcorn 1kg","Mushrooms chestnut 300g","Cucumber","Iceberg lettuce","Mixed leaf salad 180g",
+        "Peppers x3","Red peppers","Yellow peppers","Red onions x3","Chopped onions 500g",
+        "Courgettes 500g","Baby plum tomatoes 325g","Classic tomatoes x6","Avocados x2",
+        "Lemons unwaxed","Ginger 100g","Watermelon","Carrots 1kg"
       ]},
       { name: 'Cupboard & pantry', icon: '🥫', items: [
-        "Spaghetti 500g",
-        "Fresh egg penne 500g",
-        "Fresh egg fusilli 500g",
-        "Fresh egg lasagne sheets",
-        "Fresh gnocchi 500g",
-        "Passata 500g",
-        "Tomato puree double concentrate",
-        "Sun dried tomato paste",
-        "Baked beans 415g",
-        "Tuna chunks in spring water x4",
-        "Mayonnaise squeezy",
-        "Hellmann's light mayonnaise",
-        "Microwave basmati rice 250g",
-        "Microwave Thai rice 250g",
-        "Chicken and vegetable broth 600g",
-        "Oyster and spring onion stir fry sauce",
-        "Sweet and sour stir fry sauce",
-        "Chilli con carne seasoning mix",
-        "Old El Paso smoky BBQ fajita seasoning",
-        "Old El Paso taco seasoning",
-        "Schwartz honey & garlic chicken mix",
-        "Schwartz honey chilli chicken mix",
-        "Colman's chicken kebab meal maker",
-        "Plain flour 1.5kg",
-        "White granulated sugar 1kg",
-        "Rock salt grinder",
-        "Runny honey 340g",
-        "Garlic paste 75g",
-        "Squash no added sugar",
-        "Cranberry juice drink 1L",
-        "Caramelised onion chutney",
-        "Sweet pickle",
-        "Tracklements fresh chilli jam",
-        "Heinz baked beans"
+        "Spaghetti 500g","Fresh egg penne 500g","Fresh egg fusilli 500g","Fresh egg lasagne sheets",
+        "Fresh gnocchi 500g","Passata 500g","Tomato puree double concentrate","Sun dried tomato paste",
+        "Baked beans 415g","Tuna chunks in spring water x4","Mayonnaise squeezy","Hellmann's light mayonnaise",
+        "Microwave basmati rice 250g","Microwave Thai rice 250g","Chicken and vegetable broth 600g",
+        "Oyster and spring onion stir fry sauce","Sweet and sour stir fry sauce","Chilli con carne seasoning mix",
+        "Old El Paso smoky BBQ fajita seasoning","Old El Paso taco seasoning","Schwartz honey & garlic chicken mix",
+        "Schwartz honey chilli chicken mix","Colman's chicken kebab meal maker","Plain flour 1.5kg",
+        "White granulated sugar 1kg","Rock salt grinder","Runny honey 340g","Garlic paste 75g",
+        "Squash no added sugar","Cranberry juice drink 1L","Caramelised onion chutney","Sweet pickle",
+        "Tracklements fresh chilli jam","Heinz baked beans"
       ]},
       { name: 'Snacks & kids', icon: '🍿', items: [
-        "Pom-Bear crisps x6",
-        "Walkers Wotsits cheesy x6",
-        "Walkers Quavers x6",
-        "Properchips salt & vinegar lentil chips x5",
-        "Proper sea salt lentil chips x5",
-        "Go Ahead yoghurt breaks forest fruit x4",
-        "Go Ahead apple crispy fruit slices x4",
-        "Eat Natural almond cranberry dark chocolate bars x3",
-        "Deliciously Ella apple & almond breakfast bakes",
-        "Jordans super berry granola 500g",
-        "Yeo Valley granola berry & cherry 360g",
-        "Mini yogurt coated rice cakes x4",
-        "Mini snack raisins x12",
-        "Kids oaty bars x6",
-        "Banana oaty bars 12+ months x6",
-        "Roasted salted almonds 100g",
-        "Jelly babies 165g",
-        "Cheestrings x4",
-        "Cheerios multigrain cereal 500g",
-        "Weetabix Oatibix x24"
+        "Pom-Bear crisps x6","Walkers Wotsits cheesy x6","Walkers Quavers x6",
+        "Properchips salt & vinegar lentil chips x5","Proper sea salt lentil chips x5",
+        "Go Ahead yoghurt breaks forest fruit x4","Go Ahead apple crispy fruit slices x4",
+        "Eat Natural almond cranberry dark chocolate bars x3","Deliciously Ella apple & almond breakfast bakes",
+        "Jordans super berry granola 500g","Yeo Valley granola berry & cherry 360g",
+        "Mini yogurt coated rice cakes x4","Mini snack raisins x12","Kids oaty bars x6",
+        "Banana oaty bars 12+ months x6","Roasted salted almonds 100g","Jelly babies 165g",
+        "Cheestrings x4","Cheerios multigrain cereal 500g","Weetabix Oatibix x24"
       ]},
       { name: 'Household', icon: '🧹', items: [
-        "Fairy non bio pods",
-        "Washing up liquid",
-        "Baby wipes sensitive x60",
-        "Flushable moist toilet tissue x40",
-        "Toilet roll",
-        "Thick bleach citrus 750ml",
-        "Sponge scourers x6",
-        "Zoflora concentrated disinfectant",
-        "Viakal limescale remover",
-        "Shower gel",
-        "Toothpaste",
-        "Shampoo 2-in-1",
-        "Antiperspirant deodorant"
+        "Fairy non bio pods","Washing up liquid","Baby wipes sensitive x60","Flushable moist toilet tissue x40",
+        "Toilet roll","Thick bleach citrus 750ml","Sponge scourers x6","Zoflora concentrated disinfectant",
+        "Viakal limescale remover","Shower gel","Toothpaste","Shampoo 2-in-1","Antiperspirant deodorant"
       ]}
     ],
+    breakfasts: { 'Cereals & quick': ['Cornflakes'] },
+    lunches: { 'Drinks': ['Smoothie'] },
     dinners: {
-      'British classics': [
-        'Roast chicken dinner with stuffing',
-        'Roast beef with Yorkshire pudding',
-        'Roast lamb with mint sauce',
-        'Chicken and pancetta bake',
-        'Toad in the hole',
-        'Beef stew and dumplings',
-        'Steak and ale pie',
-        'Ham, egg and chips',
-        'Chicken and ham pie'
-      ],
-      'Italian': [
-        'Lasagne',
-        'Spaghetti Bolognaise',
-        'Chicken Alfredo pasta',
-        'Spaghetti Carbonara',
-        'Pollo Milanese',
-        'Pizza',
-        'Calzone (ham or chicken)',
-        'Chicken Pesto Pasta',
-        'Risotto',
-        'Mushroom pasta'
-      ],
-      'Mexican / Tex-Mex': [
-        'Chicken Fajitas',
-        'Enchiladas (chicken or beef)',
-        'Chilli Con Carne',
-        'Beef Tacos',
-        'Pulled Pork Burritos',
-        'Nachos loaded with cheese and meat'
-      ],
-      'Indian': [
-        'Butter Chicken',
-        'Chicken Tikka Masala',
-        'Chicken Korma'
-      ],
-      'Chinese': [
-        'Sweet and Sour Chicken',
-        'Crispy Duck Pancakes',
-        'Chicken Fried Rice',
-        'Chicken satay skewers with rice'
-      ],
-      'American': [
-        'Burger and chips',
-        'Hotdogs',
-        'Fried Chicken',
-        'Macaroni Cheese with Pulled Pork'
-      ],
-      'Mediterranean': [
-        'Chicken Paella',
-        'Chicken Kababs'
-      ],
-      'Burgers': [
-        'Chicken Burgers',
-        'Turkey Burgers',
-        'Nando\'s-style Chicken Burger',
-        'Pork and Apple Burgers'
-      ],
-      'Quick & simple': [
-        'Jacket Potato with beans, cheese and tuna',
-        'Breaded Chicken with chips',
-        'Pizza Pita Bread',
-        'Egg on Toast',
-        'Soup'
-      ]
+      'British classics': ['Roast chicken dinner with stuffing','Roast beef with Yorkshire pudding','Roast lamb with mint sauce','Chicken and pancetta bake','Toad in the hole','Beef stew and dumplings','Steak and ale pie','Ham, egg and chips','Chicken and ham pie'],
+      'Italian': ['Lasagne','Spaghetti Bolognaise','Chicken Alfredo pasta','Spaghetti Carbonara','Pollo Milanese','Pizza','Calzone (ham or chicken)','Chicken Pesto Pasta','Risotto','Mushroom pasta'],
+      'Mexican / Tex-Mex': ['Chicken Fajitas','Enchiladas (chicken or beef)','Chilli Con Carne','Beef Tacos','Pulled Pork Burritos','Nachos loaded with cheese and meat'],
+      'Indian': ['Butter Chicken','Chicken Tikka Masala','Chicken Korma'],
+      'Chinese': ['Sweet and Sour Chicken','Crispy Duck Pancakes','Chicken Fried Rice','Chicken satay skewers with rice'],
+      'American': ['Burger and chips','Hotdogs','Fried Chicken','Macaroni Cheese with Pulled Pork'],
+      'Mediterranean': ['Chicken Paella','Chicken Kababs'],
+      'Burgers': ['Chicken Burgers','Turkey Burgers',"Nando's-style Chicken Burger",'Pork and Apple Burgers'],
+      'Quick & simple': ['Jacket Potato with beans, cheese and tuna','Breaded Chicken with chips','Pizza Pita Bread','Egg on Toast','Soup']
     },
+    customBreakfasts: [],
+    customLunches: [],
     customDinners: [],
+    selectedBreakfasts: [],
+    selectedLunches: [],
     selectedDinners: [],
     weekPlan: { Monday: '', Tuesday: '', Wednesday: '', Thursday: '', Friday: '' }
   };
 
-  /* ── STATE ── */
   function loadState() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (!raw) return JSON.parse(JSON.stringify(DEFAULTS));
+      if (!raw) {
+        const v2 = localStorage.getItem('shopDinnerPlannerV2');
+        if (v2) {
+          try {
+            const old = JSON.parse(v2);
+            return Object.assign({}, JSON.parse(JSON.stringify(DEFAULTS)), {
+              shoppingList: old.shoppingList || [],
+              usualGroups: old.usualGroups || JSON.parse(JSON.stringify(DEFAULTS.usualGroups)),
+              dinners: old.dinners || JSON.parse(JSON.stringify(DEFAULTS.dinners)),
+              customDinners: old.customDinners || [],
+              selectedDinners: old.selectedDinners || [],
+              weekPlan: old.weekPlan || JSON.parse(JSON.stringify(DEFAULTS.weekPlan))
+            });
+          } catch(e) {}
+        }
+        return JSON.parse(JSON.stringify(DEFAULTS));
+      }
       const p = JSON.parse(raw);
+      const def = JSON.parse(JSON.stringify(DEFAULTS));
       return {
         shoppingList: p.shoppingList || [],
-        usualGroups: p.usualGroups || JSON.parse(JSON.stringify(DEFAULTS.usualGroups)),
-        dinners: p.dinners || JSON.parse(JSON.stringify(DEFAULTS.dinners)),
+        usualGroups: p.usualGroups || def.usualGroups,
+        breakfasts: p.breakfasts || def.breakfasts,
+        lunches: p.lunches || def.lunches,
+        dinners: p.dinners || def.dinners,
+        customBreakfasts: p.customBreakfasts || [],
+        customLunches: p.customLunches || [],
         customDinners: p.customDinners || [],
+        selectedBreakfasts: p.selectedBreakfasts || [],
+        selectedLunches: p.selectedLunches || [],
         selectedDinners: p.selectedDinners || [],
-        weekPlan: p.weekPlan || JSON.parse(JSON.stringify(DEFAULTS.weekPlan))
+        weekPlan: p.weekPlan || def.weekPlan
       };
     } catch(e) { return JSON.parse(JSON.stringify(DEFAULTS)); }
   }
 
   let state = loadState();
-
   function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
 
-  /* ── UTILITIES ── */
   function uid() { return Math.random().toString(36).slice(2, 10); }
 
   function toast(msg) {
@@ -1071,7 +767,12 @@
     el._t = setTimeout(() => el.classList.remove('show'), 2000);
   }
 
-  /* ── NAV ── */
+  function escHtml(t) {
+    const d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1082,7 +783,6 @@
     };
   });
 
-  /* ── SHOPPING LIST ── */
   function addItem(name) {
     const clean = name.trim();
     if (!clean) return;
@@ -1120,15 +820,8 @@
       div.innerHTML = `
         <div class="shop-check"><span class="shop-check-tick">✓</span></div>
         <div class="shop-item-name">${escHtml(item.name)}</div>
-        <button class="shop-item-del" title="Remove" data-id="${item.id}">×</button>
+        <button class="shop-item-del" title="Remove">×</button>
       `;
-      div.querySelector('.shop-check').onclick = () => {
-        div.onclick = null;
-        item.checked = !item.checked;
-        save();
-        renderShoppingList();
-        updateBadges();
-      };
       div.querySelector('.shop-item-del').onclick = (e) => {
         e.stopPropagation();
         state.shoppingList = state.shoppingList.filter(x => x.id !== item.id);
@@ -1157,31 +850,24 @@
 
   document.getElementById('untickAllBtn').onclick = () => {
     state.shoppingList.forEach(x => x.checked = false);
-    save();
-    renderShoppingList();
-    updateBadges();
+    save(); renderShoppingList(); updateBadges();
     toast('All items unticked');
   };
 
   document.getElementById('clearTickedBtn').onclick = () => {
     const n = state.shoppingList.filter(x => x.checked).length;
     state.shoppingList = state.shoppingList.filter(x => !x.checked);
-    save();
-    renderShoppingList();
-    updateBadges();
+    save(); renderShoppingList(); updateBadges();
     toast(n ? `Removed ${n} ticked item${n===1?'':'s'}` : 'Nothing ticked');
   };
 
   document.getElementById('clearAllShoppingBtn').onclick = () => {
     if (!confirm('Clear the entire shopping list?')) return;
     state.shoppingList = [];
-    save();
-    renderShoppingList();
-    updateBadges();
+    save(); renderShoppingList(); updateBadges();
     toast('List cleared');
   };
 
-  /* ── USUAL GROUPS ── */
   function renderUsualGroups() {
     const el = document.getElementById('usualGroupsEl');
     el.innerHTML = '';
@@ -1204,10 +890,7 @@
           </div>
         </div>
       `;
-
-      block.querySelector('.group-header').onclick = () => {
-        block.classList.toggle('open');
-      };
+      block.querySelector('.group-header').onclick = () => block.classList.toggle('open');
 
       const cloud = block.querySelector(`#pillcloud-${gi}`);
       group.items.forEach(item => {
@@ -1216,10 +899,7 @@
         pill.textContent = item;
         const isAdded = state.shoppingList.some(x => x.name.toLowerCase() === item.toLowerCase() && !x.checked);
         if (isAdded) pill.classList.add('added');
-        pill.onclick = () => {
-          addItem(item);
-          pill.classList.add('added');
-        };
+        pill.onclick = () => { addItem(item); pill.classList.add('added'); };
         cloud.appendChild(pill);
       });
 
@@ -1229,8 +909,7 @@
         if (!val) return;
         group.items.push(val);
         inp.value = '';
-        save();
-        renderUsualGroups();
+        save(); renderUsualGroups();
         toast(`Added "${val}" to ${group.name}`);
       };
       block.querySelector(`#groupadd-${gi}`).addEventListener('keydown', e => {
@@ -1241,65 +920,71 @@
     });
   }
 
-  /* ── DINNERS ── */
-  function allDinners() {
-    const from_library = Object.values(state.dinners).flat();
-    return [...state.customDinners, ...from_library];
+  function allMealsFor(type) {
+    const lib = state[type + 's'];
+    const customKey = 'custom' + type[0].toUpperCase() + type.slice(1) + 's';
+    const custom = state[customKey];
+    return [...custom, ...Object.values(lib).flat()];
   }
 
-  function renderDinners() {
-    const el = document.getElementById('dinnerChoicesEl');
+  function renderMealChoices(opts) {
+    const el = document.getElementById(opts.containerId);
     el.innerHTML = '';
+    const selectedSet = new Set(state[opts.selectedKey]);
+    const atMax = opts.max ? state[opts.selectedKey].length >= opts.max : false;
 
-    const selectedSet = new Set(state.selectedDinners);
-    const atMax = state.selectedDinners.length >= 5;
-
-    // Custom dinners first
-    if (state.customDinners.length > 0) {
+    const customs = state[opts.customKey];
+    if (customs.length > 0) {
       const lbl = document.createElement('div');
-      lbl.className = 'dinner-category-label';
+      lbl.className = 'meal-category-label';
       lbl.textContent = 'Your additions';
       el.appendChild(lbl);
 
       const grid = document.createElement('div');
-      grid.className = 'dinner-grid';
-      state.customDinners.forEach(d => {
-        const pill = makeDinnerPill(d, selectedSet, atMax);
-        grid.appendChild(pill);
-      });
+      grid.className = 'meal-grid';
+      customs.forEach(d => grid.appendChild(makeMealPill(d, selectedSet, atMax, opts)));
       el.appendChild(grid);
     }
 
-    Object.entries(state.dinners).forEach(([cat, items]) => {
+    Object.entries(state[opts.libraryKey]).forEach(([cat, items]) => {
       const lbl = document.createElement('div');
-      lbl.className = 'dinner-category-label';
+      lbl.className = 'meal-category-label';
       lbl.textContent = cat;
       el.appendChild(lbl);
 
       const grid = document.createElement('div');
-      grid.className = 'dinner-grid';
-      items.forEach(d => {
-        const pill = makeDinnerPill(d, selectedSet, atMax);
-        grid.appendChild(pill);
-      });
+      grid.className = 'meal-grid';
+      items.forEach(d => grid.appendChild(makeMealPill(d, selectedSet, atMax, opts)));
       el.appendChild(grid);
     });
   }
 
-  function makeDinnerPill(dinner, selectedSet, atMax) {
+  function makeMealPill(meal, selectedSet, atMax, opts) {
     const pill = document.createElement('button');
-    const isSelected = selectedSet.has(dinner);
-    pill.className = 'dinner-pill' + (isSelected ? ' selected' : '') + (!isSelected && atMax ? ' maxed' : '');
-    pill.textContent = dinner;
+    const isSelected = selectedSet.has(meal);
+    let cls = 'meal-pill';
+    if (isSelected) {
+      cls += ' selected';
+      if (opts.theme) cls += ' theme-' + opts.theme;
+    } else if (atMax) {
+      cls += ' maxed';
+    }
+    pill.className = cls;
+    pill.textContent = meal;
     pill.onclick = () => {
       if (isSelected) {
-        state.selectedDinners = state.selectedDinners.filter(x => x !== dinner);
-        Object.keys(state.weekPlan).forEach(day => {
-          if (state.weekPlan[day] === dinner) state.weekPlan[day] = '';
-        });
+        state[opts.selectedKey] = state[opts.selectedKey].filter(x => x !== meal);
+        if (opts.selectedKey === 'selectedDinners') {
+          Object.keys(state.weekPlan).forEach(day => {
+            if (state.weekPlan[day] === meal) state.weekPlan[day] = '';
+          });
+        }
       } else {
-        if (state.selectedDinners.length >= 5) { toast('Max 5 dinners for the week'); return; }
-        state.selectedDinners.push(dinner);
+        if (opts.max && state[opts.selectedKey].length >= opts.max) {
+          toast(`Max ${opts.max} ${opts.label || 'items'} for the week`);
+          return;
+        }
+        state[opts.selectedKey].push(meal);
       }
       save();
       renderAll();
@@ -1307,40 +992,102 @@
     return pill;
   }
 
-  function renderSelectedDinners() {
-    const el = document.getElementById('selectedDinnersEl');
-    const fill = document.getElementById('dinnerCounterFill');
-    const lbl = document.getElementById('dinnerCounterLabel');
-    const n = state.selectedDinners.length;
+  function renderSelectedMeals(opts) {
+    const el = document.getElementById(opts.stripId);
+    const fill = document.getElementById(opts.fillId);
+    const lbl = document.getElementById(opts.labelId);
+    const n = state[opts.selectedKey].length;
+    const max = opts.max || 7;
 
-    fill.style.width = (n / 5 * 100) + '%';
-    lbl.textContent = `${n} / 5`;
+    fill.style.width = Math.min(100, (n / max * 100)) + '%';
+    lbl.textContent = `${n} / ${max}`;
 
     if (n === 0) {
-      el.innerHTML = '<div class="empty-state"><div class="empty-icon">🍽️</div>No dinners selected yet — pick up to 5 below</div>';
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">${opts.emptyIcon}</div>${opts.emptyMsg}</div>`;
       return;
     }
 
     el.innerHTML = '';
-    state.selectedDinners.forEach((d, i) => {
+    state[opts.selectedKey].forEach((d, i) => {
       const row = document.createElement('div');
-      row.className = 'selected-dinner-row';
+      row.className = 'selected-meal-row';
+      const numCls = 'selected-meal-num' + (opts.theme ? ' theme-' + opts.theme : '');
       row.innerHTML = `
-        <div class="selected-dinner-num">${String(i+1).padStart(2,'0')}</div>
-        <div class="selected-dinner-name">${escHtml(d)}</div>
-        <button class="selected-dinner-del" title="Remove">×</button>
+        <div class="${numCls}">${String(i+1).padStart(2,'0')}</div>
+        <div class="selected-meal-name">${escHtml(d)}</div>
+        <button class="selected-meal-del" title="Remove">×</button>
       `;
-      row.querySelector('.selected-dinner-del').onclick = () => {
-        state.selectedDinners = state.selectedDinners.filter(x => x !== d);
-        Object.keys(state.weekPlan).forEach(day => {
-          if (state.weekPlan[day] === d) state.weekPlan[day] = '';
-        });
+      row.querySelector('.selected-meal-del').onclick = () => {
+        state[opts.selectedKey] = state[opts.selectedKey].filter(x => x !== d);
+        if (opts.selectedKey === 'selectedDinners') {
+          Object.keys(state.weekPlan).forEach(day => {
+            if (state.weekPlan[day] === d) state.weekPlan[day] = '';
+          });
+        }
         save();
         renderAll();
       };
       el.appendChild(row);
     });
   }
+
+  const BREAKFAST_OPTS = {
+    containerId: 'breakfastChoicesEl', stripId: 'selectedBreakfastsEl',
+    fillId: 'breakfastCounterFill', labelId: 'breakfastCounterLabel',
+    libraryKey: 'breakfasts', customKey: 'customBreakfasts', selectedKey: 'selectedBreakfasts',
+    max: 7, theme: 'orange', label: 'breakfasts',
+    emptyIcon: '🍳', emptyMsg: 'No breakfasts selected yet'
+  };
+  const LUNCH_OPTS = {
+    containerId: 'lunchChoicesEl', stripId: 'selectedLunchesEl',
+    fillId: 'lunchCounterFill', labelId: 'lunchCounterLabel',
+    libraryKey: 'lunches', customKey: 'customLunches', selectedKey: 'selectedLunches',
+    max: 7, theme: 'teal', label: 'lunches',
+    emptyIcon: '🥪', emptyMsg: 'No lunches selected yet'
+  };
+  const DINNER_OPTS = {
+    containerId: 'dinnerChoicesEl', stripId: 'selectedDinnersEl',
+    fillId: 'dinnerCounterFill', labelId: 'dinnerCounterLabel',
+    libraryKey: 'dinners', customKey: 'customDinners', selectedKey: 'selectedDinners',
+    max: 5, theme: null, label: 'dinners',
+    emptyIcon: '🍽️', emptyMsg: 'No dinners selected yet — pick up to 5 below'
+  };
+
+  document.getElementById('addBreakfastBtn').onclick = () => {
+    const inp = document.getElementById('customBreakfastInput');
+    const val = inp.value.trim();
+    if (!val) return;
+    if (allMealsFor('breakfast').map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
+      toast('Already in your breakfast list'); return;
+    }
+    state.customBreakfasts.unshift(val);
+    inp.value = '';
+    save(); renderAll(); toast(`Added: ${val}`);
+  };
+  document.getElementById('customBreakfastInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('addBreakfastBtn').click();
+  });
+  document.getElementById('clearBreakfastsBtn').onclick = () => {
+    state.selectedBreakfasts = []; save(); renderAll(); toast('Breakfasts cleared');
+  };
+
+  document.getElementById('addLunchBtn').onclick = () => {
+    const inp = document.getElementById('customLunchInput');
+    const val = inp.value.trim();
+    if (!val) return;
+    if (allMealsFor('lunch').map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
+      toast('Already in your lunch list'); return;
+    }
+    state.customLunches.unshift(val);
+    inp.value = '';
+    save(); renderAll(); toast(`Added: ${val}`);
+  };
+  document.getElementById('customLunchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('addLunchBtn').click();
+  });
+  document.getElementById('clearLunchesBtn').onclick = () => {
+    state.selectedLunches = []; save(); renderAll(); toast('Lunches cleared');
+  };
 
   function renderWeekPlan() {
     const el = document.getElementById('weekPlanEl');
@@ -1351,16 +1098,13 @@
       const hasMeal = !!state.weekPlan[day];
       row.className = 'week-row' + (hasMeal ? ' has-meal' : '');
       row.innerHTML = `<div class="week-day">${day.slice(0,3)}</div>`;
-
       const sel = document.createElement('select');
       const empty = document.createElement('option');
-      empty.value = '';
-      empty.textContent = 'Choose a dinner…';
+      empty.value = ''; empty.textContent = 'Choose a dinner…';
       sel.appendChild(empty);
       state.selectedDinners.forEach(d => {
         const opt = document.createElement('option');
-        opt.value = d;
-        opt.textContent = d;
+        opt.value = d; opt.textContent = d;
         if (state.weekPlan[day] === d) opt.selected = true;
         sel.appendChild(opt);
       });
@@ -1375,52 +1119,40 @@
   }
 
   document.getElementById('autoPickBtn').onclick = () => {
-    const all = allDinners();
+    const all = allMealsFor('dinner');
     const shuffled = [...all].sort(() => Math.random() - 0.5);
     state.selectedDinners = shuffled.slice(0, 5);
     state.weekPlan = { Monday:'', Tuesday:'', Wednesday:'', Thursday:'', Friday:'' };
-    save();
-    renderAll();
-    toast('Picked 5 random dinners');
+    save(); renderAll(); toast('Picked 5 random dinners');
   };
 
   document.getElementById('clearDinnersBtn').onclick = () => {
     state.selectedDinners = [];
     state.weekPlan = { Monday:'', Tuesday:'', Wednesday:'', Thursday:'', Friday:'' };
-    save();
-    renderAll();
-    toast('Dinners cleared');
+    save(); renderAll(); toast('Dinners cleared');
   };
 
   document.getElementById('fillWeekBtn').onclick = () => {
     const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
-    days.forEach((day, i) => {
-      state.weekPlan[day] = state.selectedDinners[i] || '';
-    });
-    save();
-    renderWeekPlan();
-    toast('Week plan filled');
+    days.forEach((day, i) => { state.weekPlan[day] = state.selectedDinners[i] || ''; });
+    save(); renderWeekPlan(); toast('Week plan filled');
   };
 
   document.getElementById('addDinnerBtn').onclick = () => {
     const inp = document.getElementById('customDinnerInput');
     const val = inp.value.trim();
     if (!val) return;
-    if (allDinners().map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
-      toast('Already in your dinner list');
-      return;
+    if (allMealsFor('dinner').map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
+      toast('Already in your dinner list'); return;
     }
     state.customDinners.unshift(val);
     inp.value = '';
-    save();
-    renderDinners();
-    toast(`Added: ${val}`);
+    save(); renderAll(); toast(`Added: ${val}`);
   };
   document.getElementById('customDinnerInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('addDinnerBtn').click();
   });
 
-  /* ── SETTINGS ── */
   document.getElementById('exportBtn').onclick = () => {
     document.getElementById('backupBox').value = JSON.stringify(state, null, 2);
     toast('Data exported — copy the text to back it up');
@@ -1431,73 +1163,67 @@
     if (!box.value.trim()) { toast('Nothing to import'); return; }
     try {
       const incoming = JSON.parse(box.value);
+      const def = JSON.parse(JSON.stringify(DEFAULTS));
       state = {
         shoppingList: incoming.shoppingList || [],
-        usualGroups: incoming.usualGroups || JSON.parse(JSON.stringify(DEFAULTS.usualGroups)),
-        dinners: incoming.dinners || JSON.parse(JSON.stringify(DEFAULTS.dinners)),
+        usualGroups: incoming.usualGroups || def.usualGroups,
+        breakfasts: incoming.breakfasts || def.breakfasts,
+        lunches: incoming.lunches || def.lunches,
+        dinners: incoming.dinners || def.dinners,
+        customBreakfasts: incoming.customBreakfasts || [],
+        customLunches: incoming.customLunches || [],
         customDinners: incoming.customDinners || [],
+        selectedBreakfasts: incoming.selectedBreakfasts || [],
+        selectedLunches: incoming.selectedLunches || [],
         selectedDinners: incoming.selectedDinners || [],
-        weekPlan: incoming.weekPlan || JSON.parse(JSON.stringify(DEFAULTS.weekPlan))
+        weekPlan: incoming.weekPlan || def.weekPlan
       };
-      save();
-      renderAll();
-      toast('Import successful');
+      save(); renderAll(); toast('Import successful');
     } catch(e) { toast('Invalid data — check your paste'); }
   };
 
   document.getElementById('resetAllBtn').onclick = () => {
     if (!confirm('Reset everything? This will wipe all your customisations and shopping list.')) return;
     state = JSON.parse(JSON.stringify(DEFAULTS));
-    save();
-    renderAll();
-    toast('Reset to defaults');
+    save(); renderAll(); toast('Reset to defaults');
   };
 
-  /* ── HEADER + BADGES ── */
   function updateBadges() {
     const unchecked = state.shoppingList.filter(x => !x.checked).length;
     const total = state.shoppingList.length;
-    const dinnerCount = state.selectedDinners.length;
 
-    const navBadge = document.getElementById('navShopBadge');
-    navBadge.textContent = unchecked > 0 ? unchecked : '';
-
-    const dinnerBadge = document.getElementById('navDinnerBadge');
-    dinnerBadge.textContent = dinnerCount > 0 ? dinnerCount : '';
+    document.getElementById('navShopBadge').textContent = unchecked > 0 ? unchecked : '';
+    document.getElementById('navBreakfastBadge').textContent = state.selectedBreakfasts.length > 0 ? state.selectedBreakfasts.length : '';
+    document.getElementById('navLunchBadge').textContent = state.selectedLunches.length > 0 ? state.selectedLunches.length : '';
+    document.getElementById('navDinnerBadge').textContent = state.selectedDinners.length > 0 ? state.selectedDinners.length : '';
 
     document.getElementById('headerBadge').textContent = unchecked || total || 0;
 
     const sub = document.getElementById('headerSub');
-    if (unchecked > 0) {
-      sub.textContent = `${unchecked} item${unchecked===1?'':'s'} still to get`;
-    } else if (total > 0) {
-      sub.textContent = 'All items ticked — nice one';
-    } else {
-      sub.textContent = 'Ready to plan your week';
-    }
+    if (unchecked > 0) sub.textContent = `${unchecked} item${unchecked===1?'':'s'} still to get`;
+    else if (total > 0) sub.textContent = 'All items ticked — nice one';
+    else sub.textContent = 'Ready to plan your week';
 
     document.getElementById('statShopItems').textContent = total;
-    document.getElementById('statDinnersSelected').textContent = dinnerCount;
-    document.getElementById('statDinnerTotal').textContent = allDinners().length;
+    document.getElementById('statBreakfastSelected').textContent = state.selectedBreakfasts.length;
+    document.getElementById('statLunchSelected').textContent = state.selectedLunches.length;
+    document.getElementById('statDinnersSelected').textContent = state.selectedDinners.length;
   }
 
-  /* ── RENDER ALL ── */
   function renderAll() {
-    // Date in header
     const now = new Date();
     document.getElementById('headerDate').textContent = now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+
     renderShoppingList();
     renderUsualGroups();
-    renderDinners();
-    renderSelectedDinners();
+    renderMealChoices(BREAKFAST_OPTS);
+    renderSelectedMeals(BREAKFAST_OPTS);
+    renderMealChoices(LUNCH_OPTS);
+    renderSelectedMeals(LUNCH_OPTS);
+    renderMealChoices(DINNER_OPTS);
+    renderSelectedMeals(DINNER_OPTS);
     renderWeekPlan();
     updateBadges();
-  }
-
-  function escHtml(t) {
-    const d = document.createElement('div');
-    d.textContent = t;
-    return d.innerHTML;
   }
 
   renderAll();
