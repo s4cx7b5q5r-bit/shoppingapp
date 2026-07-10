@@ -12,36 +12,72 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0d0f14;
-      --surface: #151820;
-      --surface2: #1c2030;
-      --surface3: #232840;
-      --border: rgba(255,255,255,0.07);
-      --border2: rgba(255,255,255,0.12);
-      --text: #f0f2f8;
-      --text2: #9ba3be;
-      --text3: #5c6480;
-      --accent: #4f8ef7;
-      --accent-dim: rgba(79,142,247,0.15);
-      --accent-glow: rgba(79,142,247,0.3);
-      --green: #3ecf8e;
-      --green-dim: rgba(62,207,142,0.15);
-      --amber: #f5a623;
-      --amber-dim: rgba(245,166,35,0.15);
-      --red: #f05454;
-      --red-dim: rgba(240,84,84,0.15);
-      --orange: #ff8c42;
-      --orange-dim: rgba(255,140,66,0.15);
-      --teal: #22d3ee;
-      --teal-dim: rgba(34,211,238,0.15);
+      /* Warm navy base, sampled from the palette backdrop */
+      --bg: #22243a;
+      --surface: #2a2d47;
+      --surface2: #333654;
+      --surface3: #3e4166;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f4f2f7;
+      --text2: #b0b0cb;
+      --text3: #7a7ca0;
+
+      /* Primary action = coral */
+      --accent: #F64668;
+      --accent-dim: rgba(246,70,104,0.16);
+      --accent-glow: rgba(246,70,104,0.32);
+
+      /* "Complete / positive" = peach (replaces old green) */
+      --green: #FE9677;
+      --green-dim: rgba(254,150,119,0.16);
+
+      /* Section themes drawn from the four-colour palette */
+      --amber: #FE9677;   /* dinner → peach */
+      --amber-dim: rgba(254,150,119,0.16);
+      --red: #F64668;
+      --red-dim: rgba(246,70,104,0.16);
+      --orange: #FE9677;  /* breakfast → peach */
+      --orange-dim: rgba(254,150,119,0.16);
+      --purple: #984063;  /* plum → evening / lunch accents */
+      --purple-dim: rgba(152,64,99,0.22);
+      --teal: #984063;    /* lunch → plum */
+      --teal-dim: rgba(152,64,99,0.22);
+      --indigo: #6d70a8;  /* lightened 41436A for contrast on dark */
+      --indigo-dim: rgba(109,112,168,0.2);
+
       --radius: 16px;
       --radius-sm: 10px;
       --font: 'DM Sans', sans-serif;
       --mono: 'DM Mono', monospace;
       --nav-h: 64px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.35);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.45);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    /* ── TICK POP FEEDBACK ── */
+    @keyframes tickPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.28); }
+      70% { transform: scale(0.92); }
+      100% { transform: scale(1); }
+    }
+    @keyframes rowFlash {
+      0% { background: var(--surface2); }
+      30% { background: var(--green-dim); }
+      100% { background: var(--surface2); }
+    }
+    @keyframes checkBurst {
+      0% { box-shadow: 0 0 0 0 rgba(254,150,119,0.55); }
+      100% { box-shadow: 0 0 0 12px rgba(254,150,119,0); }
+    }
+    .pop { animation: tickPop 0.35s var(--ease-spring); }
+    .burst { animation: checkBurst 0.5s ease-out; }
 
     body {
       margin: 0;
@@ -59,8 +95,8 @@
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 60% 40% at 10% 0%, rgba(79,142,247,0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 30% at 90% 100%, rgba(167,139,250,0.05) 0%, transparent 70%);
+        radial-gradient(ellipse 60% 40% at 10% 0%, rgba(246,70,104,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 30% at 90% 100%, rgba(254,150,119,0.06) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
     }
@@ -86,12 +122,13 @@
       gap: 14px;
       position: relative;
       overflow: hidden;
+      box-shadow: var(--shadow-md);
     }
     .header::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, rgba(79,142,247,0.07) 0%, transparent 60%);
+      background: linear-gradient(120deg, rgba(246,70,104,0.10) 0%, transparent 60%);
       pointer-events: none;
     }
     .header-title { flex: 1; position: relative; }
@@ -115,7 +152,7 @@
     .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; position: relative; }
     .header-badge {
       background: var(--accent-dim);
-      border: 1px solid rgba(79,142,247,0.3);
+      border: 1px solid rgba(246,70,104,0.35);
       border-radius: 12px;
       padding: 7px 13px;
       text-align: center;
@@ -156,9 +193,10 @@
       min-width: 0;
     }
     .nav-btn.active { color: var(--accent); }
+    .nav-btn[data-panel="home"].active { color: var(--green); }
     .nav-btn[data-panel="breakfast"].active { color: var(--orange); }
     .nav-btn[data-panel="lunch"].active { color: var(--teal); }
-    .nav-btn[data-panel="dinner"].active { color: var(--amber); }
+    .nav-btn[data-panel="dinner"].active { color: var(--indigo); }
     .nav-btn::after {
       content: '';
       position: absolute;
@@ -172,8 +210,9 @@
       transition: width 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .nav-btn.active::after { width: 26px; }
-    .nav-icon { font-size: 1.15rem; line-height: 1; }
-    .nav-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.02em; }
+    .nav-icon { font-size: 1.1rem; line-height: 1; transition: transform 0.22s var(--ease-spring); }
+    .nav-btn.active .nav-icon { transform: translateY(-2px) scale(1.12); }
+    .nav-label { font-size: 0.55rem; font-weight: 600; letter-spacing: 0.02em; }
     .nav-badge {
       position: absolute;
       top: 4px;
@@ -194,8 +233,22 @@
     .nav-badge:empty { display: none; }
 
     .panel { display: none; }
-    .panel.active { display: block; animation: fadeIn 0.18s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .panel.active { display: block; animation: panelIn 0.32s var(--ease-out); }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .panel.active > .card {
+      animation: cardIn 0.4s var(--ease-out) backwards;
+    }
+    .panel.active > .card:nth-child(1) { animation-delay: 0.02s; }
+    .panel.active > .card:nth-child(2) { animation-delay: 0.07s; }
+    .panel.active > .card:nth-child(3) { animation-delay: 0.12s; }
+    .panel.active > .card:nth-child(4) { animation-delay: 0.17s; }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
     .card {
       background: var(--surface);
@@ -203,6 +256,7 @@
       border-radius: var(--radius);
       padding: 16px;
       margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
     }
     .card-title {
       font-size: 0.78rem;
@@ -232,9 +286,9 @@
       font-family: var(--font);
     }
     .btn:active { transform: scale(0.96); opacity: 0.85; }
-    .btn-primary { background: var(--accent); color: #fff; flex: 1; justify-content: center; }
+    .btn-primary { background: linear-gradient(135deg, #f85e7c 0%, var(--accent) 100%); color: #fff; flex: 1; justify-content: center; box-shadow: 0 2px 10px rgba(246,70,104,0.35); }
     .btn-secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
-    .btn-green { background: var(--green); color: #0a1a12; flex: 1; justify-content: center; }
+    .btn-green { background: linear-gradient(135deg, #ffa88c 0%, var(--green) 100%); color: #4a2418; flex: 1; justify-content: center; box-shadow: 0 2px 10px rgba(254,150,119,0.3); }
     .btn-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(240,84,84,0.2); }
     .btn-ghost { background: transparent; color: var(--text3); border: 1px solid var(--border); }
     .btn-sm { padding: 7px 10px; font-size: 0.8rem; }
@@ -316,7 +370,7 @@
       cursor: pointer; transition: all 0.15s;
     }
     .pill:active { transform: scale(0.95); }
-    .pill.added { background: var(--green-dim); border-color: rgba(62,207,142,0.4); color: var(--green); }
+    .pill.added { background: var(--green-dim); border-color: rgba(254,150,119,0.45); color: var(--green); }
     .group-add-row { display: flex; gap: 7px; margin-top: 8px; }
     .group-add-row input { flex: 1; font-size: 0.85rem; padding: 8px 11px; }
 
@@ -338,14 +392,17 @@
     }
     .meal-pill:active { transform: scale(0.96); }
     .meal-pill.selected {
-      background: var(--accent-dim); border-color: rgba(79,142,247,0.4);
+      background: var(--accent-dim); border-color: rgba(246,70,104,0.45);
       color: var(--accent); font-weight: 600;
     }
     .meal-pill.selected.theme-orange {
-      background: var(--orange-dim); border-color: rgba(255,140,66,0.4); color: var(--orange);
+      background: var(--orange-dim); border-color: rgba(254,150,119,0.45); color: var(--orange);
     }
     .meal-pill.selected.theme-teal {
-      background: var(--teal-dim); border-color: rgba(34,211,238,0.4); color: var(--teal);
+      background: var(--teal-dim); border-color: rgba(152,64,99,0.5); color: #d98aa8;
+    }
+    .meal-pill.selected.theme-indigo {
+      background: var(--indigo-dim); border-color: rgba(109,112,168,0.5); color: #a3a5d4;
     }
     .meal-pill.maxed:not(.selected) { opacity: 0.4; cursor: default; }
 
@@ -359,7 +416,8 @@
     @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
     .selected-meal-num { font-size: 0.75rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 22px; }
     .selected-meal-num.theme-orange { color: var(--orange); }
-    .selected-meal-num.theme-teal { color: var(--teal); }
+    .selected-meal-num.theme-teal { color: #d98aa8; }
+    .selected-meal-num.theme-indigo { color: #a3a5d4; }
     .selected-meal-name { flex: 1; font-size: 0.9rem; }
     .selected-meal-del {
       background: none; border: none; color: var(--text3);
@@ -368,7 +426,19 @@
 
     .meal-counter { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
     .meal-counter-track { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
-    .meal-counter-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .meal-counter-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.45s var(--ease-spring); position: relative; overflow: hidden; }
+    .meal-counter-fill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 2.6s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%, 55% { transform: translateX(-100%); }
+      100% { transform: translateX(320%); }
+    }
     .meal-counter-fill.theme-orange { background: var(--orange); }
     .meal-counter-fill.theme-teal { background: var(--teal); }
     .meal-counter-label { font-size: 0.78rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 32px; text-align: right; }
@@ -387,7 +457,7 @@
       letter-spacing: 0.07em; font-family: var(--mono);
     }
     .week-row select { flex: 1; padding: 6px 10px; font-size: 0.88rem; background: var(--surface3); border-radius: 8px; }
-    .week-row.has-meal { border-color: rgba(79,142,247,0.25); }
+    .week-row.has-meal { border-color: rgba(246,70,104,0.3); }
     .week-row.has-meal .week-day { color: var(--accent); }
 
     .stat-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -402,6 +472,7 @@
     .stat-chip.amber .sv { color: var(--amber); }
     .stat-chip.orange .sv { color: var(--orange); }
     .stat-chip.teal .sv { color: var(--teal); }
+    .stat-chip.indigo .sv { color: var(--indigo); }
 
     .footer-note { text-align: center; color: var(--text3); font-size: 0.78rem; margin: 6px 0 14px; line-height: 1.5; }
 
@@ -420,6 +491,148 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     .spacer { height: 8px; }
+
+    /* ── HOME TILES ── */
+    .tile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .tile {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 18px 14px;
+      cursor: pointer;
+      transition: transform 0.18s var(--ease-spring), border-color 0.18s, box-shadow 0.18s;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      font-family: var(--font);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+    .tile:active { transform: scale(0.95); }
+    .tile.theme-shop:active { box-shadow: 0 4px 18px rgba(246,70,104,0.28); border-color: rgba(246,70,104,0.45); }
+    .tile.theme-breakfast:active { box-shadow: 0 4px 18px rgba(254,150,119,0.28); border-color: rgba(254,150,119,0.45); }
+    .tile.theme-lunch:active { box-shadow: 0 4px 18px rgba(152,64,99,0.32); border-color: rgba(152,64,99,0.5); }
+    .tile.theme-dinner:active { box-shadow: 0 4px 18px rgba(109,112,168,0.32); border-color: rgba(109,112,168,0.5); }
+    .tile::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      opacity: 0.12;
+      transition: opacity 0.2s;
+    }
+    .tile:hover::before { opacity: 0.2; }
+    .tile.theme-shop::before { background: var(--accent); }
+    .tile.theme-breakfast::before { background: var(--orange); }
+    .tile.theme-lunch::before { background: var(--teal); }
+    .tile.theme-dinner::before { background: var(--indigo); }
+    .tile-icon {
+      font-size: 1.9rem;
+      line-height: 1;
+      position: relative;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .tile-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tile-label::after {
+      content: '→';
+      font-size: 0.85rem;
+      color: var(--text3);
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .tile:active .tile-label::after { opacity: 1; transform: translateX(0); }
+    .tile-sub {
+      font-size: 0.72rem;
+      color: var(--text3);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      position: relative;
+    }
+
+    /* ── ROUTINE ITEMS ── */
+    .routine-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .routine-item.done { opacity: 0.55; border-color: rgba(254,150,119,0.22); }
+    .routine-item.done .routine-name { text-decoration: line-through; color: var(--text3); }
+    .routine-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: var(--text3);
+      transition: all 0.2s;
+    }
+    .routine-item.done .routine-num {
+      background: var(--green);
+      border-color: var(--green);
+      color: #0a1a12;
+    }
+    .routine-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
+    .routine-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--border2);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .routine-item.done .routine-check {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .routine-check-tick { display: none; color: #fff; font-size: 0.75rem; font-weight: 700; }
+    .routine-item.done .routine-check-tick { display: block; }
+
+    .routine-complete {
+      text-align: center;
+      padding: 14px;
+      background: var(--green-dim);
+      border: 1px solid rgba(254,150,119,0.32);
+      border-radius: var(--radius-sm);
+      color: var(--green);
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -440,8 +653,74 @@
     </div>
   </div>
 
+  <!-- HOME -->
+  <section id="panel-home" class="panel active">
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="card-title" style="margin:0">☀️ Morning routine</div>
+        <button class="btn btn-ghost btn-sm" id="resetMorningBtn">Reset</button>
+      </div>
+      <div class="meal-counter">
+        <div class="meal-counter-track">
+          <div class="meal-counter-fill" id="morningCounterFill" style="width:0%;background:var(--green)"></div>
+        </div>
+        <div class="meal-counter-label" id="morningCounterLabel" style="color:var(--green)">0 / 4</div>
+      </div>
+      <div id="morningItemsEl"></div>
+      <div id="morningCompleteEl" style="display:none" class="routine-complete">
+        ✓ Morning routine complete — have a great day
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="card-title" style="margin:0">🌙 Evening routine</div>
+        <button class="btn btn-ghost btn-sm" id="resetEveningBtn">Reset</button>
+      </div>
+      <div class="meal-counter">
+        <div class="meal-counter-track">
+          <div class="meal-counter-fill" id="eveningCounterFill" style="width:0%;background:#c9628a"></div>
+        </div>
+        <div class="meal-counter-label" id="eveningCounterLabel" style="color:#d98aa8">0 / 2</div>
+      </div>
+      <div id="eveningItemsEl"></div>
+      <div id="eveningCompleteEl" class="routine-complete" style="display:none;background:var(--purple-dim);border-color:rgba(152,64,99,0.45);color:#d98aa8">
+        ✓ Evening routine complete — rest well
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Quick access</div>
+      <div class="tile-grid">
+        <button class="tile theme-shop" data-jump="shopping">
+          <div class="tile-icon">🛒</div>
+          <div class="tile-label">Shopping list</div>
+          <div class="tile-sub" id="tileShopSub">0 to get</div>
+        </button>
+        <button class="tile theme-breakfast" data-jump="breakfast">
+          <div class="tile-icon">🍳</div>
+          <div class="tile-label">Breakfast</div>
+          <div class="tile-sub" id="tileBreakfastSub">0 picked</div>
+        </button>
+        <button class="tile theme-lunch" data-jump="lunch">
+          <div class="tile-icon">🥪</div>
+          <div class="tile-label">Lunch</div>
+          <div class="tile-sub" id="tileLunchSub">0 picked</div>
+        </button>
+        <button class="tile theme-dinner" data-jump="dinner">
+          <div class="tile-icon">🍴</div>
+          <div class="tile-label">Dinner</div>
+          <div class="tile-sub" id="tileDinnerSub">0 of 5</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+  </section>
+
   <!-- SHOPPING -->
-  <section id="panel-shopping" class="panel active">
+  <section id="panel-shopping" class="panel">
     <div class="card">
       <div class="card-title">Quick actions</div>
       <div class="btn-row">
@@ -572,7 +851,7 @@
         <div class="stat-chip accent"><div class="sv" id="statShopItems">0</div><div class="sl">List</div></div>
         <div class="stat-chip orange"><div class="sv" id="statBreakfastSelected">0</div><div class="sl">Breakfast</div></div>
         <div class="stat-chip teal"><div class="sv" id="statLunchSelected">0</div><div class="sl">Lunch</div></div>
-        <div class="stat-chip amber"><div class="sv" id="statDinnersSelected">0</div><div class="sl">Dinner</div></div>
+        <div class="stat-chip indigo"><div class="sv" id="statDinnersSelected">0</div><div class="sl">Dinner</div></div>
       </div>
     </div>
 
@@ -604,7 +883,11 @@
 </div>
 
 <nav class="nav">
-  <button class="nav-btn active" data-panel="shopping">
+  <button class="nav-btn active" data-panel="home">
+    <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+    <span class="nav-badge" id="navHomeBadge"></span>
+  </button>
+  <button class="nav-btn" data-panel="shopping">
     <span class="nav-icon">🛒</span><span class="nav-label">Shop</span>
     <span class="nav-badge" id="navShopBadge"></span>
   </button>
@@ -712,8 +995,38 @@
     selectedBreakfasts: [],
     selectedLunches: [],
     selectedDinners: [],
-    weekPlan: { Monday: '', Tuesday: '', Wednesday: '', Thursday: '', Friday: '' }
+    weekPlan: { Monday: '', Tuesday: '', Wednesday: '', Thursday: '', Friday: '' },
+    routine: {
+      morning: [
+        { id: 'm1', name: 'Take Lansoprazole', done: false },
+        { id: 'm2', name: 'Take Hayfever Tablets', done: false },
+        { id: 'm3', name: 'Take Hayfever Nasal Spray', done: false },
+        { id: 'm4', name: 'Have Breakfast', done: false }
+      ],
+      evening: [
+        { id: 'e1', name: 'Take 10 Minutes Breather', done: false },
+        { id: 'e2', name: 'Say What Favourite Part Of Day Was', done: false }
+      ],
+      lastResetDate: ''
+    }
   };
+
+  function migrateRoutine(saved, def) {
+    if (!saved) return JSON.parse(JSON.stringify(def));
+    // Old format had a single "items" array — treat that as the morning routine
+    if (saved.items && !saved.morning) {
+      return {
+        morning: saved.items,
+        evening: JSON.parse(JSON.stringify(def.evening)),
+        lastResetDate: saved.lastResetDate || ''
+      };
+    }
+    return {
+      morning: saved.morning || JSON.parse(JSON.stringify(def.morning)),
+      evening: saved.evening || JSON.parse(JSON.stringify(def.evening)),
+      lastResetDate: saved.lastResetDate || ''
+    };
+  }
 
   function loadState() {
     try {
@@ -749,7 +1062,8 @@
         selectedBreakfasts: p.selectedBreakfasts || [],
         selectedLunches: p.selectedLunches || [],
         selectedDinners: p.selectedDinners || [],
-        weekPlan: p.weekPlan || def.weekPlan
+        weekPlan: p.weekPlan || def.weekPlan,
+        routine: migrateRoutine(p.routine, def.routine)
       };
     } catch(e) { return JSON.parse(JSON.stringify(DEFAULTS)); }
   }
@@ -765,6 +1079,24 @@
     el.classList.add('show');
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  // Light haptic buzz where the device supports it (Android browsers mostly; iOS Safari ignores silently)
+  function buzz(ms) {
+    try { if (navigator.vibrate) navigator.vibrate(ms || 12); } catch(e) {}
+  }
+
+  // Play a quick pop animation on an element
+  function popEl(el, withBurst) {
+    if (!el) return;
+    el.classList.remove('pop');
+    void el.offsetWidth; // force reflow to restart animation
+    el.classList.add('pop');
+    if (withBurst) {
+      el.classList.remove('burst');
+      void el.offsetWidth;
+      el.classList.add('burst');
+    }
   }
 
   function escHtml(t) {
@@ -831,9 +1163,17 @@
       };
       div.onclick = () => {
         item.checked = !item.checked;
-        save();
-        renderShoppingList();
-        updateBadges();
+        if (item.checked) {
+          buzz(14);
+          popEl(div.querySelector('.shop-check'), true);
+          save();
+          setTimeout(() => { renderShoppingList(); updateBadges(); }, 180);
+        } else {
+          buzz(8);
+          save();
+          renderShoppingList();
+          updateBadges();
+        }
       };
       el.appendChild(div);
     });
@@ -899,7 +1239,7 @@
         pill.textContent = item;
         const isAdded = state.shoppingList.some(x => x.name.toLowerCase() === item.toLowerCase() && !x.checked);
         if (isAdded) pill.classList.add('added');
-        pill.onclick = () => { addItem(item); pill.classList.add('added'); };
+        pill.onclick = () => { addItem(item); pill.classList.add('added'); buzz(12); };
         cloud.appendChild(pill);
       });
 
@@ -979,12 +1319,14 @@
             if (state.weekPlan[day] === meal) state.weekPlan[day] = '';
           });
         }
+        buzz(8);
       } else {
         if (opts.max && state[opts.selectedKey].length >= opts.max) {
           toast(`Max ${opts.max} ${opts.label || 'items'} for the week`);
           return;
         }
         state[opts.selectedKey].push(meal);
+        buzz(14);
       }
       save();
       renderAll();
@@ -1049,7 +1391,7 @@
     containerId: 'dinnerChoicesEl', stripId: 'selectedDinnersEl',
     fillId: 'dinnerCounterFill', labelId: 'dinnerCounterLabel',
     libraryKey: 'dinners', customKey: 'customDinners', selectedKey: 'selectedDinners',
-    max: 5, theme: null, label: 'dinners',
+    max: 5, theme: 'indigo', label: 'dinners',
     emptyIcon: '🍽️', emptyMsg: 'No dinners selected yet — pick up to 5 below'
   };
 
@@ -1176,7 +1518,8 @@
         selectedBreakfasts: incoming.selectedBreakfasts || [],
         selectedLunches: incoming.selectedLunches || [],
         selectedDinners: incoming.selectedDinners || [],
-        weekPlan: incoming.weekPlan || def.weekPlan
+        weekPlan: incoming.weekPlan || def.weekPlan,
+        routine: migrateRoutine(incoming.routine, def.routine)
       };
       save(); renderAll(); toast('Import successful');
     } catch(e) { toast('Invalid data — check your paste'); }
@@ -1187,6 +1530,86 @@
     state = JSON.parse(JSON.stringify(DEFAULTS));
     save(); renderAll(); toast('Reset to defaults');
   };
+
+  /* ── ROUTINES (morning + evening) ── */
+  function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function checkRoutineReset() {
+    const today = todayKey();
+    if (!state.routine) state.routine = JSON.parse(JSON.stringify(DEFAULTS.routine));
+    if (state.routine.lastResetDate !== today) {
+      (state.routine.morning || []).forEach(it => it.done = false);
+      (state.routine.evening || []).forEach(it => it.done = false);
+      state.routine.lastResetDate = today;
+      save();
+    }
+  }
+
+  function renderRoutineList(which, opts) {
+    const items = state.routine[which] || [];
+    const el = document.getElementById(opts.itemsId);
+    el.innerHTML = '';
+    items.forEach((it, idx) => {
+      const row = document.createElement('div');
+      row.className = 'routine-item' + (it.done ? ' done' : '');
+      row.innerHTML = `
+        <div class="routine-num">${idx + 1}</div>
+        <div class="routine-name">${escHtml(it.name)}</div>
+        <div class="routine-check"><span class="routine-check-tick">✓</span></div>
+      `;
+      row.onclick = () => {
+        it.done = !it.done;
+        if (it.done) {
+          buzz(14);
+          popEl(row.querySelector('.routine-check'), true);
+        } else {
+          buzz(8);
+        }
+        save();
+        // Re-render after the pop has a moment to play
+        setTimeout(() => { renderRoutines(); updateBadges(); }, it.done ? 180 : 0);
+      };
+      el.appendChild(row);
+    });
+
+    const doneCount = items.filter(x => x.done).length;
+    const total = items.length || 1;
+    document.getElementById(opts.fillId).style.width = (doneCount / total * 100) + '%';
+    document.getElementById(opts.labelId).textContent = `${doneCount} / ${items.length}`;
+    document.getElementById(opts.completeId).style.display = (items.length > 0 && doneCount === items.length) ? 'block' : 'none';
+  }
+
+  function renderRoutines() {
+    renderRoutineList('morning', { itemsId:'morningItemsEl', fillId:'morningCounterFill', labelId:'morningCounterLabel', completeId:'morningCompleteEl' });
+    renderRoutineList('evening', { itemsId:'eveningItemsEl', fillId:'eveningCounterFill', labelId:'eveningCounterLabel', completeId:'eveningCompleteEl' });
+  }
+
+  document.getElementById('resetMorningBtn').onclick = () => {
+    state.routine.morning.forEach(it => it.done = false);
+    save(); renderRoutines(); updateBadges();
+    toast('Morning routine reset');
+  };
+  document.getElementById('resetEveningBtn').onclick = () => {
+    state.routine.evening.forEach(it => it.done = false);
+    save(); renderRoutines(); updateBadges();
+    toast('Evening routine reset');
+  };
+
+  /* ── HOME TILES ── */
+  document.querySelectorAll('.tile').forEach(tile => {
+    tile.onclick = () => {
+      const target = tile.dataset.jump;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      const navBtn = document.querySelector(`.nav-btn[data-panel="${target}"]`);
+      if (navBtn) navBtn.classList.add('active');
+      document.getElementById('panel-' + target).classList.add('active');
+      window.scrollTo(0, 0);
+    };
+  });
 
   function updateBadges() {
     const unchecked = state.shoppingList.filter(x => !x.checked).length;
@@ -1208,12 +1631,29 @@
     document.getElementById('statBreakfastSelected').textContent = state.selectedBreakfasts.length;
     document.getElementById('statLunchSelected').textContent = state.selectedLunches.length;
     document.getElementById('statDinnersSelected').textContent = state.selectedDinners.length;
+
+    // Home tile sub-text
+    document.getElementById('tileShopSub').textContent = unchecked > 0 ? `${unchecked} to get` : (total > 0 ? 'All ticked' : 'Empty');
+    document.getElementById('tileBreakfastSub').textContent = `${state.selectedBreakfasts.length} picked`;
+    document.getElementById('tileLunchSub').textContent = `${state.selectedLunches.length} picked`;
+    document.getElementById('tileDinnerSub').textContent = `${state.selectedDinners.length} of 5`;
+
+    // Home nav badge — show total outstanding routine items
+    let routineLeft = 0;
+    if (state.routine) {
+      routineLeft += (state.routine.morning || []).filter(x => !x.done).length;
+      routineLeft += (state.routine.evening || []).filter(x => !x.done).length;
+    }
+    const homeBadge = document.getElementById('navHomeBadge');
+    if (homeBadge) homeBadge.textContent = routineLeft > 0 ? routineLeft : '';
   }
 
   function renderAll() {
     const now = new Date();
     document.getElementById('headerDate').textContent = now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
 
+    checkRoutineReset();
+    renderRoutines();
     renderShoppingList();
     renderUsualGroups();
     renderMealChoices(BREAKFAST_OPTS);
@@ -1225,6 +1665,15 @@
     renderWeekPlan();
     updateBadges();
   }
+
+  // Re-check routine reset whenever the app comes back into focus (handles overnight)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      checkRoutineReset();
+      renderRoutines();
+      updateBadges();
+    }
+  });
 
   renderAll();
 </script>
