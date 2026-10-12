@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Home Shopping App</title>
-  <meta name="theme-color" content="#0d0f14" />
+  <meta name="theme-color" content="#22243a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -59,6 +60,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
 
     /* ── TICK POP FEEDBACK ── */
     @keyframes tickPop {
@@ -441,9 +443,11 @@
     }
     .meal-counter-fill.theme-orange { background: var(--orange); }
     .meal-counter-fill.theme-teal { background: var(--teal); }
+    .meal-counter-fill.theme-indigo { background: var(--indigo); }
     .meal-counter-label { font-size: 0.78rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 32px; text-align: right; }
     .meal-counter-label.theme-orange { color: var(--orange); }
     .meal-counter-label.theme-teal { color: var(--teal); }
+    .meal-counter-label.theme-indigo { color: #a3a5d4; }
 
     .week-grid { display: flex; flex-direction: column; gap: 8px; }
     .week-row {
@@ -484,11 +488,25 @@
       background: var(--surface3); border: 1px solid var(--border2);
       border-radius: 999px; padding: 10px 18px;
       font-size: 0.85rem; font-weight: 600; color: var(--text);
-      z-index: 200; opacity: 0;
+      z-index: 400; opacity: 0;
       transition: opacity 0.2s, transform 0.2s;
       pointer-events: none; white-space: nowrap;
+      max-width: calc(100vw - 32px);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .toast-msg { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .toast-action {
+      background: none; border: none; padding: 0; flex-shrink: 0;
+      color: var(--accent); font: inherit; font-weight: 700; cursor: pointer;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.show.has-action { pointer-events: auto; }
+    /* With a sheet open, the bottom is full of buttons — show toasts at the top instead */
+    body:has(.sheet-backdrop:not([hidden])) .toast {
+      bottom: auto; top: calc(env(safe-area-inset-top) + 16px);
+      transform: translateX(-50%) translateY(-20px);
+    }
+    body:has(.sheet-backdrop:not([hidden])) .toast.show { transform: translateX(-50%) translateY(0); }
 
     .spacer { height: 8px; }
 
@@ -622,6 +640,57 @@
     .routine-check-tick { display: none; color: #fff; font-size: 0.75rem; font-weight: 700; }
     .routine-item.done .routine-check-tick { display: block; }
 
+    .routine-del {
+      background: none; border: none; color: var(--text3);
+      cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 1rem;
+    }
+    .routine-item.editing { cursor: default; }
+    .routine-add-row { margin-top: 8px; }
+    .routine-add-row input { font-size: 0.85rem; padding: 8px 11px; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .card-head-actions { display: flex; gap: 6px; }
+
+    /* ── BOTTOM SHEETS (share / receive) ── */
+    .sheet-backdrop {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(10,11,20,0.62);
+      -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+      display: flex; align-items: flex-end; justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .sheet {
+      width: 100%; max-width: 480px; max-height: 92dvh; overflow-y: auto;
+      background: var(--surface); border: 1px solid var(--border2); border-bottom: none;
+      border-radius: 22px 22px 0 0;
+      padding: 10px 18px calc(18px + env(safe-area-inset-bottom));
+      box-shadow: var(--shadow-lg);
+      animation: sheetUp 0.32s var(--ease-out);
+    }
+    .sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: var(--surface3); margin: 0 auto 14px; }
+    .qr-frame {
+      background: #fff; border-radius: 16px; padding: 10px;
+      width: min(100%, 290px); aspect-ratio: 1; margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qr-frame svg { width: 100%; height: 100%; display: block; }
+    .qr-msg { color: #4a2418; text-align: center; font-size: 0.86rem; line-height: 1.5; padding: 16px; }
+    .sheet-note { text-align: center; color: var(--text2); font-size: 0.84rem; margin-bottom: 12px; line-height: 1.5; }
+    .sheet-warn {
+      background: var(--amber-dim); border: 1px solid rgba(254,150,119,0.35);
+      color: var(--text2); border-radius: var(--radius-sm);
+      padding: 10px 12px; font-size: 0.78rem; line-height: 1.5; margin-bottom: 12px;
+    }
+    .toggle-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 0.84rem; color: var(--text2); margin-bottom: 14px; cursor: pointer;
+    }
+    .toggle-row input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+    .sheet-close { width: 100%; justify-content: center; margin-top: 4px; }
+    .receive-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .receive-preview .pill { cursor: default; }
+    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     .routine-complete {
       text-align: center;
       padding: 14px;
@@ -657,9 +726,12 @@
   <section id="panel-home" class="panel active">
 
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="card-head">
         <div class="card-title" style="margin:0">☀️ Morning routine</div>
-        <button class="btn btn-ghost btn-sm" id="resetMorningBtn">Reset</button>
+        <div class="card-head-actions">
+          <button class="btn btn-ghost btn-sm" data-edit-routine="morning">Edit</button>
+          <button class="btn btn-ghost btn-sm" id="resetMorningBtn">Reset</button>
+        </div>
       </div>
       <div class="meal-counter">
         <div class="meal-counter-track">
@@ -668,15 +740,22 @@
         <div class="meal-counter-label" id="morningCounterLabel" style="color:var(--green)">0 / 4</div>
       </div>
       <div id="morningItemsEl"></div>
+      <div class="input-row routine-add-row" id="morningAddRow" hidden>
+        <input type="text" placeholder="Add a step…" />
+        <button class="btn btn-secondary btn-sm">Add</button>
+      </div>
       <div id="morningCompleteEl" style="display:none" class="routine-complete">
         ✓ Morning routine complete — have a great day
       </div>
     </div>
 
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="card-head">
         <div class="card-title" style="margin:0">🌙 Evening routine</div>
-        <button class="btn btn-ghost btn-sm" id="resetEveningBtn">Reset</button>
+        <div class="card-head-actions">
+          <button class="btn btn-ghost btn-sm" data-edit-routine="evening">Edit</button>
+          <button class="btn btn-ghost btn-sm" id="resetEveningBtn">Reset</button>
+        </div>
       </div>
       <div class="meal-counter">
         <div class="meal-counter-track">
@@ -685,6 +764,10 @@
         <div class="meal-counter-label" id="eveningCounterLabel" style="color:#d98aa8">0 / 2</div>
       </div>
       <div id="eveningItemsEl"></div>
+      <div class="input-row routine-add-row" id="eveningAddRow" hidden>
+        <input type="text" placeholder="Add a step…" />
+        <button class="btn btn-secondary btn-sm">Add</button>
+      </div>
       <div id="eveningCompleteEl" class="routine-complete" style="display:none;background:var(--purple-dim);border-color:rgba(152,64,99,0.45);color:#d98aa8">
         ✓ Evening routine complete — rest well
       </div>
@@ -727,6 +810,9 @@
         <button class="btn btn-secondary" id="untickAllBtn">✓ Untick all</button>
         <button class="btn btn-red btn-sm" id="clearTickedBtn">Remove ticked</button>
         <button class="btn btn-red btn-sm" id="clearAllShoppingBtn">Clear all</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="shareListBtn">📲 Share list by QR code</button>
       </div>
       <div class="input-row">
         <input type="text" id="customItemInput" placeholder="Add any item…" />
@@ -810,9 +896,9 @@
       <div class="card-title">This week's dinners</div>
       <div class="meal-counter">
         <div class="meal-counter-track">
-          <div class="meal-counter-fill" id="dinnerCounterFill" style="width:0%"></div>
+          <div class="meal-counter-fill theme-indigo" id="dinnerCounterFill" style="width:0%"></div>
         </div>
-        <div class="meal-counter-label" id="dinnerCounterLabel">0 / 5</div>
+        <div class="meal-counter-label theme-indigo" id="dinnerCounterLabel">0 / 5</div>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="autoPickBtn">🎲 Auto pick 5</button>
@@ -857,7 +943,7 @@
 
     <div class="card">
       <div class="card-title">Backup &amp; restore</div>
-      <div class="card-sub">Export your data to keep a copy or transfer to another device. Paste it back in to restore.</div>
+      <div class="card-sub">Export your data to keep a copy or transfer to another device. Paste it back in to restore. You can also paste a shared list link here.</div>
       <div class="btn-row">
         <button class="btn btn-secondary" id="exportBtn">📤 Export data</button>
         <button class="btn btn-secondary" id="importBtn">📥 Import data</button>
@@ -908,7 +994,55 @@
   </button>
 </nav>
 
-<div class="toast" id="toast"></div>
+<!-- SHARE SHEET -->
+<div class="sheet-backdrop" id="shareSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="sheet-handle"></div>
+    <div class="card-title" id="shareTitle">Share your list</div>
+    <div class="qr-frame" id="qrFrame"></div>
+    <div class="sheet-note" id="shareNote"></div>
+    <label class="toggle-row"><input type="checkbox" id="shareIncludeTicked" /> Include ticked items</label>
+    <div class="sheet-warn" id="shareWarn" hidden>
+      You've opened the app as a file, so this code will only work on a device that can open that same file.
+      Put the app online (GitHub Pages is free) and the code will work on any phone.
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="shareCopyBtn">🔗 Copy link</button>
+      <button class="btn btn-secondary" id="shareNativeBtn" hidden>Share…</button>
+    </div>
+    <button class="btn btn-ghost sheet-close" data-close-sheet>Close</button>
+  </div>
+</div>
+
+<!-- RECEIVE SHEET -->
+<div class="sheet-backdrop" id="receiveSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="receiveTitle">
+    <div class="sheet-handle"></div>
+    <div class="card-title" id="receiveTitle">📥 A list has been shared with you</div>
+    <div class="card-sub" id="receiveSummary"></div>
+    <div class="receive-preview" id="receivePreview"></div>
+    <div class="sheet-warn" id="receiveWarn" hidden>
+      Use the app from your Home Screen? It keeps a separate copy of your data from Safari.
+      Tap <b>Copy link</b>, open the Home Screen app, then paste the link into Settings → Import.
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" id="receiveMergeBtn">Add to my list</button>
+      <button class="btn btn-secondary" id="receiveReplaceBtn">Replace mine</button>
+    </div>
+    <div class="btn-row" id="receiveCopyRow" hidden>
+      <button class="btn btn-secondary" id="receiveCopyBtn" style="flex:1;justify-content:center">🔗 Copy link</button>
+    </div>
+    <button class="btn btn-ghost sheet-close" data-close-sheet>Not now</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="toast-msg"></span><button class="toast-action" hidden></button></div>
+
+<script>
+/* QR Code Generator for JavaScript v1.4.4 — Copyright (c) 2009 Kazuhiko Arase — MIT licence
+   https://github.com/kazuhikoarase/qrcode-generator — embedded so QR codes work offline */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(t,r){var e=n("友");if(2!=e.length||38726!=(e[0]<<8|e[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}((function(){return qrcode}));
+</script>
 
 <script>
   const STORE_KEY = 'shopDinnerPlannerV3';
@@ -1028,57 +1162,92 @@
     };
   }
 
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  // Fill gaps with defaults and drop anything malformed, so a bad import or
+  // old save can never leave the app half-rendered.
+  function normaliseState(p) {
+    const def = clone(DEFAULTS);
+    p = (p && typeof p === 'object') ? p : {};
+    const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+    const strings = (v, d) => Array.isArray(v) ? v.filter(x => typeof x === 'string') : d;
+    const library = (v, d) => {
+      if (!isObj(v)) return d;
+      const out = {};
+      Object.entries(v).forEach(([k, items]) => { if (Array.isArray(items)) out[k] = strings(items, []); });
+      return out;
+    };
+    return {
+      shoppingList: (Array.isArray(p.shoppingList) ? p.shoppingList : [])
+        .filter(x => x && typeof x.name === 'string')
+        .map(x => ({ id: x.id || uid(), name: x.name, checked: !!x.checked })),
+      usualGroups: Array.isArray(p.usualGroups)
+        ? p.usualGroups.filter(g => g && typeof g.name === 'string' && Array.isArray(g.items))
+            .map(g => ({ name: g.name, icon: typeof g.icon === 'string' ? g.icon : '📦', items: strings(g.items, []) }))
+        : def.usualGroups,
+      breakfasts: library(p.breakfasts, def.breakfasts),
+      lunches: library(p.lunches, def.lunches),
+      dinners: library(p.dinners, def.dinners),
+      customBreakfasts: strings(p.customBreakfasts, []),
+      customLunches: strings(p.customLunches, []),
+      customDinners: strings(p.customDinners, []),
+      selectedBreakfasts: strings(p.selectedBreakfasts, []),
+      selectedLunches: strings(p.selectedLunches, []),
+      selectedDinners: strings(p.selectedDinners, []).slice(0, 5),
+      weekPlan: Object.assign(def.weekPlan, isObj(p.weekPlan) ? p.weekPlan : {}),
+      routine: migrateRoutine(isObj(p.routine) ? p.routine : null, def.routine)
+    };
+  }
+
   function loadState() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (!raw) {
-        const v2 = localStorage.getItem('shopDinnerPlannerV2');
-        if (v2) {
-          try {
-            const old = JSON.parse(v2);
-            return Object.assign({}, JSON.parse(JSON.stringify(DEFAULTS)), {
-              shoppingList: old.shoppingList || [],
-              usualGroups: old.usualGroups || JSON.parse(JSON.stringify(DEFAULTS.usualGroups)),
-              dinners: old.dinners || JSON.parse(JSON.stringify(DEFAULTS.dinners)),
-              customDinners: old.customDinners || [],
-              selectedDinners: old.selectedDinners || [],
-              weekPlan: old.weekPlan || JSON.parse(JSON.stringify(DEFAULTS.weekPlan))
-            });
-          } catch(e) {}
-        }
-        return JSON.parse(JSON.stringify(DEFAULTS));
-      }
-      const p = JSON.parse(raw);
-      const def = JSON.parse(JSON.stringify(DEFAULTS));
-      return {
-        shoppingList: p.shoppingList || [],
-        usualGroups: p.usualGroups || def.usualGroups,
-        breakfasts: p.breakfasts || def.breakfasts,
-        lunches: p.lunches || def.lunches,
-        dinners: p.dinners || def.dinners,
-        customBreakfasts: p.customBreakfasts || [],
-        customLunches: p.customLunches || [],
-        customDinners: p.customDinners || [],
-        selectedBreakfasts: p.selectedBreakfasts || [],
-        selectedLunches: p.selectedLunches || [],
-        selectedDinners: p.selectedDinners || [],
-        weekPlan: p.weekPlan || def.weekPlan,
-        routine: migrateRoutine(p.routine, def.routine)
-      };
-    } catch(e) { return JSON.parse(JSON.stringify(DEFAULTS)); }
+      if (raw) return normaliseState(JSON.parse(raw));
+      // V2 had no breakfasts, lunches or routines; normaliseState fills those in
+      const v2 = localStorage.getItem('shopDinnerPlannerV2');
+      if (v2) return normaliseState(JSON.parse(v2));
+    } catch(e) {}
+    return clone(DEFAULTS);
   }
 
   let state = loadState();
-  function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  let saveWarned = false;
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } catch(e) {
+      // Private browsing or a full disk — tell them once rather than failing silently
+      if (!saveWarned) { saveWarned = true; toast("Couldn't save — storage is full or blocked"); }
+    }
+  }
 
   function uid() { return Math.random().toString(36).slice(2, 10); }
 
-  function toast(msg) {
+  // toast('Saved') or toast('Removed', { label: 'Undo', run: fn })
+  function toast(msg, action) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
+    const btn = el.querySelector('.toast-action');
+    el.querySelector('.toast-msg').textContent = msg;
+    btn.hidden = !action;
+    btn.textContent = action ? action.label : '';
+    btn.onclick = action ? () => { el.classList.remove('show'); action.run(); } : null;
+    el.classList.toggle('has-action', !!action);
     el.classList.add('show');
     clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+    el._t = setTimeout(() => el.classList.remove('show'), action ? 5000 : 2000);
+  }
+
+  // Change the shopping list, then offer a one-tap undo.
+  // msg can be a function if the wording depends on what mutate() did.
+  function changeListWithUndo(msg, mutate) {
+    const before = clone(state.shoppingList);
+    mutate();
+    save(); renderShoppingList(); updateBadges();
+    toast(typeof msg === 'function' ? msg() : msg, { label: 'Undo', run: () => {
+      state.shoppingList = before;
+      save(); renderShoppingList(); updateBadges();
+      toast('Restored');
+    }});
   }
 
   // Light haptic buzz where the device supports it (Android browsers mostly; iOS Safari ignores silently)
@@ -1105,14 +1274,13 @@
     return d.innerHTML;
   }
 
+  function showPanel(name) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.panel === name));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+    window.scrollTo(0, 0);
+  }
   document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
-      window.scrollTo(0, 0);
-    };
+    btn.onclick = () => showPanel(btn.dataset.panel);
   });
 
   function addItem(name) {
@@ -1140,6 +1308,8 @@
     document.getElementById('shopCountLabel').textContent =
       `${state.shoppingList.length} item${state.shoppingList.length === 1 ? '' : 's'}`;
 
+    refreshUsualPills();
+
     if (sorted.length === 0) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">🛒</div>Nothing on the list yet</div>';
       return;
@@ -1156,10 +1326,9 @@
       `;
       div.querySelector('.shop-item-del').onclick = (e) => {
         e.stopPropagation();
-        state.shoppingList = state.shoppingList.filter(x => x.id !== item.id);
-        save();
-        renderShoppingList();
-        updateBadges();
+        changeListWithUndo(`Removed: ${item.name}`, () => {
+          state.shoppingList = state.shoppingList.filter(x => x.id !== item.id);
+        });
       };
       div.onclick = () => {
         item.checked = !item.checked;
@@ -1196,28 +1365,38 @@
 
   document.getElementById('clearTickedBtn').onclick = () => {
     const n = state.shoppingList.filter(x => x.checked).length;
-    state.shoppingList = state.shoppingList.filter(x => !x.checked);
-    save(); renderShoppingList(); updateBadges();
-    toast(n ? `Removed ${n} ticked item${n===1?'':'s'}` : 'Nothing ticked');
+    if (!n) { toast('Nothing ticked'); return; }
+    changeListWithUndo(`Removed ${n} ticked item${n===1?'':'s'}`, () => {
+      state.shoppingList = state.shoppingList.filter(x => !x.checked);
+    });
   };
 
   document.getElementById('clearAllShoppingBtn').onclick = () => {
-    if (!confirm('Clear the entire shopping list?')) return;
-    state.shoppingList = [];
-    save(); renderShoppingList(); updateBadges();
-    toast('List cleared');
+    if (!state.shoppingList.length) { toast('List is already empty'); return; }
+    changeListWithUndo('List cleared', () => { state.shoppingList = []; });
   };
+
+  // Which usual-item groups are expanded, so re-renders don't snap them shut
+  let openGroups = new Set([0]);
+
+  // Highlight library pills for anything still to get on the list
+  function refreshUsualPills() {
+    const toGet = new Set(state.shoppingList.filter(x => !x.checked).map(x => x.name.toLowerCase()));
+    document.querySelectorAll('#usualGroupsEl .pill').forEach(p => {
+      p.classList.toggle('added', toGet.has(p.textContent.toLowerCase()));
+    });
+  }
 
   function renderUsualGroups() {
     const el = document.getElementById('usualGroupsEl');
     el.innerHTML = '';
     state.usualGroups.forEach((group, gi) => {
       const block = document.createElement('div');
-      block.className = 'group-block' + (gi === 0 ? ' open' : '');
+      block.className = 'group-block' + (openGroups.has(gi) ? ' open' : '');
       block.innerHTML = `
         <div class="group-header">
           <div class="group-header-left">
-            <span class="group-icon">${group.icon || '📦'}</span>
+            <span class="group-icon">${escHtml(group.icon || '📦')}</span>
             <span class="group-name">${escHtml(group.name)}</span>
           </div>
           <span class="group-chevron">▾</span>
@@ -1230,7 +1409,10 @@
           </div>
         </div>
       `;
-      block.querySelector('.group-header').onclick = () => block.classList.toggle('open');
+      block.querySelector('.group-header').onclick = () => {
+        const open = block.classList.toggle('open');
+        if (open) openGroups.add(gi); else openGroups.delete(gi);
+      };
 
       const cloud = block.querySelector(`#pillcloud-${gi}`);
       group.items.forEach(item => {
@@ -1239,7 +1421,7 @@
         pill.textContent = item;
         const isAdded = state.shoppingList.some(x => x.name.toLowerCase() === item.toLowerCase() && !x.checked);
         if (isAdded) pill.classList.add('added');
-        pill.onclick = () => { addItem(item); pill.classList.add('added'); buzz(12); };
+        pill.onclick = () => { addItem(item); popEl(pill); buzz(12); };
         cloud.appendChild(pill);
       });
 
@@ -1462,7 +1644,12 @@
 
   document.getElementById('autoPickBtn').onclick = () => {
     const all = allMealsFor('dinner');
-    const shuffled = [...all].sort(() => Math.random() - 0.5);
+    // Fisher–Yates: sort(() => Math.random() - 0.5) favours meals near the top of the list
+    const shuffled = [...new Set(all)];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
     state.selectedDinners = shuffled.slice(0, 5);
     state.weekPlan = { Monday:'', Tuesday:'', Wednesday:'', Thursday:'', Friday:'' };
     save(); renderAll(); toast('Picked 5 random dinners');
@@ -1502,32 +1689,23 @@
 
   document.getElementById('importBtn').onclick = () => {
     const box = document.getElementById('backupBox');
-    if (!box.value.trim()) { toast('Nothing to import'); return; }
+    const text = box.value.trim();
+    if (!text) { toast('Nothing to import'); return; }
+    const link = text.match(/#list=([A-Za-z0-9_-]+)/);
+    if (link) { box.value = ''; openSharedList(link[1]); return; }
     try {
-      const incoming = JSON.parse(box.value);
-      const def = JSON.parse(JSON.stringify(DEFAULTS));
-      state = {
-        shoppingList: incoming.shoppingList || [],
-        usualGroups: incoming.usualGroups || def.usualGroups,
-        breakfasts: incoming.breakfasts || def.breakfasts,
-        lunches: incoming.lunches || def.lunches,
-        dinners: incoming.dinners || def.dinners,
-        customBreakfasts: incoming.customBreakfasts || [],
-        customLunches: incoming.customLunches || [],
-        customDinners: incoming.customDinners || [],
-        selectedBreakfasts: incoming.selectedBreakfasts || [],
-        selectedLunches: incoming.selectedLunches || [],
-        selectedDinners: incoming.selectedDinners || [],
-        weekPlan: incoming.weekPlan || def.weekPlan,
-        routine: migrateRoutine(incoming.routine, def.routine)
-      };
+      const incoming = JSON.parse(text);
+      if (!incoming || typeof incoming !== 'object') throw new Error('not an object');
+      state = normaliseState(incoming);
+      openGroups = new Set([0]);
       save(); renderAll(); toast('Import successful');
     } catch(e) { toast('Invalid data — check your paste'); }
   };
 
   document.getElementById('resetAllBtn').onclick = () => {
     if (!confirm('Reset everything? This will wipe all your customisations and shopping list.')) return;
-    state = JSON.parse(JSON.stringify(DEFAULTS));
+    state = clone(DEFAULTS);
+    openGroups = new Set([0]);
     save(); renderAll(); toast('Reset to defaults');
   };
 
@@ -1539,7 +1717,7 @@
 
   function checkRoutineReset() {
     const today = todayKey();
-    if (!state.routine) state.routine = JSON.parse(JSON.stringify(DEFAULTS.routine));
+    if (!state.routine) state.routine = clone(DEFAULTS.routine);
     if (state.routine.lastResetDate !== today) {
       (state.routine.morning || []).forEach(it => it.done = false);
       (state.routine.evening || []).forEach(it => it.done = false);
@@ -1548,18 +1726,39 @@
     }
   }
 
+  const routineEditing = { morning: false, evening: false };
+
   function renderRoutineList(which, opts) {
     const items = state.routine[which] || [];
+    const editing = routineEditing[which];
     const el = document.getElementById(opts.itemsId);
     el.innerHTML = '';
+    document.getElementById(which + 'AddRow').hidden = !editing;
+    if (editing && items.length === 0) {
+      el.innerHTML = '<div class="empty-state">No steps yet — add one below</div>';
+    }
     items.forEach((it, idx) => {
       const row = document.createElement('div');
-      row.className = 'routine-item' + (it.done ? ' done' : '');
+      row.className = 'routine-item' + (it.done ? ' done' : '') + (editing ? ' editing' : '');
       row.innerHTML = `
         <div class="routine-num">${idx + 1}</div>
         <div class="routine-name">${escHtml(it.name)}</div>
-        <div class="routine-check"><span class="routine-check-tick">✓</span></div>
+        ${editing
+          ? '<button class="routine-del" title="Remove step">×</button>'
+          : '<div class="routine-check"><span class="routine-check-tick">✓</span></div>'}
       `;
+      if (editing) {
+        row.querySelector('.routine-del').onclick = () => {
+          const removed = state.routine[which].splice(idx, 1)[0];
+          save(); renderRoutines(); updateBadges();
+          toast(`Removed: ${removed.name}`, { label: 'Undo', run: () => {
+            state.routine[which].splice(idx, 0, removed);
+            save(); renderRoutines(); updateBadges();
+          }});
+        };
+        el.appendChild(row);
+        return;
+      }
       row.onclick = () => {
         it.done = !it.done;
         if (it.done) {
@@ -1598,17 +1797,32 @@
     toast('Evening routine reset');
   };
 
+  document.querySelectorAll('[data-edit-routine]').forEach(btn => {
+    btn.onclick = () => {
+      const which = btn.dataset.editRoutine;
+      routineEditing[which] = !routineEditing[which];
+      btn.textContent = routineEditing[which] ? 'Done' : 'Edit';
+      renderRoutines();
+      if (routineEditing[which]) document.querySelector(`#${which}AddRow input`).focus();
+    };
+  });
+  ['morning', 'evening'].forEach(which => {
+    const row = document.getElementById(which + 'AddRow');
+    const inp = row.querySelector('input');
+    const btn = row.querySelector('button');
+    btn.onclick = () => {
+      const name = inp.value.trim();
+      if (!name) return;
+      state.routine[which].push({ id: uid(), name, done: false });
+      inp.value = '';
+      save(); renderRoutines(); updateBadges();
+    };
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+  });
+
   /* ── HOME TILES ── */
   document.querySelectorAll('.tile').forEach(tile => {
-    tile.onclick = () => {
-      const target = tile.dataset.jump;
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      const navBtn = document.querySelector(`.nav-btn[data-panel="${target}"]`);
-      if (navBtn) navBtn.classList.add('active');
-      document.getElementById('panel-' + target).classList.add('active');
-      window.scrollTo(0, 0);
-    };
+    tile.onclick = () => showPanel(tile.dataset.jump);
   });
 
   function updateBadges() {
@@ -1620,7 +1834,7 @@
     document.getElementById('navLunchBadge').textContent = state.selectedLunches.length > 0 ? state.selectedLunches.length : '';
     document.getElementById('navDinnerBadge').textContent = state.selectedDinners.length > 0 ? state.selectedDinners.length : '';
 
-    document.getElementById('headerBadge').textContent = unchecked || total || 0;
+    document.getElementById('headerBadge').textContent = unchecked;
 
     const sub = document.getElementById('headerSub');
     if (unchecked > 0) sub.textContent = `${unchecked} item${unchecked===1?'':'s'} still to get`;
@@ -1648,10 +1862,13 @@
     if (homeBadge) homeBadge.textContent = routineLeft > 0 ? routineLeft : '';
   }
 
-  function renderAll() {
-    const now = new Date();
-    document.getElementById('headerDate').textContent = now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+  function renderHeaderDate() {
+    document.getElementById('headerDate').textContent =
+      new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+  }
 
+  function renderAll() {
+    renderHeaderDate();
     checkRoutineReset();
     renderRoutines();
     renderShoppingList();
@@ -1669,13 +1886,242 @@
   // Re-check routine reset whenever the app comes back into focus (handles overnight)
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
+      renderHeaderDate();
       checkRoutineReset();
       renderRoutines();
       updateBadges();
     }
   });
 
+  /* ── SHARE BY QR CODE / LINK ──
+     The list travels inside the link itself (#list=…), so there is no server.
+     Payload: { v: 1, i: [names to get], t: [names already ticked] }, JSON →
+     deflate (where the browser supports it) → base64url. Prefix 'z' = deflated, 'j' = plain. */
+  const SHARE_MAX_ITEMS = 300;
+  const SHARE_MAX_NAME = 120;
+
+  function bytesToB64url(bytes) {
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function b64urlToBytes(str) {
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (str.length % 4) str += '=';
+    return Uint8Array.from(atob(str), c => c.charCodeAt(0));
+  }
+  async function pipeBytes(bytes, transform) {
+    const stream = new Blob([bytes]).stream().pipeThrough(transform);
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }
+
+  async function encodeShare(payload) {
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    if (typeof CompressionStream === 'function') {
+      try { return 'z' + bytesToB64url(await pipeBytes(bytes, new CompressionStream('deflate-raw'))); } catch(e) {}
+    }
+    return 'j' + bytesToB64url(bytes);
+  }
+
+  async function decodeShare(code) {
+    const bytes = b64urlToBytes(code.slice(1));
+    let raw;
+    if (code[0] === 'z') {
+      if (typeof DecompressionStream !== 'function') throw new Error('unsupported');
+      raw = await pipeBytes(bytes, new DecompressionStream('deflate-raw'));
+    } else if (code[0] === 'j') {
+      raw = bytes;
+    } else {
+      throw new Error('unknown format');
+    }
+    return JSON.parse(new TextDecoder().decode(raw));
+  }
+
+  // Build an SVG QR code; returns null if the text is too long to fit
+  function qrSvg(text) {
+    let qr = null;
+    for (const level of ['M', 'L']) {  // M copes better with glare; L squeezes in longer lists
+      try { qr = qrcode(0, level); qr.addData(text, 'Byte'); qr.make(); break; }
+      catch(e) { qr = null; }
+    }
+    if (!qr) return null;
+    const n = qr.getModuleCount(), quiet = 3, size = n + quiet * 2;
+    let d = '';
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c + quiet} ${r + quiet}h1v1h-1z`;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" role="img" aria-label="QR code for your shopping list"><path fill="#14152a" d="${d}"/></svg>`;
+  }
+
+  function openSheet(id) { document.getElementById(id).hidden = false; }
+  function closeSheet(id) {
+    document.getElementById(id).hidden = true;
+    if (id === 'receiveSheet') { pendingShare = null; clearShareHash(); }
+  }
+  document.querySelectorAll('.sheet-backdrop').forEach(bd => {
+    bd.addEventListener('click', e => { if (e.target === bd) closeSheet(bd.id); });
+    bd.querySelectorAll('[data-close-sheet]').forEach(b => b.onclick = () => closeSheet(bd.id));
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('.sheet-backdrop:not([hidden])').forEach(bd => closeSheet(bd.id));
+  });
+
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); toast('Link copied'); }
+    catch(e) { window.prompt('Copy this link:', text); }
+  }
+
+  let currentShareUrl = '';
+  let shareRenderToken = 0;
+
+  async function renderShareSheet() {
+    const token = ++shareRenderToken;
+    const includeTicked = document.getElementById('shareIncludeTicked').checked;
+    const toGet = state.shoppingList.filter(x => !x.checked).map(x => x.name);
+    const got = includeTicked ? state.shoppingList.filter(x => x.checked).map(x => x.name) : [];
+    const frame = document.getElementById('qrFrame');
+    const note = document.getElementById('shareNote');
+    const copyBtn = document.getElementById('shareCopyBtn');
+    const nativeBtn = document.getElementById('shareNativeBtn');
+
+    currentShareUrl = '';
+    if (!toGet.length && !got.length) {
+      frame.innerHTML = '<div class="qr-msg">Nothing to share yet.<br>Add a few items first.</div>';
+      note.textContent = state.shoppingList.length ? 'Everything is ticked — tick "Include ticked items" to share them anyway.' : '';
+      copyBtn.disabled = nativeBtn.disabled = true;
+      return;
+    }
+
+    const payload = { v: 1, i: toGet };
+    if (got.length) payload.t = got;
+    const url = location.href.split('#')[0] + '#list=' + await encodeShare(payload);
+    if (token !== shareRenderToken) return;  // a newer render started while we were compressing
+
+    currentShareUrl = url;
+    copyBtn.disabled = nativeBtn.disabled = false;
+    const svg = qrSvg(url);
+    frame.innerHTML = svg || '<div class="qr-msg">This list is too long for one QR code.<br>Use “Copy link” instead.</div>';
+    note.textContent = `${toGet.length} to get${got.length ? ` · ${got.length} ticked` : ''}` +
+      (svg ? ' — scan with the other phone’s camera' : '');
+  }
+
+  document.getElementById('shareListBtn').onclick = () => {
+    document.getElementById('shareWarn').hidden = /^https?:$/.test(location.protocol);
+    document.getElementById('shareNativeBtn').hidden = typeof navigator.share !== 'function';
+    openSheet('shareSheet');
+    renderShareSheet();
+  };
+  document.getElementById('shareIncludeTicked').onchange = renderShareSheet;
+  document.getElementById('shareCopyBtn').onclick = () => { if (currentShareUrl) copyText(currentShareUrl); };
+  document.getElementById('shareNativeBtn').onclick = () => {
+    if (!currentShareUrl) return;
+    navigator.share({ title: 'Shopping list', text: 'Here’s the shopping list', url: currentShareUrl }).catch(() => {});
+  };
+
+  /* ── RECEIVING A SHARED LIST ── */
+  let pendingShare = null;
+
+  function clearShareHash() {
+    if (!location.hash.startsWith('#list=')) return;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {}
+  }
+
+  function cleanNames(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(x => typeof x === 'string')
+      .map(x => x.trim().slice(0, SHARE_MAX_NAME))
+      .filter(Boolean)
+      .slice(0, SHARE_MAX_ITEMS);
+  }
+
+  async function openSharedList(code) {
+    let toGet, got;
+    try {
+      const data = await decodeShare(code);
+      toGet = cleanNames(data && data.i);
+      got = cleanNames(data && data.t);
+      if (!toGet.length && !got.length) throw new Error('empty');
+    } catch(e) {
+      clearShareHash();
+      toast(e.message === 'unsupported'
+        ? "This browser is too old to open shared lists"
+        : "That share link didn't work — ask for a fresh one");
+      return;
+    }
+    pendingShare = { toGet, got, code };
+
+    document.getElementById('receiveSummary').textContent =
+      `${toGet.length} item${toGet.length === 1 ? '' : 's'} to get` +
+      (got.length ? `, plus ${got.length} already ticked.` : '.');
+    const preview = document.getElementById('receivePreview');
+    preview.innerHTML = '';
+    const PREVIEW = 12;
+    toGet.slice(0, PREVIEW).forEach(name => {
+      const pill = document.createElement('span');
+      pill.className = 'pill';
+      pill.textContent = name;
+      preview.appendChild(pill);
+    });
+    if (toGet.length > PREVIEW) {
+      const more = document.createElement('span');
+      more.className = 'pill';
+      more.textContent = `+${toGet.length - PREVIEW} more`;
+      preview.appendChild(more);
+    }
+    // iOS: a scanned link opens in Safari, whose storage is separate from the Home Screen app
+    const inIosSafari = navigator.standalone === false;
+    document.getElementById('receiveWarn').hidden = !inIosSafari;
+    document.getElementById('receiveCopyRow').hidden = !inIosSafari;
+    openSheet('receiveSheet');
+  }
+
+  // Returns how many new items were added
+  function mergeShared(toGet, got) {
+    const byName = new Map(state.shoppingList.map(x => [x.name.toLowerCase(), x]));
+    let added = 0;
+    const put = (name, checked) => {
+      const existing = byName.get(name.toLowerCase());
+      if (existing) { if (!checked) existing.checked = false; return; }
+      const item = { id: uid(), name, checked };
+      state.shoppingList.push(item);
+      byName.set(name.toLowerCase(), item);
+      added++;
+    };
+    toGet.forEach(n => put(n, false));
+    got.forEach(n => put(n, true));
+    return added;
+  }
+
+  function acceptShare(replace) {
+    if (!pendingShare) return;
+    const { toGet, got } = pendingShare;
+    closeSheet('receiveSheet');
+    let added = 0;
+    changeListWithUndo(
+      () => replace ? 'List replaced'
+        : added ? `Added ${added} new item${added === 1 ? '' : 's'}`
+        : 'You already had all of these',
+      () => {
+        if (replace) state.shoppingList = [];
+        added = mergeShared(toGet, got);
+      });
+    showPanel('shopping');
+  }
+  document.getElementById('receiveMergeBtn').onclick = () => acceptShare(false);
+  document.getElementById('receiveReplaceBtn').onclick = () => acceptShare(true);
+  document.getElementById('receiveCopyBtn').onclick = () => {
+    if (pendingShare) copyText(location.href.split('#')[0] + '#list=' + pendingShare.code);
+  };
+
+  function checkShareHash() {
+    const m = location.hash.match(/^#list=([A-Za-z0-9_-]+)$/);
+    if (m) openSharedList(m[1]);
+  }
+  window.addEventListener('hashchange', checkShareHash);
+
   renderAll();
+  checkShareHash();
 </script>
 </body>
 </html>
