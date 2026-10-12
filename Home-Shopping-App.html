@@ -749,26 +749,28 @@
     .sheet-handle { width: 38px; height: 4px; border-radius: 2px; background: var(--surface3); margin: 0 auto 14px; }
     .qr-frame {
       background: #fff; border-radius: 16px; padding: 10px;
-      width: min(100%, 290px); aspect-ratio: 1; margin: 0 auto 12px;
+      width: min(100%, 220px); aspect-ratio: 1; margin: 0 auto 12px;
       display: flex; align-items: center; justify-content: center;
     }
     .qr-frame svg { width: 100%; height: 100%; display: block; }
-    .qr-frame.qr-sm { width: min(100%, 220px); }
-    .qr-msg { color: #4a2418; text-align: center; font-size: 0.86rem; line-height: 1.5; padding: 16px; }
-    .sheet-note { text-align: center; color: var(--text2); font-size: 0.84rem; margin-bottom: 12px; line-height: 1.5; }
     .sheet-warn {
       background: var(--amber-dim); border: 1px solid rgba(254,150,119,0.35);
       color: var(--text2); border-radius: var(--radius-sm);
       padding: 10px 12px; font-size: 0.78rem; line-height: 1.5; margin-bottom: 12px;
     }
-    .toggle-row {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      font-size: 0.84rem; color: var(--text2); margin-bottom: 14px; cursor: pointer;
+    .done-hero { font-size: 1.05rem; font-weight: 600; margin: 0 0 14px; line-height: 1.4; }
+    .done-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .done-option {
+      display: flex; gap: 12px; align-items: flex-start; cursor: pointer;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 12px 14px;
     }
-    .toggle-row input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+    .done-option.is-fixed { cursor: default; }
+    .done-option input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--green); flex-shrink: 0; }
+    .done-option span { display: flex; flex-direction: column; gap: 3px; font-size: 0.92rem; }
+    .done-option small { color: var(--text3); font-size: 0.78rem; line-height: 1.4; }
+    .sheet-wide { width: 100%; justify-content: center; margin-bottom: 4px; }
     .sheet-close { width: 100%; justify-content: center; margin-top: 4px; }
-    .receive-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-    .receive-preview .pill { cursor: default; }
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -953,12 +955,11 @@
     <div class="card">
       <div class="card-title">Quick actions</div>
       <div class="btn-row">
-        <button class="btn btn-secondary" id="untickAllBtn">✓ Untick all</button>
-        <button class="btn btn-green btn-sm" id="clearTickedBtn" style="flex:0 0 auto">✅ Finish shop</button>
-        <button class="btn btn-red btn-sm" id="clearAllShoppingBtn">Clear all</button>
+        <button class="btn btn-green" id="shopDoneBtn">🛒 Shop done — start next week</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" id="shareListBtn">📲 Share list by QR code</button>
+        <button class="btn btn-secondary btn-sm" id="untickAllBtn">✓ Untick all</button>
+        <button class="btn btn-red btn-sm" id="clearAllShoppingBtn">Clear all</button>
       </div>
       <div class="input-row">
         <input type="text" id="customItemInput" placeholder="Add any item… (try “2 milk”)" />
@@ -1128,7 +1129,7 @@
     <div class="card">
       <div class="card-title">📲 Share the app</div>
       <div class="card-sub">Let someone scan this with their phone camera to get their own copy of the app. Your list and settings stay on your phone.</div>
-      <div class="qr-frame qr-sm" id="appQrFrame"></div>
+      <div class="qr-frame" id="appQrFrame"></div>
       <div class="sheet-warn" id="appShareWarn" hidden>
         You've opened the app as a file, so this code won't work on other phones. Open it from its web address instead.
       </div>
@@ -1192,45 +1193,28 @@
   </button>
 </nav>
 
-<!-- SHARE SHEET -->
-<div class="sheet-backdrop" id="shareSheet" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+<!-- SHOP DONE SHEET -->
+<div class="sheet-backdrop" id="shopDoneSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="shopDoneTitle">
     <div class="sheet-handle"></div>
-    <div class="card-title" id="shareTitle">Share your list</div>
-    <div class="qr-frame" id="qrFrame"></div>
-    <div class="sheet-note" id="shareNote"></div>
-    <label class="toggle-row"><input type="checkbox" id="shareIncludeTicked" /> Include ticked items</label>
-    <div class="sheet-warn" id="shareWarn" hidden>
-      You've opened the app as a file, so this code will only work on a device that can open that same file.
-      Put the app online (GitHub Pages is free) and the code will work on any phone.
+    <div class="card-title" id="shopDoneTitle">🛒 Shop done — start next week</div>
+    <div class="done-hero" id="shopDoneHero"></div>
+    <div class="done-options">
+      <label class="done-option is-fixed">
+        <input type="checkbox" checked disabled />
+        <span><b id="shopDoneBought"></b><small>Everything you ticked comes off the list.</small></span>
+      </label>
+      <label class="done-option" id="shopDoneLeftRow">
+        <input type="checkbox" id="shopDoneClearLeft" />
+        <span><b id="shopDoneLeft"></b><small>Leave unticked to carry them over to next week.</small></span>
+      </label>
+      <label class="done-option" id="shopDoneMealsRow">
+        <input type="checkbox" id="shopDoneClearMeals" />
+        <span><b>Clear this week's meals</b><small>Breakfast, lunch and dinner picks and the week plan. Your meal ideas and ingredients are kept.</small></span>
+      </label>
     </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" id="shareCopyBtn">🔗 Copy link</button>
-      <button class="btn btn-secondary" id="shareNativeBtn" hidden>Share…</button>
-    </div>
-    <button class="btn btn-ghost sheet-close" data-close-sheet>Close</button>
-  </div>
-</div>
-
-<!-- RECEIVE SHEET -->
-<div class="sheet-backdrop" id="receiveSheet" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="receiveTitle">
-    <div class="sheet-handle"></div>
-    <div class="card-title" id="receiveTitle">📥 A list has been shared with you</div>
-    <div class="card-sub" id="receiveSummary"></div>
-    <div class="receive-preview" id="receivePreview"></div>
-    <div class="sheet-warn" id="receiveWarn" hidden>
-      Use the app from your Home Screen? It keeps a separate copy of your data from Safari.
-      Tap <b>Copy link</b>, open the Home Screen app, then paste the link into the “Add any item” box on the Shop tab.
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-green" id="receiveMergeBtn">Add to my list</button>
-      <button class="btn btn-secondary" id="receiveReplaceBtn">Replace mine</button>
-    </div>
-    <div class="btn-row" id="receiveCopyRow" hidden>
-      <button class="btn btn-secondary" id="receiveCopyBtn" style="flex:1;justify-content:center">🔗 Copy link</button>
-    </div>
-    <button class="btn btn-ghost sheet-close" data-close-sheet>Not now</button>
+    <button class="btn btn-green sheet-wide" id="shopDoneConfirm">Start next week</button>
+    <button class="btn btn-ghost sheet-close" data-close-sheet>Cancel</button>
   </div>
 </div>
 
@@ -1622,10 +1606,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   document.getElementById('addCustomItemBtn').onclick = () => {
     const input = document.getElementById('customItemInput');
-    // A pasted share link opens the shared list instead of becoming an item
-    const link = input.value.match(/#list=([A-Za-z0-9_-]+)/);
-    if (link) { openSharedList(link[1]); }
-    else { const typed = parseTyped(input.value); addItem(typed.name, typed.qty); }
+    const typed = parseTyped(input.value);
+    addItem(typed.name, typed.qty);
     input.value = '';
   };
   document.getElementById('customItemInput').addEventListener('keydown', e => {
@@ -1638,13 +1620,52 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     toast('All items unticked');
   };
 
-  document.getElementById('clearTickedBtn').onclick = () => {
-    const n = state.shoppingList.filter(x => x.checked).length;
-    if (!n) { toast('Nothing ticked yet — tick items as they go in the trolley'); return; }
-    const left = state.shoppingList.length - n;
-    changeListWithUndo(`🎉 ${n} item${n===1?'':'s'} bought${left ? ` · ${left} still to get` : ''}`, () => {
-      state.shoppingList = state.shoppingList.filter(x => !x.checked);
+  /* ── SHOP DONE: clear what was bought, ready for next week ── */
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+  document.getElementById('shopDoneBtn').onclick = () => {
+    const bought = state.shoppingList.filter(x => x.checked).length;
+    const left = state.shoppingList.length - bought;
+    const hasMeals = state.selectedBreakfasts.length + state.selectedLunches.length + state.selectedDinners.length > 0
+      || Object.values(state.weekPlan).some(Boolean);
+    document.getElementById('shopDoneHero').textContent = bought
+      ? `🎉 Nice one — ${plural(bought, 'item')} bought this week.`
+      : 'Nothing is ticked yet. Tick items as they go in the trolley, or carry on to clear the list.';
+    document.getElementById('shopDoneBought').textContent = `Clear ${plural(bought, 'bought item')}`;
+    document.getElementById('shopDoneLeft').textContent = `Also clear ${plural(left, 'item')} you didn't get`;
+    document.getElementById('shopDoneLeftRow').hidden = !left;
+    document.getElementById('shopDoneMealsRow').hidden = !hasMeals;
+    document.getElementById('shopDoneClearLeft').checked = false;
+    document.getElementById('shopDoneClearMeals').checked = false;
+    openSheet('shopDoneSheet');
+  };
+
+  document.getElementById('shopDoneConfirm').onclick = () => {
+    const clearLeft = document.getElementById('shopDoneClearLeft').checked;
+    const clearMeals = document.getElementById('shopDoneClearMeals').checked
+      && !document.getElementById('shopDoneMealsRow').hidden;
+    const before = clone({
+      shoppingList: state.shoppingList, weekPlan: state.weekPlan,
+      selectedBreakfasts: state.selectedBreakfasts, selectedLunches: state.selectedLunches, selectedDinners: state.selectedDinners
     });
+    const bought = state.shoppingList.filter(x => x.checked).length;
+    state.shoppingList = clearLeft ? [] : state.shoppingList.filter(x => !x.checked);
+    const carried = state.shoppingList.length;
+    if (clearMeals) {
+      state.selectedBreakfasts = [];
+      state.selectedLunches = [];
+      state.selectedDinners = [];
+      state.weekPlan = emptyWeekPlan();
+    }
+    closeSheet('shopDoneSheet');
+    save(); renderAll();
+    const msg = carried ? `Ready for next week · ${plural(carried, 'item')} carried over` : 'Ready for next week — fresh list';
+    toast(msg, { label: 'Undo', run: () => {
+      Object.assign(state, before);
+      save(); renderAll();
+      toast('Restored');
+    }});
+    buzz(bought ? 20 : 10);
   };
 
   document.getElementById('clearAllShoppingBtn').onclick = () => {
@@ -2257,54 +2278,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     }
   });
 
-  /* ── SHARE BY QR CODE / LINK ──
-     The list travels inside the link itself (#list=…), so there is no server.
-     Payload: { v: 1, i: [names to get], t: [names already ticked] }, JSON →
-     deflate (where the browser supports it) → base64url. Prefix 'z' = deflated, 'j' = plain. */
-  const SHARE_MAX_ITEMS = 300;
-  const SHARE_MAX_NAME = 120;
-
-  function bytesToB64url(bytes) {
-    let bin = '';
-    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
-  function b64urlToBytes(str) {
-    str = str.replace(/-/g, '+').replace(/_/g, '/');
-    while (str.length % 4) str += '=';
-    return Uint8Array.from(atob(str), c => c.charCodeAt(0));
-  }
-  async function pipeBytes(bytes, transform) {
-    const stream = new Blob([bytes]).stream().pipeThrough(transform);
-    return new Uint8Array(await new Response(stream).arrayBuffer());
-  }
-
-  async function encodeShare(payload) {
-    const bytes = new TextEncoder().encode(JSON.stringify(payload));
-    if (typeof CompressionStream === 'function') {
-      try { return 'z' + bytesToB64url(await pipeBytes(bytes, new CompressionStream('deflate-raw'))); } catch(e) {}
-    }
-    return 'j' + bytesToB64url(bytes);
-  }
-
-  async function decodeShare(code) {
-    const bytes = b64urlToBytes(code.slice(1));
-    let raw;
-    if (code[0] === 'z') {
-      if (typeof DecompressionStream !== 'function') throw new Error('unsupported');
-      raw = await pipeBytes(bytes, new DecompressionStream('deflate-raw'));
-    } else if (code[0] === 'j') {
-      raw = bytes;
-    } else {
-      throw new Error('unknown format');
-    }
-    return JSON.parse(new TextDecoder().decode(raw));
-  }
-
   // Build an SVG QR code; returns null if the text is too long to fit
   function qrSvg(text) {
     let qr = null;
-    for (const level of ['M', 'L']) {  // M copes better with glare; L squeezes in longer lists
+    for (const level of ['M', 'L']) {  // M copes better with glare; L fits more in
       try { qr = qrcode(0, level); qr.addData(text, 'Byte'); qr.make(); break; }
       catch(e) { qr = null; }
     }
@@ -2314,14 +2291,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     for (let r = 0; r < n; r++) {
       for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c + quiet} ${r + quiet}h1v1h-1z`;
     }
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" role="img" aria-label="QR code for your shopping list"><path fill="#14152a" d="${d}"/></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges" role="img" aria-label="QR code"><path fill="#14152a" d="${d}"/></svg>`;
   }
 
   function openSheet(id) { document.getElementById(id).hidden = false; }
-  function closeSheet(id) {
-    document.getElementById(id).hidden = true;
-    if (id === 'receiveSheet') { pendingShare = null; clearShareHash(); }
-  }
+  function closeSheet(id) { document.getElementById(id).hidden = true; }
   document.querySelectorAll('.sheet-backdrop').forEach(bd => {
     bd.addEventListener('click', e => { if (e.target === bd) closeSheet(bd.id); });
     bd.querySelectorAll('[data-close-sheet]').forEach(b => b.onclick = () => closeSheet(bd.id));
@@ -2336,150 +2310,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     catch(e) { window.prompt('Copy this link:', text); }
   }
 
-  let currentShareUrl = '';
-  let shareRenderToken = 0;
-
-  async function renderShareSheet() {
-    const token = ++shareRenderToken;
-    const includeTicked = document.getElementById('shareIncludeTicked').checked;
-    const toGet = state.shoppingList.filter(x => !x.checked).map(x => x.name);
-    const got = includeTicked ? state.shoppingList.filter(x => x.checked).map(x => x.name) : [];
-    const frame = document.getElementById('qrFrame');
-    const note = document.getElementById('shareNote');
-    const copyBtn = document.getElementById('shareCopyBtn');
-    const nativeBtn = document.getElementById('shareNativeBtn');
-
-    currentShareUrl = '';
-    if (!toGet.length && !got.length) {
-      frame.innerHTML = '<div class="qr-msg">Nothing to share yet.<br>Add a few items first.</div>';
-      note.textContent = state.shoppingList.length ? 'Everything is ticked — tick "Include ticked items" to share them anyway.' : '';
-      copyBtn.disabled = nativeBtn.disabled = true;
-      return;
-    }
-
-    const payload = { v: 1, i: toGet };
-    if (got.length) payload.t = got;
-    const url = location.href.split('#')[0] + '#list=' + await encodeShare(payload);
-    if (token !== shareRenderToken) return;  // a newer render started while we were compressing
-
-    currentShareUrl = url;
-    copyBtn.disabled = nativeBtn.disabled = false;
-    const svg = qrSvg(url);
-    frame.innerHTML = svg || '<div class="qr-msg">This list is too long for one QR code.<br>Use “Copy link” instead.</div>';
-    note.textContent = `${toGet.length} to get${got.length ? ` · ${got.length} ticked` : ''}` +
-      (svg ? ' — scan with the other phone’s camera' : '');
-  }
-
-  document.getElementById('shareListBtn').onclick = () => {
-    document.getElementById('shareWarn').hidden = /^https?:$/.test(location.protocol);
-    document.getElementById('shareNativeBtn').hidden = typeof navigator.share !== 'function';
-    openSheet('shareSheet');
-    renderShareSheet();
-  };
-  document.getElementById('shareIncludeTicked').onchange = renderShareSheet;
-  document.getElementById('shareCopyBtn').onclick = () => { if (currentShareUrl) copyText(currentShareUrl); };
-  document.getElementById('shareNativeBtn').onclick = () => {
-    if (!currentShareUrl) return;
-    navigator.share({ title: 'Shopping list', text: 'Here’s the shopping list', url: currentShareUrl }).catch(() => {});
-  };
-
-  /* ── RECEIVING A SHARED LIST ── */
-  let pendingShare = null;
-
-  function clearShareHash() {
-    if (!location.hash.startsWith('#list=')) return;
-    try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {}
-  }
-
-  function cleanNames(arr) {
-    if (!Array.isArray(arr)) return [];
-    return arr.filter(x => typeof x === 'string')
-      .map(x => x.trim().slice(0, SHARE_MAX_NAME))
-      .filter(Boolean)
-      .slice(0, SHARE_MAX_ITEMS);
-  }
-
-  async function openSharedList(code) {
-    let toGet, got;
-    try {
-      const data = await decodeShare(code);
-      toGet = cleanNames(data && data.i);
-      got = cleanNames(data && data.t);
-      if (!toGet.length && !got.length) throw new Error('empty');
-    } catch(e) {
-      clearShareHash();
-      toast(e.message === 'unsupported'
-        ? "This browser is too old to open shared lists"
-        : "That share link didn't work — ask for a fresh one");
-      return;
-    }
-    pendingShare = { toGet, got, code };
-
-    document.getElementById('receiveSummary').textContent =
-      `${toGet.length} item${toGet.length === 1 ? '' : 's'} to get` +
-      (got.length ? `, plus ${got.length} already ticked.` : '.');
-    const preview = document.getElementById('receivePreview');
-    preview.innerHTML = '';
-    const PREVIEW = 12;
-    toGet.slice(0, PREVIEW).forEach(name => {
-      const pill = document.createElement('span');
-      pill.className = 'pill';
-      pill.textContent = name;
-      preview.appendChild(pill);
-    });
-    if (toGet.length > PREVIEW) {
-      const more = document.createElement('span');
-      more.className = 'pill';
-      more.textContent = `+${toGet.length - PREVIEW} more`;
-      preview.appendChild(more);
-    }
-    // iOS: a scanned link opens in Safari, whose storage is separate from the Home Screen app
-    const inIosSafari = navigator.standalone === false;
-    document.getElementById('receiveWarn').hidden = !inIosSafari;
-    document.getElementById('receiveCopyRow').hidden = !inIosSafari;
-    openSheet('receiveSheet');
-  }
-
-  // Returns how many new items were added
-  function mergeShared(toGet, got) {
-    const byName = new Map(state.shoppingList.map(x => [x.name.toLowerCase(), x]));
-    let added = 0;
-    const put = (name, checked) => {
-      const existing = byName.get(name.toLowerCase());
-      if (existing) { if (!checked) existing.checked = false; return; }
-      const item = { id: uid(), name, checked };
-      state.shoppingList.push(item);
-      byName.set(name.toLowerCase(), item);
-      added++;
-    };
-    toGet.forEach(n => put(n, false));
-    got.forEach(n => put(n, true));
-    return added;
-  }
-
-  function acceptShare(replace) {
-    if (!pendingShare) return;
-    const { toGet, got } = pendingShare;
-    closeSheet('receiveSheet');
-    let added = 0;
-    changeListWithUndo(
-      () => replace ? 'List replaced'
-        : added ? `Added ${added} new item${added === 1 ? '' : 's'}`
-        : 'You already had all of these',
-      () => {
-        if (replace) state.shoppingList = [];
-        added = mergeShared(toGet, got);
-      });
-    showPanel('shopping');
-  }
-  document.getElementById('receiveMergeBtn').onclick = () => acceptShare(false);
-  document.getElementById('receiveReplaceBtn').onclick = () => acceptShare(true);
-  document.getElementById('receiveCopyBtn').onclick = () => {
-    if (pendingShare) copyText(location.href.split('#')[0] + '#list=' + pendingShare.code);
-  };
-
   /* ── SHARE THE APP ITSELF (Settings) ──
-     Just the page address: no list, no #hash, no ?cache-busting query */
+     Just the page address: no #hash, no ?cache-busting query */
   const appUrl = location.origin + location.pathname;
   document.getElementById('appQrFrame').innerHTML = qrSvg(appUrl) || '';
   document.getElementById('appShareWarn').hidden = /^https?:$/.test(location.protocol);
@@ -2488,12 +2320,6 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   document.getElementById('appNativeBtn').onclick = () => {
     navigator.share({ title: 'Home Shopping App', text: 'Here’s the shopping app I use', url: appUrl }).catch(() => {});
   };
-
-  function checkShareHash() {
-    const m = location.hash.match(/^#list=([A-Za-z0-9_-]+)$/);
-    if (m) openSharedList(m[1]);
-  }
-  window.addEventListener('hashchange', checkShareHash);
 
   /* ── FAMILY SYNC (Firebase) ──
      Cloud layout (one household, locked to two accounts by the security rules):
@@ -2888,7 +2714,6 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   };
 
   renderAll();
-  checkShareHash();
   captureSyncBase();
   // Keep a copy of the app on the phone so it opens with no signal (see sw.js)
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
