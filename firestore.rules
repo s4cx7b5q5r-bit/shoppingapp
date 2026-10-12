@@ -16,14 +16,17 @@ service cloud.firestore {
         && request.auth.uid in ['3Vh0HLOvvgQgidmhalXAqZHjhcL2', 'hsG8kkamEMT2UmK0I1sXIZ3drS53'];
     }
 
-    // One shopping list item: exactly a name, a ticked flag and a creation time
+    // One shopping list item: a name, a ticked flag and a creation time,
+    // plus an optional quantity (2–99) and the name of who added it
     function isValidItem() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['name', 'checked', 'created'])
+      return d.keys().hasOnly(['name', 'checked', 'created', 'qty', 'by'])
         && d.keys().hasAll(['name', 'checked', 'created'])
         && d.name is string && d.name.size() > 0 && d.name.size() <= 200
         && d.checked is bool
-        && d.created is number;
+        && d.created is number
+        && (!('qty' in d) || (d.qty is int && d.qty >= 2 && d.qty <= 99))
+        && (!('by' in d) || (d.by is string && d.by.size() > 0 && d.by.size() <= 20));
     }
 
     match /households/home/items/{itemId} {
@@ -31,20 +34,21 @@ service cloud.firestore {
       allow create, update: if isFamily() && isValidItem();
     }
 
-    // Usual items and breakfast / lunch / dinner ideas
+    // Usual items, breakfast / lunch / dinner ideas and each dinner's ingredients
     match /households/home/data/library {
       allow read: if isFamily();
       allow create, update: if isFamily()
         && request.resource.data.keys().hasOnly([
              'usualGroups', 'breakfasts', 'lunches', 'dinners',
-             'customBreakfasts', 'customLunches', 'customDinners'])
+             'customBreakfasts', 'customLunches', 'customDinners', 'ingredients'])
         && request.resource.data.usualGroups is list
         && request.resource.data.breakfasts is list
         && request.resource.data.lunches is list
         && request.resource.data.dinners is list
         && request.resource.data.customBreakfasts is list
         && request.resource.data.customLunches is list
-        && request.resource.data.customDinners is list;
+        && request.resource.data.customDinners is list
+        && (!('ingredients' in request.resource.data) || request.resource.data.ingredients is list);
     }
 
     // This week's picks and the week plan
