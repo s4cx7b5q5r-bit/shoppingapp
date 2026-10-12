@@ -34,13 +34,15 @@ service cloud.firestore {
       allow create, update: if isFamily() && isValidItem();
     }
 
-    // Usual items, breakfast / lunch / dinner ideas and each dinner's ingredients
+    // Usual items, breakfast / lunch / dinner ideas, each dinner's ingredients and recipe link,
+    // saved weeks, and the names remembered for scanned barcodes
     match /households/home/data/library {
       allow read: if isFamily();
       allow create, update: if isFamily()
         && request.resource.data.keys().hasOnly([
              'usualGroups', 'breakfasts', 'lunches', 'dinners',
-             'customBreakfasts', 'customLunches', 'customDinners', 'ingredients'])
+             'customBreakfasts', 'customLunches', 'customDinners', 'ingredients',
+             'recipes', 'savedWeeks', 'barcodes'])
         && request.resource.data.usualGroups is list
         && request.resource.data.breakfasts is list
         && request.resource.data.lunches is list
@@ -48,7 +50,18 @@ service cloud.firestore {
         && request.resource.data.customBreakfasts is list
         && request.resource.data.customLunches is list
         && request.resource.data.customDinners is list
-        && (!('ingredients' in request.resource.data) || request.resource.data.ingredients is list);
+        && (!('ingredients' in request.resource.data) || request.resource.data.ingredients is list)
+        && (!('recipes' in request.resource.data) || request.resource.data.recipes is list)
+        && (!('savedWeeks' in request.resource.data) || request.resource.data.savedWeeks is list)
+        && (!('barcodes' in request.resource.data) || request.resource.data.barcodes is list);
+    }
+
+    // What was bought at each "Shop done", used for the "you usually buy" suggestions
+    match /households/home/data/history {
+      allow read: if isFamily();
+      allow create, update: if isFamily()
+        && request.resource.data.keys().hasOnly(['items'])
+        && request.resource.data.items is list;
     }
 
     // This week's picks and the week plan

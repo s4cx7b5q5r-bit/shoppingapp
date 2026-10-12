@@ -354,7 +354,7 @@
     .btn-sm { padding: 7px 10px; font-size: 0.8rem; }
 
     .input-row { display: flex; gap: 8px; }
-    input[type="text"], input[type="email"], input[type="password"], select, textarea {
+    input[type="text"], input[type="email"], input[type="password"], input[type="url"], select, textarea {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border2);
@@ -367,7 +367,7 @@
       transition: border-color 0.15s;
       -webkit-appearance: none;
     }
-    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
@@ -702,7 +702,10 @@
       border-color: var(--green);
       color: var(--on-green);
     }
-    .routine-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
+    .routine-main { flex: 1; min-width: 0; }
+    .routine-name { font-size: 0.95rem; font-weight: 500; }
+    .routine-time { font-size: 0.74rem; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+    .routine-item.done .routine-time { text-decoration: none; }
     .routine-check {
       width: 22px;
       height: 22px;
@@ -822,7 +825,94 @@
     }
     .ingr-label { display: block; font-size: 0.78rem; color: var(--text2); margin-bottom: 6px; }
     .ingr-panel textarea { min-height: 96px; margin-bottom: 8px; }
+    .recipe-label { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
     .btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* ── BARCODE SCANNING ── */
+    .scan-view {
+      position: relative; width: 100%; aspect-ratio: 4 / 3; background: #000;
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 10px;
+    }
+    .scan-view video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .scan-guide {
+      position: absolute; left: 10%; right: 10%; top: 30%; bottom: 30%;
+      border: 3px solid rgba(255,255,255,0.85); border-radius: 12px;
+      box-shadow: 0 0 0 999px rgba(0,0,0,0.35);
+    }
+    .scan-status { font-size: 0.88rem; color: var(--text2); text-align: center; margin-bottom: 12px; line-height: 1.5; }
+    .scan-status:empty { display: none; }
+    #scanResult { margin-bottom: 8px; }
+
+    /* ── SUGGESTIONS ── */
+    .suggest-row {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 6px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    }
+    .suggest-main { flex: 1; min-width: 0; }
+    .suggest-name { font-size: 0.95rem; font-weight: 600; overflow-wrap: anywhere; }
+    .suggest-why { font-size: 0.74rem; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+    .suggest-row .btn { flex: 0 0 auto; }
+    .suggest-hide {
+      background: none; border: none; color: var(--text3); cursor: pointer;
+      min-width: 40px; min-height: 40px; font-size: 1.2rem; margin: -8px -8px -8px -4px;
+    }
+
+    /* ── SHOPPING MODE ── */
+    .shop-mode {
+      position: fixed; inset: 0; z-index: 250; background: var(--bg); overflow-y: auto;
+      padding: calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 28px);
+      animation: fadeIn 0.2s ease;
+    }
+    .shop-mode-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .shop-mode-title { font-size: 1.4rem; font-weight: 700; }
+    .shop-mode-progress { font-size: 0.9rem; color: var(--text2); margin-top: 2px; }
+    .shop-mode-bar { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+    .shop-mode-bar-fill { height: 100%; width: 0; background: var(--green); border-radius: 3px; transition: width 0.35s var(--ease-out); }
+    .shop-mode-awake { font-size: 0.78rem; color: var(--text3); margin-bottom: 10px; }
+    .sm-item {
+      display: flex; align-items: center; gap: 16px; width: 100%; text-align: left;
+      min-height: 68px; padding: 14px 16px; margin-bottom: 8px;
+      background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius);
+      color: var(--text); font-family: var(--font); font-size: 1.3rem; font-weight: 600; cursor: pointer;
+    }
+    .sm-item .shop-check { width: 30px; height: 30px; }
+    .sm-item .sm-name { flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
+    .sm-item .sm-qty { font-family: var(--mono); font-size: 1.05rem; color: var(--accent); flex-shrink: 0; }
+    .sm-item.ticked { min-height: 52px; font-size: 1rem; font-weight: 500; opacity: 0.5; background: var(--surface2); }
+    .sm-item.ticked .sm-name { text-decoration: line-through; }
+    .sm-item.ticked .shop-check { width: 24px; height: 24px; background: var(--green); border-color: var(--green); }
+    .sm-item.ticked .shop-check-tick { display: block; }
+    .sm-heading { font-size: 0.78rem; font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin: 18px 0 8px; }
+    .sm-finished { text-align: center; padding: 24px 8px 8px; font-size: 1.15rem; font-weight: 600; }
+    .sm-finished .btn { width: 100%; justify-content: center; margin-top: 14px; }
+
+    /* ── EDIT MODE + MEAL CATEGORIES ── */
+    .meal-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0 14px; flex-wrap: wrap; }
+    .meal-cat { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text2); flex: 1; min-width: 0; }
+    .meal-cat select { width: auto; flex: 1; min-width: 0; padding: 7px 10px; font-size: 0.85rem; }
+    .edit-hint {
+      font-size: 0.8rem; color: var(--text2); background: var(--accent-dim); border: 1px dashed var(--accent);
+      border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px;
+    }
+    .pill.editing, .meal-pill.editing {
+      display: inline-flex; align-items: center; padding: 0; cursor: default;
+      border-style: dashed;
+    }
+    .pill-name {
+      background: none; border: none; color: inherit; font: inherit; cursor: pointer;
+      padding: 8px 2px 8px 13px; min-height: 36px; text-align: left;
+    }
+    .pill-del {
+      background: none; border: none; color: var(--red); cursor: pointer;
+      font-size: 1.1rem; min-width: 36px; min-height: 36px; padding: 0 4px;
+    }
+    .cat-edit { display: inline-flex; align-items: center; gap: 4px; }
+    .cat-edit button, .group-tools button {
+      background: var(--surface3); border: 1px solid var(--border2); color: var(--text2);
+      border-radius: 8px; min-width: 32px; min-height: 32px; cursor: pointer; font-size: 0.85rem;
+    }
+    .group-tools { display: inline-flex; gap: 6px; margin-right: 6px; }
+    .new-group-btn { margin-top: 4px; }
 
     /* Apple's minimum comfortable tap size is 44×44 */
     .shop-item-del, .selected-meal-del, .routine-del {
@@ -866,14 +956,14 @@
   <!-- HOME -->
   <section id="panel-home" class="panel active">
 
-    <div class="card tonight-card">
+    <div class="card tonight-card" id="tonightCard">
       <div class="card-title">🍽️ Tonight's dinner</div>
       <div class="tonight-meal" id="tonightMeal"></div>
       <div class="tonight-sub" id="tonightSub"></div>
       <div class="btn-row" id="tonightActions" style="margin-top:12px"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="morningCard">
       <div class="card-head">
         <div class="card-title" style="margin:0">☀️ Morning routine</div>
         <div class="card-head-actions">
@@ -897,7 +987,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="eveningCard">
       <div class="card-head">
         <div class="card-title" style="margin:0">🌙 Evening routine</div>
         <div class="card-head-actions">
@@ -955,6 +1045,9 @@
     <div class="card">
       <div class="card-title">Quick actions</div>
       <div class="btn-row">
+        <button class="btn btn-primary" id="shopModeBtn">🛍️ Start shopping</button>
+      </div>
+      <div class="btn-row">
         <button class="btn btn-green" id="shopDoneBtn">🛒 Shop done — start next week</button>
       </div>
       <div class="btn-row">
@@ -963,8 +1056,15 @@
       </div>
       <div class="input-row">
         <input type="text" id="customItemInput" placeholder="Add any item… (try “2 milk”)" />
+        <button class="btn btn-secondary" id="scanBtn" style="flex:0 0 auto;padding:10px 13px" title="Scan a barcode" aria-label="Scan a barcode">📷</button>
         <button class="btn btn-green" id="addCustomItemBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
       </div>
+    </div>
+
+    <div class="card" id="suggestCard" hidden>
+      <div class="card-title">💡 You usually buy</div>
+      <div class="card-sub" style="margin-bottom:10px">Based on what you’ve bought at your last few shops.</div>
+      <div id="suggestList"></div>
     </div>
 
     <div class="card">
@@ -976,8 +1076,12 @@
     </div>
 
     <div class="card">
-      <div class="card-title">Usual items library</div>
+      <div class="card-head">
+        <div class="card-title" style="margin:0">Usual items library</div>
+        <button class="btn btn-ghost btn-sm" id="usualEditBtn">✏️ Edit</button>
+      </div>
       <div class="card-sub">Tap any item to add it to your list. Tap it again for ×2. Groups open and close.</div>
+      <div class="edit-hint" id="usualEditHint" hidden>Tap a name to rename it, or × to remove it. Use ✎ and 🗑 on a group to rename or delete it.</div>
       <div class="search-row">
         <input type="search" id="usualSearch" placeholder="🔍 Search usual items…" autocomplete="off" enterkeyhint="search" aria-label="Search usual items" />
       </div>
@@ -1005,10 +1109,15 @@
       <div id="selectedBreakfastsEl" class="selected-strip" style="margin-bottom:14px">
         <div class="empty-state"><div class="empty-icon">🍳</div>No breakfasts selected yet</div>
       </div>
-      <div class="input-row" style="margin-bottom:14px">
-        <input type="text" id="customBreakfastInput" placeholder="Add a breakfast idea…" />
+      <div class="input-row">
+        <input type="text" id="customBreakfastInput" placeholder="Add a breakfast idea…" maxlength="80" />
         <button class="btn btn-green" id="addBreakfastBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
       </div>
+      <div class="meal-tools">
+        <label class="meal-cat">Add to <select id="breakfastCatSelect" aria-label="Category for new breakfast ideas"></select></label>
+        <button class="btn btn-ghost btn-sm" data-edit-meals="breakfast">✏️ Edit list</button>
+      </div>
+      <div class="edit-hint" id="breakfastEditHint" hidden>Tap a name to rename it, or × to remove it. Tap a category name to rename it.</div>
       <div id="breakfastChoicesEl"></div>
     </div>
     <div class="spacer"></div>
@@ -1031,10 +1140,15 @@
       <div id="selectedLunchesEl" class="selected-strip" style="margin-bottom:14px">
         <div class="empty-state"><div class="empty-icon">🥪</div>No lunches selected yet</div>
       </div>
-      <div class="input-row" style="margin-bottom:14px">
-        <input type="text" id="customLunchInput" placeholder="Add a lunch idea…" />
+      <div class="input-row">
+        <input type="text" id="customLunchInput" placeholder="Add a lunch idea…" maxlength="80" />
         <button class="btn btn-green" id="addLunchBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
       </div>
+      <div class="meal-tools">
+        <label class="meal-cat">Add to <select id="lunchCatSelect" aria-label="Category for new lunch ideas"></select></label>
+        <button class="btn btn-ghost btn-sm" data-edit-meals="lunch">✏️ Edit list</button>
+      </div>
+      <div class="edit-hint" id="lunchEditHint" hidden>Tap a name to rename it, or × to remove it. Tap a category name to rename it.</div>
       <div id="lunchChoicesEl"></div>
     </div>
     <div class="spacer"></div>
@@ -1071,12 +1185,26 @@
     </div>
 
     <div class="card">
+      <div class="card-head">
+        <div class="card-title" style="margin:0">💾 Saved weeks</div>
+        <button class="btn btn-secondary btn-sm" id="saveWeekBtn">Save this week</button>
+      </div>
+      <div class="card-sub">Save a week of meals you liked — breakfasts, lunches, dinners and the plan — and bring it back in one tap.</div>
+      <div id="savedWeeksEl"></div>
+    </div>
+
+    <div class="card">
       <div class="card-title">Dinner ideas</div>
       <div class="card-sub">Tap to select or deselect. Up to 7 for the week. Tap 🧺 on a picked dinner to save its ingredients.</div>
-      <div class="input-row" style="margin-bottom:14px">
-        <input type="text" id="customDinnerInput" placeholder="Add a dinner idea…" />
+      <div class="input-row">
+        <input type="text" id="customDinnerInput" placeholder="Add a dinner idea…" maxlength="80" />
         <button class="btn btn-green" id="addDinnerBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
       </div>
+      <div class="meal-tools">
+        <label class="meal-cat">Add to <select id="dinnerCatSelect" aria-label="Category for new dinner ideas"></select></label>
+        <button class="btn btn-ghost btn-sm" data-edit-meals="dinner">✏️ Edit list</button>
+      </div>
+      <div class="edit-hint" id="dinnerEditHint" hidden>Tap a name to rename it, or × to remove it. Tap a category name to rename it.</div>
       <div id="dinnerChoicesEl"></div>
     </div>
     <div class="spacer"></div>
@@ -1192,6 +1320,42 @@
     <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
   </button>
 </nav>
+
+<!-- SHOPPING MODE -->
+<div class="shop-mode" id="shopMode" hidden role="dialog" aria-modal="true" aria-labelledby="shopModeTitle">
+  <div class="shop-mode-head">
+    <div>
+      <div class="shop-mode-title" id="shopModeTitle">🛍️ Shopping</div>
+      <div class="shop-mode-progress" id="shopModeProgress"></div>
+    </div>
+    <button class="btn btn-secondary btn-sm" id="shopModeExit">Close</button>
+  </div>
+  <div class="shop-mode-bar"><div class="shop-mode-bar-fill" id="shopModeBarFill"></div></div>
+  <div class="shop-mode-awake" id="shopModeAwake" hidden>☀️ Screen stays on while you shop</div>
+  <div id="shopModeList"></div>
+</div>
+
+<!-- BARCODE SCAN SHEET -->
+<div class="sheet-backdrop" id="scanSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="scanTitle">
+    <div class="sheet-handle"></div>
+    <div class="card-title" id="scanTitle">📷 Scan a barcode</div>
+    <div class="scan-view" id="scanView">
+      <video id="scanVideo" playsinline muted autoplay></video>
+      <div class="scan-guide"></div>
+    </div>
+    <div class="scan-status" id="scanStatus"></div>
+    <div id="scanResult" hidden>
+      <label class="ingr-label" for="scanName" id="scanResultLabel"></label>
+      <input type="text" id="scanName" maxlength="120" autocomplete="off" />
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn-green" id="scanAddBtn">Add to list</button>
+        <button class="btn btn-secondary" id="scanAgainBtn">Scan another</button>
+      </div>
+    </div>
+    <button class="btn btn-ghost sheet-close" data-close-sheet>Close</button>
+  </div>
+</div>
 
 <!-- SHOP DONE SHEET -->
 <div class="sheet-backdrop" id="shopDoneSheet" hidden>
@@ -1316,6 +1480,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     selectedDinners: [],
     weekPlan: emptyWeekPlan(),
     ingredients: {},   // { 'Lasagne': ['Beef mince 500g', 'Lasagne sheets', …] }
+    recipes: {},       // { 'Lasagne': 'https://www.bbcgoodfood.com/…' }
+    savedWeeks: [],    // [{ name, selectedBreakfasts, selectedLunches, selectedDinners, weekPlan }]
+    barcodes: {},      // { '5010044000213': 'Warburtons Farmhouse Soft White 800g' }
+    history: {},       // { 'milk': { name: 'Milk', dates: [day timestamps of each Shop done it was bought at] } }
     routine: {
       morning: [
         { id: 'm1', name: 'Take Lansoprazole', done: false },
@@ -1352,6 +1520,18 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   // Fill gaps with defaults and drop anything malformed, so a bad import or
   // old save can never leave the app half-rendered.
+  // Only ever store http(s) links (never javascript: and the like)
+  function safeUrl(u) {
+    if (typeof u !== 'string' || !u.trim()) return '';
+    let s = u.trim();
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(s)) s = 'https://' + s;
+    try {
+      const url = new URL(s);
+      return (url.protocol === 'https:' || url.protocol === 'http:') && url.hostname.includes('.') ? url.href.slice(0, 500) : '';
+    } catch(e) { return ''; }
+  }
+  const HISTORY_KEEP = 10;   // purchase dates remembered per item
+
   function normaliseState(p) {
     const def = clone(DEFAULTS);
     p = (p && typeof p === 'object') ? p : {};
@@ -1387,6 +1567,27 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       selectedLunches: strings(p.selectedLunches, []),
       selectedDinners: strings(p.selectedDinners, []).slice(0, DINNER_MAX),
       ingredients: library(p.ingredients, {}),
+      recipes: isObj(p.recipes)
+        ? Object.fromEntries(Object.entries(p.recipes).filter(([k, u]) => safeUrl(u)).map(([k, u]) => [k, safeUrl(u)]))
+        : {},
+      savedWeeks: (Array.isArray(p.savedWeeks) ? p.savedWeeks : [])
+        .filter(w => w && typeof w.name === 'string' && w.name.trim())
+        .slice(0, 30)
+        .map(w => ({
+          name: w.name.trim().slice(0, 40),
+          selectedBreakfasts: strings(w.selectedBreakfasts, []),
+          selectedLunches: strings(w.selectedLunches, []),
+          selectedDinners: strings(w.selectedDinners, []).slice(0, DINNER_MAX),
+          weekPlan: Object.assign(emptyWeekPlan(), isObj(w.weekPlan) ? w.weekPlan : {})
+        })),
+      barcodes: isObj(p.barcodes)
+        ? Object.fromEntries(Object.entries(p.barcodes).filter(([c, n]) => /^\d{8,14}$/.test(c) && typeof n === 'string' && n.trim()))
+        : {},
+      history: isObj(p.history)
+        ? Object.fromEntries(Object.entries(p.history)
+            .filter(([k, h]) => h && typeof h.name === 'string' && Array.isArray(h.dates))
+            .map(([k, h]) => [k, { name: h.name, dates: h.dates.filter(Number.isFinite).slice(-HISTORY_KEEP) }]))
+        : {},
       weekPlan: Object.assign(def.weekPlan, isObj(p.weekPlan) ? p.weekPlan : {}),
       routine: migrateRoutine(isObj(p.routine) ? p.routine : null, def.routine)
     };
@@ -1547,6 +1748,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       `${state.shoppingList.length} item${state.shoppingList.length === 1 ? '' : 's'}`;
 
     refreshUsualPills();
+    renderShopMode();
+    renderSuggestions();
 
     if (sorted.length === 0) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">🛒</div>Nothing on the list yet</div>';
@@ -1620,6 +1823,314 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     toast('All items unticked');
   };
 
+  /* ── BARCODE SCANNING ──
+     The ZXing library (vendor/, Apache 2.0) is only downloaded the first time someone taps Scan.
+     Names come from Open Food Facts (free, open product database); anything it doesn't know,
+     you type once and the app remembers it (shared between your phones). */
+  const ZXING_SRC = 'vendor/zxing-library-0.23.0.min.js';
+  let zxingLoading = null;
+  let scanStream = null, scanTimer = null, scanReader = null, scanCode = '';
+
+  function loadZXing() {
+    if (window.ZXing) return Promise.resolve(window.ZXing);
+    if (!zxingLoading) {
+      zxingLoading = new Promise((resolve, reject) => {
+        const tag = document.createElement('script');
+        tag.src = ZXING_SRC;
+        tag.onload = () => resolve(window.ZXing);
+        tag.onerror = () => { zxingLoading = null; reject(new Error('scanner-load')); };
+        document.head.appendChild(tag);
+      });
+    }
+    return zxingLoading;
+  }
+
+  function scanStatus(text) { document.getElementById('scanStatus').textContent = text; }
+  function showScanResult(show) {
+    document.getElementById('scanResult').hidden = !show;
+    document.getElementById('scanView').hidden = show;
+  }
+
+  function stopScanner() {
+    clearTimeout(scanTimer);
+    scanTimer = null;
+    if (scanStream) scanStream.getTracks().forEach(t => t.stop());
+    scanStream = null;
+    const video = document.getElementById('scanVideo');
+    if (video) video.srcObject = null;
+  }
+
+  async function startScanner(message) {
+    stopScanner();
+    showScanResult(false);
+    scanCode = '';
+    scanStatus('Starting the camera…');
+    try {
+      const Z = await loadZXing();
+      if (!scanReader) {
+        const hints = new Map();
+        hints.set(Z.DecodeHintType.POSSIBLE_FORMATS,
+          [Z.BarcodeFormat.EAN_13, Z.BarcodeFormat.EAN_8, Z.BarcodeFormat.UPC_A, Z.BarcodeFormat.UPC_E]);
+        hints.set(Z.DecodeHintType.TRY_HARDER, true);
+        scanReader = new Z.MultiFormatReader();
+        scanReader.setHints(hints);
+      }
+      if (document.getElementById('scanSheet').hidden) return;   // closed while loading
+      scanStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
+      });
+      if (document.getElementById('scanSheet').hidden) { stopScanner(); return; }
+      const video = document.getElementById('scanVideo');
+      video.srcObject = scanStream;
+      await video.play();
+      scanStatus(message || 'Line the barcode up inside the box');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const look = () => {
+        if (!scanStream) return;
+        const w = video.videoWidth, h = video.videoHeight;
+        if (w && h) {
+          // Read the middle band of the picture, where the guide box is
+          const band = Math.round(h * 0.5);
+          canvas.width = w; canvas.height = band;
+          ctx.drawImage(video, 0, Math.round((h - band) / 2), w, band, 0, 0, w, band);
+          try {
+            const bitmap = new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(canvas)));
+            const result = scanReader.decodeWithState(bitmap);
+            barcodeFound(result.getText());
+            return;
+          } catch(e) { /* no barcode in this frame yet */ }
+        }
+        scanTimer = setTimeout(look, 120);
+      };
+      look();
+    } catch(e) {
+      stopScanner();
+      showScanResult(true);
+      document.getElementById('scanView').hidden = true;
+      scanStatus(e && e.name === 'NotAllowedError'
+        ? 'Camera access is turned off. On iPhone go to Settings → Safari → Camera → Allow, then try again.'
+        : e && e.message === 'scanner-load'
+          ? 'Couldn’t load the scanner — check your connection and try again.'
+          : 'Couldn’t start the camera on this phone.');
+      document.getElementById('scanResultLabel').textContent = 'You can type the item instead:';
+      document.getElementById('scanName').value = '';
+    }
+  }
+
+  // "Warburtons" + "Farmhouse Soft White" + "800 g" → "Warburtons Farmhouse Soft White 800 g"
+  function productName(p) {
+    const base = String(p.product_name_en || p.product_name || '').trim();
+    if (!base) return '';
+    const brand = String(p.brands || '').split(',')[0].trim();
+    let name = brand && !base.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${base}` : base;
+    const qty = String(p.quantity || '').trim();
+    const squash = t => t.toLowerCase().replace(/\s+/g, '');
+    if (qty && !squash(name).includes(squash(qty))) name += ' ' + qty;
+    return name.replace(/\s+/g, ' ').slice(0, 120);
+  }
+
+  async function lookupBarcode(code) {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 6000);
+      const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=product_name,product_name_en,brands,quantity`,
+        { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) return '';
+      const data = await res.json();
+      return data && data.status === 1 && data.product ? productName(data.product) : '';
+    } catch(e) { return ''; }   // offline or slow: fall back to typing it
+  }
+
+  async function barcodeFound(code) {
+    stopScanner();
+    buzz(30);
+    scanCode = code;
+    showScanResult(true);
+    const label = document.getElementById('scanResultLabel');
+    const input = document.getElementById('scanName');
+    scanStatus('');
+    label.textContent = `Looking up ${code}…`;
+    input.value = '';
+    let name = state.barcodes[code] || '';
+    const known = !!name;
+    if (!name) name = await lookupBarcode(code);
+    if (scanCode !== code) return;   // scanned something else meanwhile
+    input.value = name;
+    label.textContent = known ? 'You’ve scanned this before:'
+      : name ? 'Found it — check the name, then add:'
+      : 'We don’t know this one yet — what is it? (We’ll remember next time.)';
+    if (!name) input.focus();
+  }
+
+  function addScanned() {
+    const name = document.getElementById('scanName').value.trim().slice(0, 120);
+    if (!name) { document.getElementById('scanName').focus(); return; }
+    if (scanCode) state.barcodes[scanCode] = name;
+    addItem(name);
+    startScanner(`Added ${name} — scan the next one`);
+  }
+
+  document.getElementById('scanBtn').onclick = () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      toast('This browser can’t use the camera'); return;
+    }
+    openSheet('scanSheet');
+    startScanner();
+  };
+  document.getElementById('scanAddBtn').onclick = addScanned;
+  document.getElementById('scanName').addEventListener('keydown', e => { if (e.key === 'Enter') addScanned(); });
+  document.getElementById('scanAgainBtn').onclick = () => startScanner();
+
+  /* ── "YOU USUALLY BUY": learn from each Shop done ── */
+  const DAY_MS = 86400000;
+  const SUGGEST_MIN_SHOPS = 3;    // bought at this many Shop dones before we guess a pattern
+  const SUGGEST_MAX = 8;
+  const dayStart = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+
+  function recordPurchases(items, when) {
+    const day = dayStart(when || Date.now());
+    items.forEach(it => {
+      const name = it.name.trim();
+      const key = name.toLowerCase();
+      const h = state.history[key] || (state.history[key] = { name, dates: [] });
+      if (h.dates[h.dates.length - 1] !== day) h.dates.push(day);
+      h.dates = h.dates.slice(-HISTORY_KEEP);
+    });
+  }
+
+  function readDismissed() {
+    try { return JSON.parse(localStorage.getItem('shopSuggestDismissed') || '{}') || {}; } catch(e) { return {}; }
+  }
+  function dismissSuggestion(key) {
+    const d = readDismissed();
+    d[key] = Date.now();
+    try { localStorage.setItem('shopSuggestDismissed', JSON.stringify(d)); } catch(e) {}
+    renderSuggestions();
+  }
+
+  // Items whose usual gap between purchases has (nearly) passed and aren't on the list
+  function usualSuggestions(now) {
+    now = now || Date.now();
+    const onList = new Set(state.shoppingList.map(x => x.name.trim().toLowerCase()));
+    const dismissed = readDismissed();
+    const out = [];
+    Object.entries(state.history).forEach(([key, h]) => {
+      const dates = [...new Set(h.dates)].sort((a, b) => a - b);
+      if (dates.length < SUGGEST_MIN_SHOPS || onList.has(key)) return;
+      const gaps = dates.slice(1).map((d, i) => Math.round((d - dates[i]) / DAY_MS)).slice(-5).sort((a, b) => a - b);
+      const every = gaps[Math.floor((gaps.length - 1) / 2)];          // median gap, in days
+      if (!every) return;
+      const last = dates[dates.length - 1];
+      const since = Math.round((dayStart(now) - last) / DAY_MS);
+      if (since < Math.max(1, Math.floor(every * 0.7))) return;       // show a little before it's due
+      const snoozed = dismissed[key];
+      if (snoozed && snoozed > last && now - snoozed < every * DAY_MS) return;
+      out.push({ key, name: h.name, every, since, ratio: since / every });
+    });
+    return out.sort((a, b) => b.ratio - a.ratio).slice(0, SUGGEST_MAX);
+  }
+
+  function renderSuggestions() {
+    const list = usualSuggestions();
+    const card = document.getElementById('suggestCard');
+    card.hidden = !list.length;
+    const el = document.getElementById('suggestList');
+    el.innerHTML = '';
+    list.forEach(sug => {
+      const row = document.createElement('div');
+      row.className = 'suggest-row';
+      const when = sug.since >= sug.every ? 'due now' : `due in ${sug.every - sug.since} day${sug.every - sug.since === 1 ? '' : 's'}`;
+      row.innerHTML = `
+        <div class="suggest-main">
+          <div class="suggest-name">${escHtml(sug.name)}</div>
+          <div class="suggest-why">Usually every ${sug.every} day${sug.every === 1 ? '' : 's'} · last bought ${sug.since} day${sug.since === 1 ? '' : 's'} ago · ${when}</div>
+        </div>
+        <button class="btn btn-green btn-sm suggest-add">＋ Add</button>
+        <button class="suggest-hide" title="Not now" aria-label="Hide ${escHtml(sug.name)} for now">×</button>`;
+      row.querySelector('.suggest-add').onclick = () => addItem(sug.name);
+      row.querySelector('.suggest-hide').onclick = () => dismissSuggestion(sug.key);
+      el.appendChild(row);
+    });
+  }
+
+  /* ── SHOPPING MODE: big, focused list that keeps the screen awake ── */
+  let wakeLock = null;
+
+  async function keepScreenOn() {
+    const note = document.getElementById('shopModeAwake');
+    try {
+      if (!('wakeLock' in navigator) || document.hidden || document.getElementById('shopMode').hidden) return;
+      wakeLock = await navigator.wakeLock.request('screen');
+      note.hidden = false;
+      wakeLock.addEventListener('release', () => { note.hidden = true; });
+    } catch(e) { note.hidden = true; }
+  }
+  function letScreenSleep() {
+    if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  }
+
+  function renderShopMode() {
+    const mode = document.getElementById('shopMode');
+    if (mode.hidden) return;
+    const list = document.getElementById('shopModeList');
+    const toGet = state.shoppingList.filter(x => !x.checked);
+    const got = state.shoppingList.filter(x => x.checked);
+    const total = state.shoppingList.length;
+    document.getElementById('shopModeProgress').textContent = total
+      ? (toGet.length ? `${toGet.length} left · ${got.length} in the trolley` : 'Everything’s in the trolley')
+      : 'Your list is empty';
+    document.getElementById('shopModeBarFill').style.width = total ? (got.length / total * 100) + '%' : '0';
+    list.innerHTML = '';
+    const row = item => {
+      const b = document.createElement('button');
+      b.className = 'sm-item' + (item.checked ? ' ticked' : '');
+      b.innerHTML = `<span class="shop-check"><span class="shop-check-tick">✓</span></span>
+        <span class="sm-name">${escHtml(item.name)}</span>
+        ${qtyOf(item) > 1 ? `<span class="sm-qty">×${qtyOf(item)}</span>` : ''}`;
+      b.onclick = () => {
+        item.checked = !item.checked;
+        buzz(item.checked ? 14 : 8);
+        save(); renderShoppingList(); updateBadges();
+      };
+      return b;
+    };
+    toGet.forEach(item => list.appendChild(row(item)));
+    if (total && !toGet.length) {
+      const done = document.createElement('div');
+      done.className = 'sm-finished';
+      done.innerHTML = `🎉 That's everything!<button class="btn btn-green">🛒 Shop done — start next week</button>`;
+      done.querySelector('button').onclick = () => { closeShopMode(); document.getElementById('shopDoneBtn').click(); };
+      list.appendChild(done);
+    }
+    if (got.length) {
+      const h = document.createElement('div');
+      h.className = 'sm-heading';
+      h.textContent = `In the trolley (${got.length})`;
+      list.appendChild(h);
+      got.forEach(item => list.appendChild(row(item)));
+    }
+  }
+
+  function openShopMode() {
+    document.getElementById('shopMode').hidden = false;
+    document.body.style.overflow = 'hidden';
+    renderShopMode();
+    keepScreenOn();
+  }
+  function closeShopMode() {
+    document.getElementById('shopMode').hidden = true;
+    document.body.style.overflow = '';
+    letScreenSleep();
+  }
+  document.getElementById('shopModeBtn').onclick = openShopMode;
+  document.getElementById('shopModeExit').onclick = closeShopMode;
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) keepScreenOn(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !document.getElementById('shopMode').hidden) closeShopMode();
+  });
+
   /* ── SHOP DONE: clear what was bought, ready for next week ── */
   const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
@@ -1645,10 +2156,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     const clearMeals = document.getElementById('shopDoneClearMeals').checked
       && !document.getElementById('shopDoneMealsRow').hidden;
     const before = clone({
-      shoppingList: state.shoppingList, weekPlan: state.weekPlan,
+      shoppingList: state.shoppingList, weekPlan: state.weekPlan, history: state.history,
       selectedBreakfasts: state.selectedBreakfasts, selectedLunches: state.selectedLunches, selectedDinners: state.selectedDinners
     });
-    const bought = state.shoppingList.filter(x => x.checked).length;
+    const boughtItems = state.shoppingList.filter(x => x.checked);
+    const bought = boughtItems.length;
+    recordPurchases(boughtItems);
     state.shoppingList = clearLeft ? [] : state.shoppingList.filter(x => !x.checked);
     const carried = state.shoppingList.length;
     if (clearMeals) {
@@ -1685,6 +2198,46 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   let usualQuery = '';
+  let editingUsual = false;
+
+  document.getElementById('usualEditBtn').onclick = () => {
+    editingUsual = !editingUsual;
+    document.getElementById('usualEditBtn').textContent = editingUsual ? '✓ Done' : '✏️ Edit';
+    document.getElementById('usualEditHint').hidden = !editingUsual;
+    renderUsualGroups();
+  };
+
+  function renameUsualItem(group, item) {
+    const to = (prompt('Rename this item', item) || '').trim().slice(0, 120);
+    if (!to || to === item) return;
+    if (group.items.some(x => x !== item && x.toLowerCase() === to.toLowerCase())) { toast('That item is already in this group'); return; }
+    changeWithUndo(['usualGroups'], `Renamed to “${to}”`, () => {
+      group.items = group.items.map(x => x === item ? to : x);
+    });
+  }
+  function renameGroup(gi) {
+    const group = state.usualGroups[gi];
+    const to = (prompt('Rename this group', group.name) || '').trim().slice(0, 40);
+    if (!to || to === group.name) return;
+    changeWithUndo(['usualGroups'], `Group renamed to “${to}”`, () => { state.usualGroups[gi].name = to; });
+  }
+  function deleteGroup(gi) {
+    const group = state.usualGroups[gi];
+    if (group.items.length && !confirm(`Delete “${group.name}” and its ${group.items.length} item${group.items.length === 1 ? '' : 's'}?`)) return;
+    changeWithUndo(['usualGroups'], `Deleted “${group.name}”`, () => {
+      state.usualGroups.splice(gi, 1);
+      openGroups = new Set();
+    });
+  }
+  function addGroup() {
+    const name = (prompt('Name the new group, e.g. “Baby & toddler”') || '').trim().slice(0, 40);
+    if (!name) return;
+    if (state.usualGroups.some(g => g.name.toLowerCase() === name.toLowerCase())) { toast('There’s already a group with that name'); return; }
+    changeWithUndo(['usualGroups'], `Added group “${name}”`, () => {
+      state.usualGroups.push({ name, icon: '🛒', items: [] });
+      openGroups.add(state.usualGroups.length - 1);
+    });
+  }
   // Every typed word must appear somewhere in the item ("chick breast" finds "Chicken breast fillets")
   function matchesQuery(item) {
     const words = usualQuery.toLowerCase().split(/\s+/).filter(Boolean);
@@ -1709,6 +2262,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
             <span class="group-icon">${escHtml(group.icon || '📦')}</span>
             <span class="group-name">${escHtml(group.name)}</span>
           </div>
+          ${editingUsual ? `<span class="group-tools">
+            <button class="group-rename" title="Rename group" aria-label="Rename ${escHtml(group.name)}">✎</button>
+            <button class="group-del" title="Delete group" aria-label="Delete ${escHtml(group.name)}">🗑</button>
+          </span>` : ''}
           <span class="group-chevron">▾</span>
         </div>
         <div class="group-body">
@@ -1719,6 +2276,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
           </div>
         </div>
       `;
+      if (editingUsual) {
+        block.querySelector('.group-rename').onclick = e => { e.stopPropagation(); renameGroup(gi); };
+        block.querySelector('.group-del').onclick = e => { e.stopPropagation(); deleteGroup(gi); };
+      }
       block.querySelector('.group-header').onclick = () => {
         if (searching) return;
         const open = block.classList.toggle('open');
@@ -1727,6 +2288,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
       const cloud = block.querySelector(`#pillcloud-${gi}`);
       items.forEach(item => {
+        if (editingUsual) {
+          cloud.appendChild(editPill('pill', item, () => renameUsualItem(group, item),
+            () => changeWithUndo(['usualGroups'], `Removed: ${item}`, () => { group.items = group.items.filter(x => x !== item); })));
+          return;
+        }
         const pill = document.createElement('button');
         pill.className = 'pill';
         pill.textContent = item;
@@ -1751,6 +2317,13 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
       el.appendChild(block);
     });
+    if (editingUsual && !searching) {
+      const b = document.createElement('button');
+      b.className = 'btn btn-secondary btn-sm new-group-btn';
+      b.textContent = '＋ New group';
+      b.onclick = addGroup;
+      el.appendChild(b);
+    }
     if (searching && !shown) {
       const typed = usualQuery.trim();
       el.innerHTML = `<div class="empty-state">No usual items match “${escHtml(typed)}”</div>`;
@@ -1778,33 +2351,36 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function renderMealChoices(opts) {
     const el = document.getElementById(opts.containerId);
     el.innerHTML = '';
+    if (opts.catSelectId) renderCategorySelect(opts);
+    const editing = opts.type && editingMeals[opts.type];
     const selectedSet = new Set(state[opts.selectedKey]);
     const atMax = opts.max ? state[opts.selectedKey].length >= opts.max : false;
 
-    const customs = state[opts.customKey];
-    if (customs.length > 0) {
+    const section = (label, items, cat) => {
+      if (!items.length && !(editing && cat)) return;   // empty categories only show while editing
       const lbl = document.createElement('div');
       lbl.className = 'meal-category-label';
-      lbl.textContent = 'Your additions';
+      if (editing && cat) {
+        lbl.innerHTML = `<span class="cat-edit"><button class="cat-rename" title="Rename category">${escHtml(label)} ✎</button>
+          <button class="cat-del" title="Delete category" aria-label="Delete ${escHtml(label)}">🗑</button></span>`;
+        lbl.querySelector('.cat-rename').onclick = () => renameCategory(opts, cat);
+        lbl.querySelector('.cat-del').onclick = () => deleteCategory(opts, cat);
+      } else {
+        lbl.textContent = label;
+      }
       el.appendChild(lbl);
-
       const grid = document.createElement('div');
       grid.className = 'meal-grid';
-      customs.forEach(d => grid.appendChild(makeMealPill(d, selectedSet, atMax, opts)));
+      items.forEach(meal => grid.appendChild(editing
+        ? editPill('meal-pill', meal, () => renameMeal(opts, meal),
+            () => changeWithUndo(mealKeys(opts), `Removed: ${meal}`, () => removeMeal(opts, meal)))
+        : makeMealPill(meal, selectedSet, atMax, opts)));
+      if (!items.length) grid.innerHTML = '<span class="edit-hint" style="margin:0">Empty</span>';
       el.appendChild(grid);
-    }
+    };
 
-    Object.entries(state[opts.libraryKey]).forEach(([cat, items]) => {
-      const lbl = document.createElement('div');
-      lbl.className = 'meal-category-label';
-      lbl.textContent = cat;
-      el.appendChild(lbl);
-
-      const grid = document.createElement('div');
-      grid.className = 'meal-grid';
-      items.forEach(d => grid.appendChild(makeMealPill(d, selectedSet, atMax, opts)));
-      el.appendChild(grid);
-    });
+    section('Your additions', state[opts.customKey], null);
+    Object.entries(state[opts.libraryKey]).forEach(([cat, items]) => section(cat, items, cat));
   }
 
   function makeMealPill(meal, selectedSet, atMax, opts) {
@@ -1867,7 +2443,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         <div class="${numCls}">${String(i+1).padStart(2,'0')}</div>
         <div class="selected-meal-name">${escHtml(d)}</div>
         ${ingr ? `<button class="ingr-btn${openIngredients.has(d) ? ' open' : ''}" aria-expanded="${openIngredients.has(d)}"
-                   title="Ingredients">🧺${ingr.length ? `<span>${ingr.length}</span>` : ''}</button>` : ''}
+                   title="Ingredients and recipe">🧺${ingr.length ? `<span>${ingr.length}</span>` : ''}${state.recipes[d] ? '📖' : ''}</button>` : ''}
         <button class="selected-meal-del" title="Remove">×</button>
       `;
       if (ingr) {
@@ -1900,21 +2476,38 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     panel.innerHTML = `
       <label class="ingr-label" for="ingr-${uid()}">Ingredients for ${escHtml(meal)} — one per line</label>
       <textarea class="ingr-text" rows="4" placeholder="e.g.\nBeef mince 500g\nFresh egg lasagne sheets\nPassata 500g"></textarea>
+      <label class="ingr-label recipe-label">Recipe link (optional)
+        <input type="url" class="recipe-url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://www.bbcgoodfood.com/recipes/…" />
+      </label>
       <div class="btn-row">
         <button class="btn btn-secondary btn-sm ingr-save">Save</button>
         <button class="btn btn-green btn-sm ingr-add" ${list.length ? '' : 'disabled'}>🛒 Add to list</button>
+        ${state.recipes[meal] ? '<button class="btn btn-secondary btn-sm ingr-recipe">📖 Recipe</button>' : ''}
       </div>`;
     const ta = panel.querySelector('.ingr-text');
     ta.id = panel.querySelector('.ingr-label').htmlFor;
     ta.value = list.join('\n');
+    const urlInput = panel.querySelector('.recipe-url');
+    urlInput.value = state.recipes[meal] || '';
     panel.querySelector('.ingr-save').onclick = () => {
+      const typedUrl = urlInput.value.trim();
+      const url = safeUrl(typedUrl);
+      if (typedUrl && !url) { toast('That recipe link doesn’t look right'); urlInput.focus(); return; }
       const items = [...new Set(ta.value.split('\n').map(x => x.trim().slice(0, 120)).filter(Boolean))].slice(0, 60);
       if (items.length) state.ingredients[meal] = items; else delete state.ingredients[meal];
+      if (url) state.recipes[meal] = url; else delete state.recipes[meal];
       save(); renderAll();
-      toast(items.length ? `Saved ${items.length} ingredient${items.length === 1 ? '' : 's'} for ${meal}` : 'Ingredients cleared');
+      toast(`Saved ${meal}: ${items.length} ingredient${items.length === 1 ? '' : 's'}${url ? ' and a recipe link' : ''}`);
     };
+    const recipeBtn = panel.querySelector('.ingr-recipe');
+    if (recipeBtn) recipeBtn.onclick = () => openRecipe(meal);
     panel.querySelector('.ingr-add').onclick = () => addIngredientsFor([meal]);
     return panel;
+  }
+
+  function openRecipe(meal) {
+    const url = safeUrl(state.recipes[meal]);
+    if (url) window.open(url, '_blank', 'noopener');
   }
 
   // Make sure every ingredient for these dinners is on the list (no duplicates), with one Undo
@@ -1933,6 +2526,72 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   document.getElementById('addWeekIngredientsBtn').onclick = () => addIngredientsFor(state.selectedDinners);
 
+  /* ── HOME ORDER: put what matters now at the top ── */
+  function homeOrderFor(hour) {
+    if (hour >= 4 && hour < 12) return ['morningCard', 'tonightCard', 'eveningCard'];   // morning
+    if (hour >= 17 || hour < 4) return ['tonightCard', 'eveningCard', 'morningCard'];   // evening and night
+    return ['tonightCard', 'morningCard', 'eveningCard'];                               // daytime
+  }
+  function orderHome() {
+    const panel = document.getElementById('panel-home');
+    const anchor = panel.querySelector('.tile-grid').closest('.card');
+    homeOrderFor(new Date().getHours()).forEach(id => panel.insertBefore(document.getElementById(id), anchor));
+  }
+
+  /* ── SAVED WEEKS ── */
+  const WEEK_KEYS = ['selectedBreakfasts', 'selectedLunches', 'selectedDinners', 'weekPlan'];
+  const SAVED_WEEKS_MAX = 30;
+
+  function weekSummary(w) {
+    const parts = [];
+    if (w.selectedDinners.length) parts.push(`${w.selectedDinners.length} dinner${w.selectedDinners.length === 1 ? '' : 's'}`);
+    if (w.selectedBreakfasts.length) parts.push(`${w.selectedBreakfasts.length} breakfast${w.selectedBreakfasts.length === 1 ? '' : 's'}`);
+    if (w.selectedLunches.length) parts.push(`${w.selectedLunches.length} lunch${w.selectedLunches.length === 1 ? '' : 'es'}`);
+    const planned = Object.values(w.weekPlan).filter(Boolean).length;
+    if (planned) parts.push(`${planned} day${planned === 1 ? '' : 's'} planned`);
+    return parts.join(' · ') || 'Empty';
+  }
+
+  function renderSavedWeeks() {
+    const el = document.getElementById('savedWeeksEl');
+    el.innerHTML = '';
+    if (!state.savedWeeks.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:14px">No saved weeks yet</div>';
+      return;
+    }
+    state.savedWeeks.forEach((w, i) => {
+      const row = document.createElement('div');
+      row.className = 'suggest-row';
+      row.innerHTML = `
+        <div class="suggest-main">
+          <div class="suggest-name">${escHtml(w.name)}</div>
+          <div class="suggest-why">${escHtml(weekSummary(w))}</div>
+        </div>
+        <button class="btn btn-secondary btn-sm week-load">Load</button>
+        <button class="suggest-hide week-del" title="Delete" aria-label="Delete ${escHtml(w.name)}">×</button>`;
+      row.querySelector('.week-load').onclick = () =>
+        changeWithUndo(WEEK_KEYS, `Loaded “${w.name}”`, () => { WEEK_KEYS.forEach(k => { state[k] = clone(w[k]); }); });
+      row.querySelector('.week-del').onclick = () =>
+        changeWithUndo(['savedWeeks'], `Deleted “${w.name}”`, () => { state.savedWeeks.splice(i, 1); });
+      el.appendChild(row);
+    });
+  }
+
+  document.getElementById('saveWeekBtn').onclick = () => {
+    const week = Object.fromEntries(WEEK_KEYS.map(k => [k, clone(state[k])]));
+    if (weekSummary(week) === 'Empty') { toast('Pick some meals first, then save the week'); return; }
+    const suggested = 'Week of ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    const name = (prompt('Name this week, e.g. “Easy week” or “Payday week”', suggested) || '').trim().slice(0, 40);
+    if (!name) return;
+    const existing = state.savedWeeks.findIndex(w => w.name.toLowerCase() === name.toLowerCase());
+    if (existing >= 0 && !confirm(`Replace the saved week “${state.savedWeeks[existing].name}”?`)) return;
+    changeWithUndo(['savedWeeks'], `Saved “${name}”`, () => {
+      if (existing >= 0) state.savedWeeks.splice(existing, 1);
+      state.savedWeeks.unshift({ name, ...week });
+      state.savedWeeks = state.savedWeeks.slice(0, SAVED_WEEKS_MAX);
+    });
+  };
+
   /* ── TONIGHT (home) ── */
   function todayName(offset) {
     return WEEK_DAYS[(new Date().getDay() + 6 + (offset || 0)) % 7];   // getDay(): Sunday = 0
@@ -1948,8 +2607,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     const btn = (label, cls, fn) => {
       const b = document.createElement('button');
       b.className = 'btn btn-sm ' + cls; b.textContent = label; b.onclick = fn;
+      b.style.flex = '0 0 auto';
       actions.appendChild(b);
     };
+    if (meal && state.recipes[meal]) btn('📖 Recipe', 'btn-primary', () => openRecipe(meal));
     if (meal && (state.ingredients[meal] || []).length) btn('🧺 Add ingredients', 'btn-green', () => addIngredientsFor([meal]));
     btn(meal ? 'Week plan' : 'Plan dinners', 'btn-secondary', () => showPanel('dinner'));
   }
@@ -1958,6 +2619,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     containerId: 'breakfastChoicesEl', stripId: 'selectedBreakfastsEl',
     fillId: 'breakfastCounterFill', labelId: 'breakfastCounterLabel',
     libraryKey: 'breakfasts', customKey: 'customBreakfasts', selectedKey: 'selectedBreakfasts',
+    type: 'breakfast', inputId: 'customBreakfastInput', addBtnId: 'addBreakfastBtn', catSelectId: 'breakfastCatSelect',
     max: 7, theme: 'orange', label: 'breakfasts',
     emptyIcon: '🍳', emptyMsg: 'No breakfasts selected yet'
   };
@@ -1965,6 +2627,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     containerId: 'lunchChoicesEl', stripId: 'selectedLunchesEl',
     fillId: 'lunchCounterFill', labelId: 'lunchCounterLabel',
     libraryKey: 'lunches', customKey: 'customLunches', selectedKey: 'selectedLunches',
+    type: 'lunch', inputId: 'customLunchInput', addBtnId: 'addLunchBtn', catSelectId: 'lunchCatSelect',
     max: 7, theme: 'teal', label: 'lunches',
     emptyIcon: '🥪', emptyMsg: 'No lunches selected yet'
   };
@@ -1972,42 +2635,15 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     containerId: 'dinnerChoicesEl', stripId: 'selectedDinnersEl',
     fillId: 'dinnerCounterFill', labelId: 'dinnerCounterLabel',
     libraryKey: 'dinners', customKey: 'customDinners', selectedKey: 'selectedDinners',
+    type: 'dinner', inputId: 'customDinnerInput', addBtnId: 'addDinnerBtn', catSelectId: 'dinnerCatSelect',
     max: DINNER_MAX, theme: 'indigo', label: 'dinners', ingredients: true,
     emptyIcon: '🍽️', emptyMsg: 'No dinners selected yet — pick up to 7 below'
   };
 
-  document.getElementById('addBreakfastBtn').onclick = () => {
-    const inp = document.getElementById('customBreakfastInput');
-    const val = inp.value.trim();
-    if (!val) return;
-    if (allMealsFor('breakfast').map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
-      toast('Already in your breakfast list'); return;
-    }
-    state.customBreakfasts.unshift(val);
-    inp.value = '';
-    save(); renderAll(); toast(`Added: ${val}`);
-  };
-  document.getElementById('customBreakfastInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('addBreakfastBtn').click();
-  });
   document.getElementById('clearBreakfastsBtn').onclick = () => {
     state.selectedBreakfasts = []; save(); renderAll(); toast('Breakfasts cleared');
   };
 
-  document.getElementById('addLunchBtn').onclick = () => {
-    const inp = document.getElementById('customLunchInput');
-    const val = inp.value.trim();
-    if (!val) return;
-    if (allMealsFor('lunch').map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
-      toast('Already in your lunch list'); return;
-    }
-    state.customLunches.unshift(val);
-    inp.value = '';
-    save(); renderAll(); toast(`Added: ${val}`);
-  };
-  document.getElementById('customLunchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('addLunchBtn').click();
-  });
   document.getElementById('clearLunchesBtn').onclick = () => {
     state.selectedLunches = []; save(); renderAll(); toast('Lunches cleared');
   };
@@ -2067,19 +2703,142 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     save(); renderWeekPlan(); toast('Week plan filled');
   };
 
-  document.getElementById('addDinnerBtn').onclick = () => {
-    const inp = document.getElementById('customDinnerInput');
-    const val = inp.value.trim();
-    if (!val) return;
-    if (allMealsFor('dinner').map(x=>x.toLowerCase()).includes(val.toLowerCase())) {
-      toast('Already in your dinner list'); return;
+  /* ── ADDING, RENAMING AND REMOVING MEAL IDEAS ── */
+  const MEAL_OPTS = { breakfast: BREAKFAST_OPTS, lunch: LUNCH_OPTS, dinner: DINNER_OPTS };
+  const editingMeals = { breakfast: false, lunch: false, dinner: false };
+  const NEW_CATEGORY = '__new__';
+
+  // Change some parts of the state, then offer a one-tap Undo that puts exactly those parts back
+  function changeWithUndo(keys, msg, mutate) {
+    const before = clone(Object.fromEntries(keys.map(k => [k, state[k]])));
+    if (mutate() === false) return;
+    save(); renderAll();
+    toast(msg, { label: 'Undo', run: () => {
+      Object.assign(state, before);
+      save(); renderAll();
+      toast('Restored');
+    }});
+  }
+  const mealKeys = opts => [opts.customKey, opts.libraryKey, opts.selectedKey, 'weekPlan', 'ingredients', 'recipes'];
+
+  function renderCategorySelect(opts) {
+    const sel = document.getElementById(opts.catSelectId);
+    const keep = sel.value;
+    sel.innerHTML = '';
+    const option = (value, text) => {
+      const o = document.createElement('option');
+      o.value = value; o.textContent = text;
+      sel.appendChild(o);
+    };
+    option('', 'Your additions');
+    Object.keys(state[opts.libraryKey]).forEach(cat => option('cat:' + cat, cat));
+    option(NEW_CATEGORY, '＋ New category…');
+    sel.value = [...sel.options].some(o => o.value === keep) ? keep : '';
+  }
+
+  function addMeal(opts) {
+    const inp = document.getElementById(opts.inputId);
+    const meal = inp.value.trim().slice(0, 80);
+    if (!meal) return;
+    if (allMealsFor(opts.type).some(x => x.toLowerCase() === meal.toLowerCase())) {
+      toast(`Already in your ${opts.type} list`); return;
     }
-    state.customDinners.unshift(val);
+    const sel = document.getElementById(opts.catSelectId);
+    let where = sel.value;
+    const lib = state[opts.libraryKey];
+    if (where === NEW_CATEGORY) {
+      const typed = (prompt('Name the new category, e.g. “Weekend treats”') || '').trim().slice(0, 40);
+      if (!typed) return;
+      const existing = Object.keys(lib).find(c => c.toLowerCase() === typed.toLowerCase());
+      const cat = existing || typed;
+      if (!existing) lib[cat] = [];
+      where = 'cat:' + cat;
+    }
+    if (where.startsWith('cat:') && lib[where.slice(4)]) lib[where.slice(4)].push(meal);
+    else { state[opts.customKey].unshift(meal); where = ''; }
     inp.value = '';
-    save(); renderAll(); toast(`Added: ${val}`);
-  };
-  document.getElementById('customDinnerInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('addDinnerBtn').click();
+    save(); renderAll();
+    sel.value = where;
+    toast(where ? `Added “${meal}” to ${where.slice(4)}` : `Added: ${meal}`);
+  }
+
+  function removeMeal(opts, meal) {
+    const lib = state[opts.libraryKey];
+    state[opts.customKey] = state[opts.customKey].filter(x => x !== meal);
+    Object.keys(lib).forEach(c => { lib[c] = lib[c].filter(x => x !== meal); });
+    state[opts.selectedKey] = state[opts.selectedKey].filter(x => x !== meal);
+    if (opts.type === 'dinner') {
+      WEEK_DAYS.forEach(d => { if (state.weekPlan[d] === meal) state.weekPlan[d] = ''; });
+      delete state.ingredients[meal];
+      delete state.recipes[meal];
+    }
+  }
+
+  function renameMeal(opts, from) {
+    const to = (prompt('Rename this meal', from) || '').trim().slice(0, 80);
+    if (!to || to === from) return;
+    if (to.toLowerCase() !== from.toLowerCase() && allMealsFor(opts.type).some(x => x.toLowerCase() === to.toLowerCase())) {
+      toast(`“${to}” is already in the list`); return;
+    }
+    changeWithUndo(mealKeys(opts), `Renamed to “${to}”`, () => {
+      const swap = x => x === from ? to : x;
+      const lib = state[opts.libraryKey];
+      state[opts.customKey] = state[opts.customKey].map(swap);
+      Object.keys(lib).forEach(c => { lib[c] = lib[c].map(swap); });
+      state[opts.selectedKey] = state[opts.selectedKey].map(swap);
+      if (opts.type === 'dinner') {
+        WEEK_DAYS.forEach(d => { state.weekPlan[d] = swap(state.weekPlan[d]); });
+        ['ingredients', 'recipes'].forEach(k => {
+          if (from in state[k]) { state[k][to] = state[k][from]; delete state[k][from]; }
+        });
+        if (openIngredients.delete(from)) openIngredients.add(to);
+      }
+    });
+  }
+
+  function renameCategory(opts, from) {
+    const to = (prompt('Rename this category', from) || '').trim().slice(0, 40);
+    if (!to || to === from) return;
+    if (Object.keys(state[opts.libraryKey]).some(c => c !== from && c.toLowerCase() === to.toLowerCase())) {
+      toast(`There's already a “${to}” category`); return;
+    }
+    changeWithUndo([opts.libraryKey], `Category renamed to “${to}”`, () => {
+      state[opts.libraryKey] = Object.fromEntries(Object.entries(state[opts.libraryKey]).map(([c, v]) => [c === from ? to : c, v]));
+    });
+  }
+
+  function deleteCategory(opts, cat) {
+    const meals = state[opts.libraryKey][cat] || [];
+    if (meals.length && !confirm(`Delete “${cat}” and its ${meals.length} meal${meals.length === 1 ? '' : 's'}?`)) return;
+    changeWithUndo(mealKeys(opts), `Deleted “${cat}”`, () => {
+      meals.forEach(m => removeMeal(opts, m));
+      delete state[opts.libraryKey][cat];
+    });
+  }
+
+  // A pill in edit mode: tap the name to rename, × to remove
+  function editPill(className, name, onRename, onRemove) {
+    const pill = document.createElement('span');
+    pill.className = className + ' editing';
+    pill.innerHTML = `<button class="pill-name" title="Rename">${escHtml(name)}</button>
+      <button class="pill-del" title="Remove" aria-label="Remove ${escHtml(name)}">×</button>`;
+    pill.querySelector('.pill-name').onclick = onRename;
+    pill.querySelector('.pill-del').onclick = onRemove;
+    return pill;
+  }
+
+  Object.values(MEAL_OPTS).forEach(opts => {
+    document.getElementById(opts.addBtnId).onclick = () => addMeal(opts);
+    document.getElementById(opts.inputId).addEventListener('keydown', e => { if (e.key === 'Enter') addMeal(opts); });
+  });
+  document.querySelectorAll('[data-edit-meals]').forEach(btn => {
+    btn.onclick = () => {
+      const type = btn.dataset.editMeals;
+      editingMeals[type] = !editingMeals[type];
+      btn.textContent = editingMeals[type] ? '✓ Done' : '✏️ Edit list';
+      document.getElementById(type + 'EditHint').hidden = !editingMeals[type];
+      renderMealChoices(MEAL_OPTS[type]);
+    };
   });
 
   document.getElementById('resetAllBtn').onclick = () => {
@@ -2102,8 +2861,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     const today = todayKey();
     if (!state.routine) state.routine = clone(DEFAULTS.routine);
     if (state.routine.lastResetDate !== today) {
-      (state.routine.morning || []).forEach(it => it.done = false);
-      (state.routine.evening || []).forEach(it => it.done = false);
+      (state.routine.morning || []).forEach(it => { it.done = false; delete it.doneAt; });
+      (state.routine.evening || []).forEach(it => { it.done = false; delete it.doneAt; });
       state.routine.lastResetDate = today;
       save();
     }
@@ -2123,9 +2882,14 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     items.forEach((it, idx) => {
       const row = document.createElement('div');
       row.className = 'routine-item' + (it.done ? ' done' : '') + (editing ? ' editing' : '');
+      const at = it.done && it.doneAt && !editing
+        ? new Date(it.doneAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
       row.innerHTML = `
         <div class="routine-num">${idx + 1}</div>
-        <div class="routine-name">${escHtml(it.name)}</div>
+        <div class="routine-main">
+          <div class="routine-name">${escHtml(it.name)}</div>
+          ${at ? `<div class="routine-time">Done at ${at}</div>` : ''}
+        </div>
         ${editing
           ? '<button class="routine-del" title="Remove step">×</button>'
           : '<div class="routine-check"><span class="routine-check-tick">✓</span></div>'}
@@ -2144,6 +2908,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       }
       row.onclick = () => {
         it.done = !it.done;
+        if (it.done) it.doneAt = Date.now(); else delete it.doneAt;
         if (it.done) {
           buzz(14);
           popEl(row.querySelector('.routine-check'), true);
@@ -2170,12 +2935,12 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   document.getElementById('resetMorningBtn').onclick = () => {
-    state.routine.morning.forEach(it => it.done = false);
+    state.routine.morning.forEach(it => { it.done = false; delete it.doneAt; });
     save(); renderRoutines(); updateBadges();
     toast('Morning routine reset');
   };
   document.getElementById('resetEveningBtn').onclick = () => {
-    state.routine.evening.forEach(it => it.done = false);
+    state.routine.evening.forEach(it => { it.done = false; delete it.doneAt; });
     save(); renderRoutines(); updateBadges();
     toast('Evening routine reset');
   };
@@ -2264,6 +3029,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     renderSelectedMeals(DINNER_OPTS);
     renderWeekPlan();
     renderTonight();
+    renderSavedWeeks();
+    orderHome();
     updateBadges();
   }
 
@@ -2272,6 +3039,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (!document.hidden) {
       renderHeaderDate();
       renderTonight();
+      orderHome();
       checkRoutineReset();
       renderRoutines();
       updateBadges();
@@ -2295,7 +3063,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   function openSheet(id) { document.getElementById(id).hidden = false; }
-  function closeSheet(id) { document.getElementById(id).hidden = true; }
+  function closeSheet(id) {
+    document.getElementById(id).hidden = true;
+    if (id === 'scanSheet') stopScanner();
+  }
   document.querySelectorAll('.sheet-backdrop').forEach(bd => {
     bd.addEventListener('click', e => { if (e.target === bd) closeSheet(bd.id); });
     bd.querySelectorAll('[data-close-sheet]').forEach(b => b.onclick = () => closeSheet(bd.id));
@@ -2344,7 +3115,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   let cloudUser = null;
   let cloudUnsubs = [];
   let itemsReady = false;     // the cloud has answered for the list…
-  let docsReady = { library: false, meals: false };  // …and for each shared doc
+  let docsReady = { library: false, meals: false, history: false };  // …and for each shared doc
   let syncedItems = new Map(); // id -> fingerprint of what the cloud last held
   let syncedDocs = {};         // 'library' | 'meals' -> fingerprint
   let syncBase = null;         // this phone's state when it last matched the cloud
@@ -2378,6 +3149,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     };
     LIBS.forEach(k => { out[k] = Object.entries(src[k]).map(([name, items]) => ({ name, items })); });
     out.ingredients = Object.entries(src.ingredients || {}).map(([name, items]) => ({ name, items }));
+    out.recipes = Object.entries(src.recipes || {}).map(([name, url]) => ({ name, url }));
+    out.savedWeeks = src.savedWeeks || [];
+    out.barcodes = Object.entries(src.barcodes || {}).map(([code, name]) => ({ code, name }));
     return out;
   }
   function libraryFromCloud(d) {
@@ -2388,13 +3162,29 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     [...LIBS, 'ingredients'].forEach(k => {
       if (Array.isArray(d[k])) out[k] = Object.fromEntries(d[k].filter(c => c && typeof c.name === 'string').map(c => [c.name, c.items]));
     });
+    if (Array.isArray(d.recipes)) out.recipes = Object.fromEntries(d.recipes.filter(r => r && typeof r.name === 'string').map(r => [r.name, r.url]));
+    if (Array.isArray(d.savedWeeks)) out.savedWeeks = d.savedWeeks;
+    if (Array.isArray(d.barcodes)) out.barcodes = Object.fromEntries(d.barcodes.filter(b => b && typeof b.code === 'string').map(b => [b.code, b.name]));
     return out;
   }
   function mealsToCloud(src) {
     return { selectedBreakfasts: src.selectedBreakfasts, selectedLunches: src.selectedLunches,
              selectedDinners: src.selectedDinners, weekPlan: src.weekPlan };
   }
-  const DOC_BUILDERS = { library: libraryToCloud, meals: mealsToCloud };
+  // What's been bought at each Shop done, for the "you usually buy" suggestions
+  function historyToCloud(src) {
+    return { items: Object.values(src.history || {}).map(h => ({ name: h.name, dates: h.dates })) };
+  }
+  function historyFromCloud(d) {
+    const out = {};
+    (Array.isArray(d.items) ? d.items : []).forEach(h => {
+      if (h && typeof h.name === 'string' && Array.isArray(h.dates)) out[h.name.toLowerCase()] = { name: h.name, dates: h.dates };
+    });
+    return { history: out };
+  }
+  const DOC_BUILDERS = { library: libraryToCloud, meals: mealsToCloud, history: historyToCloud };
+  const DOC_READERS = { library: libraryFromCloud, meals: d => d, history: historyFromCloud };
+  const freshDocsReady = () => Object.fromEntries(Object.keys(DOC_BUILDERS).map(k => [k, false]));
 
   // Take some fields from the cloud, cleaned up the same way an import is
   function adoptFromCloud(partial) {
@@ -2408,7 +3198,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     syncBase = {
       items: new Map(state.shoppingList.map(it => [it.id, itemPrint(it)])),
       library: stable(libraryToCloud(state)),
-      meals: stable(mealsToCloud(state))
+      meals: stable(mealsToCloud(state)),
+      history: stable(historyToCloud(state))
     };
   }
   const byCreated = (x, y) => (x.created || 0) - (y.created || 0) || x.id.localeCompare(y.id);
@@ -2501,12 +3292,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   // First sign-in on this phone: fold its list into the shared one, or seed the cloud if it's empty
   async function joinCloud(user) {
-    const [libSnap, mealsSnap, itemsSnap] = await Promise.all([
-      fb.f.getDoc(dataRef('library')), fb.f.getDoc(dataRef('meals')),
+    const [libSnap, mealsSnap, historySnap, itemsSnap] = await Promise.all([
+      fb.f.getDoc(dataRef('library')), fb.f.getDoc(dataRef('meals')), fb.f.getDoc(dataRef('history')),
       fb.f.getDocs(fb.f.collection(fb.db, 'households', 'home', 'items'))
     ]);
     syncedItems = new Map();
     syncedDocs = {};
+    if (historySnap.exists()) {
+      adoptFromCloud(historyFromCloud(historySnap.data()));
+      syncedDocs.history = stable(historySnap.data());
+    }
     if (libSnap.exists()) {
       // Someone's already set up the household — their library and meals win
       adoptFromCloud(libraryFromCloud(libSnap.data()));
@@ -2575,7 +3370,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       else setSyncStatus('synced', 'Synced');
     }, cloudError));
 
-    Object.entries({ library: libraryFromCloud, meals: d => d }).forEach(([name, fromCloud]) => {
+    Object.entries(DOC_READERS).forEach(([name, fromCloud]) => {
       cloudUnsubs.push(fb.f.onSnapshot(dataRef(name), snap => {
         const build = DOC_BUILDERS[name];
         const before = stable(build(state));
@@ -2589,8 +3384,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         }
         adoptFromCloud(fromCloud(snap.data()));
         const after = stable(build(state));
-        syncedDocs[name] = after;
+        // Remember exactly what the cloud holds; if it's missing anything this phone has
+        // (e.g. a field an older version of the app didn't know about), send it
+        syncedDocs[name] = stable(snap.data());
         if (before !== after) { saveLocal(); renderAll(); }
+        if (after !== syncedDocs[name]) pushToCloud();
       }, cloudError));
     });
   }
@@ -2621,7 +3419,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     cloudUnsubs = [];
     cloudUser = null;
     itemsReady = false;
-    docsReady = { library: false, meals: false };
+    docsReady = freshDocsReady();
     syncedItems = new Map();
     syncedDocs = {};
     captureSyncBase();
