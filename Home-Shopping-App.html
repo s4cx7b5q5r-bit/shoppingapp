@@ -4,9 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Home Shopping App</title>
-  <meta name="theme-color" content="#22243a" />
+  <meta name="theme-color" content="#22243a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f6f4f8" media="(prefers-color-scheme: light)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Shopping" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,7 +27,7 @@
       --border2: rgba(255,255,255,0.14);
       --text: #f4f2f7;
       --text2: #b0b0cb;
-      --text3: #7a7ca0;
+      --text3: #a0a2c4;   /* 5.4:1 on cards — was #7a7ca0 (3.3:1) */
 
       /* Primary action = coral */
       --accent: #F64668;
@@ -47,6 +52,16 @@
       --indigo: #6d70a8;  /* lightened 41436A for contrast on dark */
       --indigo-dim: rgba(109,112,168,0.2);
 
+      /* Text-safe tints and other colours that change between dark and light */
+      --teal-text: #d98aa8;
+      --indigo-text: #a3a5d4;
+      --error-text: #ff8fa4;
+      --ok: var(--ok);
+      --green-hi: #ffa88c;   /* lighter end of the peach button gradient */
+      --on-green: #4a2418;   /* text sitting on peach */
+      --nav-bg: rgba(13,15,20,0.92);
+      --evening: #c9628a;
+
       --radius: 16px;
       --radius-sm: 10px;
       --font: 'DM Sans', sans-serif;
@@ -57,6 +72,49 @@
       --shadow-lg: 0 12px 40px rgba(0,0,0,0.45);
       --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Light mode follows the phone's setting */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f4f8;
+        --surface: #ffffff;
+        --surface2: #f3f0f6;
+        --surface3: #e6e1eb;
+        --border: rgba(30,20,60,0.10);
+        --border2: rgba(30,20,60,0.17);
+        --text: #1d1e33;
+        --text2: #3f4060;
+        --text3: #5f6180;
+        --accent: #d42e55;
+        --accent-dim: rgba(212,46,85,0.10);
+        --accent-glow: rgba(212,46,85,0.22);
+        --green: #c4553a;
+        --green-dim: rgba(196,85,58,0.12);
+        --amber: #c4553a;
+        --amber-dim: rgba(196,85,58,0.12);
+        --orange: #c4553a;
+        --orange-dim: rgba(196,85,58,0.12);
+        --red: #d42e55;
+        --red-dim: rgba(212,46,85,0.10);
+        --purple: #984063;
+        --purple-dim: rgba(152,64,99,0.12);
+        --teal: #984063;
+        --teal-dim: rgba(152,64,99,0.12);
+        --indigo: #4e5196;
+        --indigo-dim: rgba(78,81,150,0.12);
+        --teal-text: #8a3358;
+        --indigo-text: #4e5196;
+        --error-text: #c8203f;
+        --ok: #1f8a52;
+        --green-hi: #d9694a;
+        --on-green: #ffffff;
+        --nav-bg: rgba(255,255,255,0.94);
+        --evening: #984063;
+        --shadow-sm: 0 1px 2px rgba(30,20,60,0.08);
+        --shadow-md: 0 4px 16px rgba(30,20,60,0.10);
+        --shadow-lg: 0 12px 40px rgba(30,20,60,0.18);
+      }
     }
 
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -171,7 +229,7 @@
       right: 0;
       height: calc(var(--nav-h) + env(safe-area-inset-bottom));
       padding-bottom: env(safe-area-inset-bottom);
-      background: rgba(13,15,20,0.92);
+      background: var(--nav-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid var(--border);
@@ -290,7 +348,7 @@
     .btn:active { transform: scale(0.96); opacity: 0.85; }
     .btn-primary { background: linear-gradient(135deg, #f85e7c 0%, var(--accent) 100%); color: #fff; flex: 1; justify-content: center; box-shadow: 0 2px 10px rgba(246,70,104,0.35); }
     .btn-secondary { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
-    .btn-green { background: linear-gradient(135deg, #ffa88c 0%, var(--green) 100%); color: #4a2418; flex: 1; justify-content: center; box-shadow: 0 2px 10px rgba(254,150,119,0.3); }
+    .btn-green { background: linear-gradient(135deg, var(--green-hi) 0%, var(--green) 100%); color: var(--on-green); flex: 1; justify-content: center; box-shadow: 0 2px 10px rgba(254,150,119,0.3); }
     .btn-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(240,84,84,0.2); }
     .btn-ghost { background: transparent; color: var(--text3); border: 1px solid var(--border); }
     .btn-sm { padding: 7px 10px; font-size: 0.8rem; }
@@ -341,7 +399,18 @@
     .shop-item.ticked .shop-check { background: var(--green); border-color: var(--green); }
     .shop-check-tick { display: none; color: #fff; font-size: 0.75rem; font-weight: 700; }
     .shop-item.ticked .shop-check-tick { display: block; }
-    .shop-item-name { flex: 1; font-size: 0.95rem; }
+    .shop-item-main { flex: 1; min-width: 0; }
+    .shop-item-name { font-size: 0.95rem; overflow-wrap: anywhere; }
+    .shop-item-by { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
+    .qty {
+      display: flex; align-items: center; flex-shrink: 0;
+      background: var(--surface3); border: 1px solid var(--border2); border-radius: 999px;
+    }
+    .qty-num { font-family: var(--mono); font-size: 0.8rem; font-weight: 600; min-width: 26px; text-align: center; color: var(--text); }
+    .qty-btn {
+      background: none; border: none; color: var(--text2); cursor: pointer;
+      min-width: 36px; min-height: 36px; font-size: 1.05rem; line-height: 1; padding: 0;
+    }
     .shop-item-del {
       background: none; border: none; color: var(--text3);
       cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 1rem;
@@ -350,6 +419,17 @@
     .empty-state { text-align: center; padding: 28px 16px; color: var(--text3); font-size: 0.9rem; }
     .empty-icon { font-size: 2rem; margin-bottom: 8px; }
 
+    /* iPhone zooms the page into any text box under 16px — stop that on iOS only */
+    @supports (-webkit-touch-callout: none) {
+      input, select, textarea { font-size: 16px !important; }
+    }
+    .search-row { margin-bottom: 10px; }
+    input[type="search"] {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: var(--radius-sm); padding: 11px 13px; font-size: 1rem; color: var(--text);
+      font-family: var(--font); outline: none; -webkit-appearance: none; appearance: none;
+    }
+    input[type="search"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
     .group-block { margin-bottom: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
     .group-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -401,10 +481,10 @@
       background: var(--orange-dim); border-color: rgba(254,150,119,0.45); color: var(--orange);
     }
     .meal-pill.selected.theme-teal {
-      background: var(--teal-dim); border-color: rgba(152,64,99,0.5); color: #d98aa8;
+      background: var(--teal-dim); border-color: rgba(152,64,99,0.5); color: var(--teal-text);
     }
     .meal-pill.selected.theme-indigo {
-      background: var(--indigo-dim); border-color: rgba(109,112,168,0.5); color: #a3a5d4;
+      background: var(--indigo-dim); border-color: rgba(109,112,168,0.5); color: var(--indigo-text);
     }
     .meal-pill.maxed:not(.selected) { opacity: 0.4; cursor: default; }
 
@@ -418,8 +498,8 @@
     @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
     .selected-meal-num { font-size: 0.75rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 22px; }
     .selected-meal-num.theme-orange { color: var(--orange); }
-    .selected-meal-num.theme-teal { color: #d98aa8; }
-    .selected-meal-num.theme-indigo { color: #a3a5d4; }
+    .selected-meal-num.theme-teal { color: var(--teal-text); }
+    .selected-meal-num.theme-indigo { color: var(--indigo-text); }
     .selected-meal-name { flex: 1; font-size: 0.9rem; }
     .selected-meal-del {
       background: none; border: none; color: var(--text3);
@@ -447,7 +527,7 @@
     .meal-counter-label { font-size: 0.78rem; font-weight: 700; color: var(--accent); font-family: var(--mono); min-width: 32px; text-align: right; }
     .meal-counter-label.theme-orange { color: var(--orange); }
     .meal-counter-label.theme-teal { color: var(--teal); }
-    .meal-counter-label.theme-indigo { color: #a3a5d4; }
+    .meal-counter-label.theme-indigo { color: var(--indigo-text); }
 
     .week-grid { display: flex; flex-direction: column; gap: 8px; }
     .week-row {
@@ -620,7 +700,7 @@
     .routine-item.done .routine-num {
       background: var(--green);
       border-color: var(--green);
-      color: #0a1a12;
+      color: var(--on-green);
     }
     .routine-name { flex: 1; font-size: 0.95rem; font-weight: 500; }
     .routine-check {
@@ -698,7 +778,7 @@
       color: var(--text3); display: flex; align-items: center; gap: 5px; white-space: nowrap;
     }
     .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
-    .sync-chip[data-state="synced"] .sync-dot { background: #6fd39b; }
+    .sync-chip[data-state="synced"] .sync-dot { background: var(--ok); }
     .sync-chip[data-state="saving"] .sync-dot { background: var(--amber); }
     .sync-chip[data-state="error"] .sync-dot { background: var(--red); }
     .sync-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
@@ -709,15 +789,45 @@
     }
     .sync-msg { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin: 0 0 10px; min-height: 0; }
     .sync-msg:empty { display: none; }
-    .sync-msg.error { color: #ff8fa4; }
+    .sync-msg.error { color: var(--error-text); }
     .sync-who { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; }
     .sync-who-btn {
       background: var(--surface2); border: 1px solid var(--border2); color: var(--text2);
       border-radius: 8px; padding: 2px 8px; font-size: 0.8rem; cursor: pointer; line-height: 1.4;
     }
+    .sync-name { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; font-size: 0.84rem; color: var(--text2); }
+    .sync-name small { color: var(--text3); }
     details.sync-details { margin-bottom: 10px; }
     details.sync-details summary { cursor: pointer; font-size: 0.84rem; color: var(--text2); padding: 6px 0; }
     details.sync-details .sync-form { margin-top: 8px; }
+
+    /* ── TONIGHT + INGREDIENTS ── */
+    .tonight-card { background: linear-gradient(135deg, var(--indigo-dim), var(--surface) 70%); }
+    .tonight-meal { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+    .tonight-meal.empty { color: var(--text3); font-weight: 600; font-size: 1.05rem; }
+    .tonight-sub { font-size: 0.82rem; color: var(--text2); margin-top: 4px; }
+    .tonight-sub:empty { display: none; }
+    .ingr-btn {
+      display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+      min-height: 36px; padding: 0 10px; border-radius: 999px; cursor: pointer;
+      background: var(--surface3); border: 1px solid var(--border2); color: var(--text2); font-size: 0.9rem;
+    }
+    .ingr-btn span { font-family: var(--mono); font-size: 0.72rem; }
+    .ingr-btn.open { border-color: var(--indigo); color: var(--indigo-text); }
+    .ingr-panel {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 12px; margin: -2px 0 4px;
+    }
+    .ingr-label { display: block; font-size: 0.78rem; color: var(--text2); margin-bottom: 6px; }
+    .ingr-panel textarea { min-height: 96px; margin-bottom: 8px; }
+    .btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* Apple's minimum comfortable tap size is 44×44 */
+    .shop-item-del, .selected-meal-del, .routine-del {
+      min-width: 44px; min-height: 44px; margin: -10px -10px -10px 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+    }
 
     .routine-complete {
       text-align: center;
@@ -754,6 +864,13 @@
   <!-- HOME -->
   <section id="panel-home" class="panel active">
 
+    <div class="card tonight-card">
+      <div class="card-title">🍽️ Tonight's dinner</div>
+      <div class="tonight-meal" id="tonightMeal"></div>
+      <div class="tonight-sub" id="tonightSub"></div>
+      <div class="btn-row" id="tonightActions" style="margin-top:12px"></div>
+    </div>
+
     <div class="card">
       <div class="card-head">
         <div class="card-title" style="margin:0">☀️ Morning routine</div>
@@ -788,16 +905,16 @@
       </div>
       <div class="meal-counter">
         <div class="meal-counter-track">
-          <div class="meal-counter-fill" id="eveningCounterFill" style="width:0%;background:#c9628a"></div>
+          <div class="meal-counter-fill" id="eveningCounterFill" style="width:0%;background:var(--evening)"></div>
         </div>
-        <div class="meal-counter-label" id="eveningCounterLabel" style="color:#d98aa8">0 / 2</div>
+        <div class="meal-counter-label" id="eveningCounterLabel" style="color:var(--teal-text)">0 / 2</div>
       </div>
       <div id="eveningItemsEl"></div>
       <div class="input-row routine-add-row" id="eveningAddRow" hidden>
         <input type="text" placeholder="Add a step…" />
         <button class="btn btn-secondary btn-sm">Add</button>
       </div>
-      <div id="eveningCompleteEl" class="routine-complete" style="display:none;background:var(--purple-dim);border-color:rgba(152,64,99,0.45);color:#d98aa8">
+      <div id="eveningCompleteEl" class="routine-complete" style="display:none;background:var(--purple-dim);border-color:rgba(152,64,99,0.45);color:var(--teal-text)">
         ✓ Evening routine complete — rest well
       </div>
     </div>
@@ -823,7 +940,7 @@
         <button class="tile theme-dinner" data-jump="dinner">
           <div class="tile-icon">🍴</div>
           <div class="tile-label">Dinner</div>
-          <div class="tile-sub" id="tileDinnerSub">0 of 5</div>
+          <div class="tile-sub" id="tileDinnerSub">0 of 7</div>
         </button>
       </div>
     </div>
@@ -837,14 +954,14 @@
       <div class="card-title">Quick actions</div>
       <div class="btn-row">
         <button class="btn btn-secondary" id="untickAllBtn">✓ Untick all</button>
-        <button class="btn btn-red btn-sm" id="clearTickedBtn">Remove ticked</button>
+        <button class="btn btn-green btn-sm" id="clearTickedBtn" style="flex:0 0 auto">✅ Finish shop</button>
         <button class="btn btn-red btn-sm" id="clearAllShoppingBtn">Clear all</button>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="shareListBtn">📲 Share list by QR code</button>
       </div>
       <div class="input-row">
-        <input type="text" id="customItemInput" placeholder="Add any item…" />
+        <input type="text" id="customItemInput" placeholder="Add any item… (try “2 milk”)" />
         <button class="btn btn-green" id="addCustomItemBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
       </div>
     </div>
@@ -859,7 +976,10 @@
 
     <div class="card">
       <div class="card-title">Usual items library</div>
-      <div class="card-sub">Tap any item to add it to your list. Groups open and close.</div>
+      <div class="card-sub">Tap any item to add it to your list. Tap it again for ×2. Groups open and close.</div>
+      <div class="search-row">
+        <input type="search" id="usualSearch" placeholder="🔍 Search usual items…" autocomplete="off" enterkeyhint="search" aria-label="Search usual items" />
+      </div>
       <div id="usualGroupsEl"></div>
     </div>
 
@@ -930,11 +1050,14 @@
         <div class="meal-counter-label theme-indigo" id="dinnerCounterLabel">0 / 5</div>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" id="autoPickBtn">🎲 Auto pick 5</button>
+        <button class="btn btn-primary" id="autoPickBtn">🎲 Auto pick 7</button>
         <button class="btn btn-ghost btn-sm" id="clearDinnersBtn">Clear</button>
       </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm" id="addWeekIngredientsBtn">🧺 Add this week's ingredients to the list</button>
+      </div>
       <div id="selectedDinnersEl" class="selected-strip">
-        <div class="empty-state"><div class="empty-icon">🍽️</div>No dinners selected yet — pick up to 5 below</div>
+        <div class="empty-state"><div class="empty-icon">🍽️</div>No dinners selected yet — pick up to 7 below</div>
       </div>
     </div>
 
@@ -948,7 +1071,7 @@
 
     <div class="card">
       <div class="card-title">Dinner ideas</div>
-      <div class="card-sub">Tap to select or deselect. Max 5 for the week.</div>
+      <div class="card-sub">Tap to select or deselect. Up to 7 for the week. Tap 🧺 on a picked dinner to save its ingredients.</div>
       <div class="input-row" style="margin-bottom:14px">
         <input type="text" id="customDinnerInput" placeholder="Add a dinner idea…" />
         <button class="btn btn-green" id="addDinnerBtn" style="flex:0 0 auto;padding:10px 16px">Add</button>
@@ -985,6 +1108,10 @@
           Your list, meals and usual items are shared. Routines stay on this phone.
         </div>
         <div class="sync-msg" id="syncSignedInMsg"></div>
+        <label class="sync-name">
+          <span>Your name <small>(shown on items you add)</small></span>
+          <input type="text" id="syncMyName" maxlength="20" placeholder="e.g. Dan" autocomplete="given-name" />
+        </label>
         <details class="sync-details">
           <summary>Change password</summary>
           <form class="sync-form" id="syncPasswordForm">
@@ -1020,16 +1147,6 @@
         <div class="stat-chip teal"><div class="sv" id="statLunchSelected">0</div><div class="sl">Lunch</div></div>
         <div class="stat-chip indigo"><div class="sv" id="statDinnersSelected">0</div><div class="sl">Dinner</div></div>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Backup &amp; restore</div>
-      <div class="card-sub">Export your data to keep a copy or transfer to another device. Paste it back in to restore. You can also paste a shared list link here.</div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" id="exportBtn">📤 Export data</button>
-        <button class="btn btn-secondary" id="importBtn">📥 Import data</button>
-      </div>
-      <textarea id="backupBox" placeholder="Exported data appears here — or paste data to import"></textarea>
     </div>
 
     <div class="card">
@@ -1104,7 +1221,7 @@
     <div class="receive-preview" id="receivePreview"></div>
     <div class="sheet-warn" id="receiveWarn" hidden>
       Use the app from your Home Screen? It keeps a separate copy of your data from Safari.
-      Tap <b>Copy link</b>, open the Home Screen app, then paste the link into Settings → Import.
+      Tap <b>Copy link</b>, open the Home Screen app, then paste the link into the “Add any item” box on the Shop tab.
     </div>
     <div class="btn-row">
       <button class="btn btn-green" id="receiveMergeBtn">Add to my list</button>
@@ -1127,6 +1244,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
 <script>
   const STORE_KEY = 'shopDinnerPlannerV3';
+  const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const DINNER_MAX = 7;
+  const emptyWeekPlan = () => Object.fromEntries(WEEK_DAYS.map(d => [d, '']));
 
   const DEFAULTS = {
     shoppingList: [],
@@ -1210,7 +1330,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     selectedBreakfasts: [],
     selectedLunches: [],
     selectedDinners: [],
-    weekPlan: { Monday: '', Tuesday: '', Wednesday: '', Thursday: '', Friday: '' },
+    weekPlan: emptyWeekPlan(),
+    ingredients: {},   // { 'Lasagne': ['Beef mince 500g', 'Lasagne sheets', …] }
     routine: {
       morning: [
         { id: 'm1', name: 'Take Lansoprazole', done: false },
@@ -1264,6 +1385,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         .map(x => {
           const item = { id: /^[A-Za-z0-9_-]{1,40}$/.test(x.id) ? x.id : uid(), name: x.name, checked: !!x.checked };
           if (typeof x.created === 'number') item.created = x.created;
+          if (Number.isInteger(x.qty) && x.qty > 1) item.qty = Math.min(x.qty, 99);
+          if (typeof x.by === 'string' && x.by.trim()) item.by = x.by.trim().slice(0, 20);
           return item;
         }),
       usualGroups: Array.isArray(p.usualGroups)
@@ -1278,7 +1401,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       customDinners: strings(p.customDinners, []),
       selectedBreakfasts: strings(p.selectedBreakfasts, []),
       selectedLunches: strings(p.selectedLunches, []),
-      selectedDinners: strings(p.selectedDinners, []).slice(0, 5),
+      selectedDinners: strings(p.selectedDinners, []).slice(0, DINNER_MAX),
+      ingredients: library(p.ingredients, {}),
       weekPlan: Object.assign(def.weekPlan, isObj(p.weekPlan) ? p.weekPlan : {}),
       routine: migrateRoutine(isObj(p.routine) ? p.routine : null, def.routine)
     };
@@ -1375,20 +1499,58 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     btn.onclick = () => showPanel(btn.dataset.panel);
   });
 
-  function addItem(name) {
+  const QTY_MAX = 99;
+  const qtyOf = item => item.qty || 1;
+  function setQty(item, n) {
+    n = Math.max(1, Math.min(QTY_MAX, n));
+    if (n > 1) item.qty = n; else delete item.qty;
+  }
+
+  // "2 milk", "2x milk" or "2 x milk" → { qty: 2, name: "milk" }.
+  // Only a leading number counts, because names like "Bananas x5" are pack sizes.
+  function parseTyped(text) {
+    const m = text.trim().match(/^(\d{1,2})\s*(?:x|×)?\s+(.+)$/i);
+    if (m && +m[1] >= 1) return { qty: +m[1], name: m[2].trim() };
+    return { qty: 1, name: text.trim() };
+  }
+
+  // Name shown to the family on items this phone adds (only used while signed in)
+  function myName() {
+    try { return (localStorage.getItem('shopMyName') || '').trim().slice(0, 20); } catch(e) { return ''; }
+  }
+
+  // Adding something already on the list bumps its quantity instead of duplicating it.
+  // ensure: just make sure it's on the list (used for dinner ingredients).
+  function addItem(name, qty, opts) {
     const clean = name.trim();
     if (!clean) return;
+    qty = qty || 1;
+    const before = clone(state.shoppingList);
     const existing = state.shoppingList.find(x => x.name.toLowerCase() === clean.toLowerCase());
-    if (existing) {
+    let msg;
+    if (existing && existing.checked) {
       existing.checked = false;
-      toast('Already on the list — unticked it');
+      setQty(existing, qty);
+      msg = `Back on the list: ${clean}`;
+    } else if (existing) {
+      if (opts && opts.ensure) return;
+      setQty(existing, qtyOf(existing) + qty);
+      msg = `${clean} — now ×${qtyOf(existing)}`;
     } else {
-      state.shoppingList.push({ id: uid(), name: clean, checked: false });
-      toast(`Added: ${clean}`);
+      const item = { id: uid(), name: clean, checked: false };
+      setQty(item, qty);
+      if (cloudUser && myName()) item.by = myName();
+      state.shoppingList.push(item);
+      msg = qty > 1 ? `Added: ${clean} ×${qty}` : `Added: ${clean}`;
     }
     save();
     renderShoppingList();
     updateBadges();
+    if (opts && opts.quiet) return;
+    toast(msg, { label: 'Undo', run: () => {
+      state.shoppingList = before;
+      save(); renderShoppingList(); updateBadges();
+    }});
   }
 
   function renderShoppingList() {
@@ -1411,11 +1573,29 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     sorted.forEach(item => {
       const div = document.createElement('div');
       div.className = 'shop-item' + (item.checked ? ' ticked' : '');
+      const showBy = cloudUser && item.by && item.by !== myName();
       div.innerHTML = `
         <div class="shop-check"><span class="shop-check-tick">✓</span></div>
-        <div class="shop-item-name">${escHtml(item.name)}</div>
-        <button class="shop-item-del" title="Remove">×</button>
+        <div class="shop-item-main">
+          <div class="shop-item-name">${escHtml(item.name)}</div>
+          ${showBy ? `<div class="shop-item-by">added by ${escHtml(item.by)}</div>` : ''}
+        </div>
+        ${qtyOf(item) > 1 ? `
+          <div class="qty" aria-label="Quantity">
+            <button class="qty-btn" data-step="-1" aria-label="One fewer">−</button>
+            <span class="qty-num">×${qtyOf(item)}</span>
+            <button class="qty-btn" data-step="1" aria-label="One more">+</button>
+          </div>` : ''}
+        <button class="shop-item-del" title="Remove" aria-label="Remove ${escHtml(item.name)}">×</button>
       `;
+      div.querySelectorAll('.qty-btn').forEach(btn => {
+        btn.onclick = e => {
+          e.stopPropagation();
+          setQty(item, qtyOf(item) + Number(btn.dataset.step));
+          buzz(8);
+          save(); renderShoppingList(); updateBadges();
+        };
+      });
       div.querySelector('.shop-item-del').onclick = (e) => {
         e.stopPropagation();
         changeListWithUndo(`Removed: ${item.name}`, () => {
@@ -1442,7 +1622,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   document.getElementById('addCustomItemBtn').onclick = () => {
     const input = document.getElementById('customItemInput');
-    addItem(input.value);
+    // A pasted share link opens the shared list instead of becoming an item
+    const link = input.value.match(/#list=([A-Za-z0-9_-]+)/);
+    if (link) { openSharedList(link[1]); }
+    else { const typed = parseTyped(input.value); addItem(typed.name, typed.qty); }
     input.value = '';
   };
   document.getElementById('customItemInput').addEventListener('keydown', e => {
@@ -1457,8 +1640,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   document.getElementById('clearTickedBtn').onclick = () => {
     const n = state.shoppingList.filter(x => x.checked).length;
-    if (!n) { toast('Nothing ticked'); return; }
-    changeListWithUndo(`Removed ${n} ticked item${n===1?'':'s'}`, () => {
+    if (!n) { toast('Nothing ticked yet — tick items as they go in the trolley'); return; }
+    const left = state.shoppingList.length - n;
+    changeListWithUndo(`🎉 ${n} item${n===1?'':'s'} bought${left ? ` · ${left} still to get` : ''}`, () => {
       state.shoppingList = state.shoppingList.filter(x => !x.checked);
     });
   };
@@ -1479,12 +1663,25 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     });
   }
 
+  let usualQuery = '';
+  // Every typed word must appear somewhere in the item ("chick breast" finds "Chicken breast fillets")
+  function matchesQuery(item) {
+    const words = usualQuery.toLowerCase().split(/\s+/).filter(Boolean);
+    const name = item.toLowerCase();
+    return words.every(w => name.includes(w));
+  }
+
   function renderUsualGroups() {
     const el = document.getElementById('usualGroupsEl');
     el.innerHTML = '';
+    const searching = !!usualQuery.trim();
+    let shown = 0;
     state.usualGroups.forEach((group, gi) => {
+      const items = searching ? group.items.filter(matchesQuery) : group.items;
+      if (searching && !items.length) return;
+      shown += items.length;
       const block = document.createElement('div');
-      block.className = 'group-block' + (openGroups.has(gi) ? ' open' : '');
+      block.className = 'group-block' + ((searching || openGroups.has(gi)) ? ' open' : '');
       block.innerHTML = `
         <div class="group-header">
           <div class="group-header-left">
@@ -1502,12 +1699,13 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         </div>
       `;
       block.querySelector('.group-header').onclick = () => {
+        if (searching) return;
         const open = block.classList.toggle('open');
         if (open) openGroups.add(gi); else openGroups.delete(gi);
       };
 
       const cloud = block.querySelector(`#pillcloud-${gi}`);
-      group.items.forEach(item => {
+      items.forEach(item => {
         const pill = document.createElement('button');
         pill.className = 'pill';
         pill.textContent = item;
@@ -1532,7 +1730,22 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
       el.appendChild(block);
     });
+    if (searching && !shown) {
+      const typed = usualQuery.trim();
+      el.innerHTML = `<div class="empty-state">No usual items match “${escHtml(typed)}”</div>`;
+      const b = document.createElement('button');
+      b.className = 'btn btn-green btn-sm';
+      b.style.margin = '0 auto';
+      b.textContent = `Add “${typed}” to the list`;
+      b.onclick = () => { addItem(typed); };
+      el.appendChild(b);
+    }
   }
+
+  document.getElementById('usualSearch').addEventListener('input', e => {
+    usualQuery = e.target.value;
+    renderUsualGroups();
+  });
 
   function allMealsFor(type) {
     const lib = state[type + 's'];
@@ -1628,11 +1841,20 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       const row = document.createElement('div');
       row.className = 'selected-meal-row';
       const numCls = 'selected-meal-num' + (opts.theme ? ' theme-' + opts.theme : '');
+      const ingr = opts.ingredients ? (state.ingredients[d] || []) : null;
       row.innerHTML = `
         <div class="${numCls}">${String(i+1).padStart(2,'0')}</div>
         <div class="selected-meal-name">${escHtml(d)}</div>
+        ${ingr ? `<button class="ingr-btn${openIngredients.has(d) ? ' open' : ''}" aria-expanded="${openIngredients.has(d)}"
+                   title="Ingredients">🧺${ingr.length ? `<span>${ingr.length}</span>` : ''}</button>` : ''}
         <button class="selected-meal-del" title="Remove">×</button>
       `;
+      if (ingr) {
+        row.querySelector('.ingr-btn').onclick = () => {
+          if (openIngredients.has(d)) openIngredients.delete(d); else openIngredients.add(d);
+          renderSelectedMeals(opts);
+        };
+      }
       row.querySelector('.selected-meal-del').onclick = () => {
         state[opts.selectedKey] = state[opts.selectedKey].filter(x => x !== d);
         if (opts.selectedKey === 'selectedDinners') {
@@ -1644,7 +1866,71 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         renderAll();
       };
       el.appendChild(row);
+      if (ingr && openIngredients.has(d)) el.appendChild(ingredientsPanel(d, ingr));
     });
+  }
+
+  /* ── DINNER INGREDIENTS ── */
+  const openIngredients = new Set();   // dinners whose ingredient panel is open
+
+  function ingredientsPanel(meal, list) {
+    const panel = document.createElement('div');
+    panel.className = 'ingr-panel';
+    panel.innerHTML = `
+      <label class="ingr-label" for="ingr-${uid()}">Ingredients for ${escHtml(meal)} — one per line</label>
+      <textarea class="ingr-text" rows="4" placeholder="e.g.\nBeef mince 500g\nFresh egg lasagne sheets\nPassata 500g"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-sm ingr-save">Save</button>
+        <button class="btn btn-green btn-sm ingr-add" ${list.length ? '' : 'disabled'}>🛒 Add to list</button>
+      </div>`;
+    const ta = panel.querySelector('.ingr-text');
+    ta.id = panel.querySelector('.ingr-label').htmlFor;
+    ta.value = list.join('\n');
+    panel.querySelector('.ingr-save').onclick = () => {
+      const items = [...new Set(ta.value.split('\n').map(x => x.trim().slice(0, 120)).filter(Boolean))].slice(0, 60);
+      if (items.length) state.ingredients[meal] = items; else delete state.ingredients[meal];
+      save(); renderAll();
+      toast(items.length ? `Saved ${items.length} ingredient${items.length === 1 ? '' : 's'} for ${meal}` : 'Ingredients cleared');
+    };
+    panel.querySelector('.ingr-add').onclick = () => addIngredientsFor([meal]);
+    return panel;
+  }
+
+  // Make sure every ingredient for these dinners is on the list (no duplicates), with one Undo
+  function addIngredientsFor(meals) {
+    const before = clone(state.shoppingList);
+    const names = [...new Set(meals.flatMap(m => state.ingredients[m] || []))];
+    if (!names.length) { toast('No ingredients saved yet — tap 🧺 on a dinner to add some'); return; }
+    const had = new Set(state.shoppingList.filter(x => !x.checked).map(x => x.name.toLowerCase()));
+    names.forEach(n => addItem(n, 1, { ensure: true, quiet: true }));
+    const added = names.filter(n => !had.has(n.toLowerCase())).length;
+    toast(added ? `Added ${added} ingredient${added === 1 ? '' : 's'} to the list` : 'All of those are already on the list', added ? { label: 'Undo', run: () => {
+      state.shoppingList = before;
+      save(); renderShoppingList(); updateBadges();
+    }} : undefined);
+  }
+
+  document.getElementById('addWeekIngredientsBtn').onclick = () => addIngredientsFor(state.selectedDinners);
+
+  /* ── TONIGHT (home) ── */
+  function todayName(offset) {
+    return WEEK_DAYS[(new Date().getDay() + 6 + (offset || 0)) % 7];   // getDay(): Sunday = 0
+  }
+  function renderTonight() {
+    const meal = state.weekPlan[todayName()];
+    const tomorrow = state.weekPlan[todayName(1)];
+    const actions = document.getElementById('tonightActions');
+    document.getElementById('tonightMeal').textContent = meal || 'Nothing planned yet';
+    document.getElementById('tonightMeal').classList.toggle('empty', !meal);
+    document.getElementById('tonightSub').textContent = tomorrow ? `Tomorrow: ${tomorrow}` : '';
+    actions.innerHTML = '';
+    const btn = (label, cls, fn) => {
+      const b = document.createElement('button');
+      b.className = 'btn btn-sm ' + cls; b.textContent = label; b.onclick = fn;
+      actions.appendChild(b);
+    };
+    if (meal && (state.ingredients[meal] || []).length) btn('🧺 Add ingredients', 'btn-green', () => addIngredientsFor([meal]));
+    btn(meal ? 'Week plan' : 'Plan dinners', 'btn-secondary', () => showPanel('dinner'));
   }
 
   const BREAKFAST_OPTS = {
@@ -1665,8 +1951,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     containerId: 'dinnerChoicesEl', stripId: 'selectedDinnersEl',
     fillId: 'dinnerCounterFill', labelId: 'dinnerCounterLabel',
     libraryKey: 'dinners', customKey: 'customDinners', selectedKey: 'selectedDinners',
-    max: 5, theme: 'indigo', label: 'dinners',
-    emptyIcon: '🍽️', emptyMsg: 'No dinners selected yet — pick up to 5 below'
+    max: DINNER_MAX, theme: 'indigo', label: 'dinners', ingredients: true,
+    emptyIcon: '🍽️', emptyMsg: 'No dinners selected yet — pick up to 7 below'
   };
 
   document.getElementById('addBreakfastBtn').onclick = () => {
@@ -1708,7 +1994,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   function renderWeekPlan() {
     const el = document.getElementById('weekPlanEl');
     el.innerHTML = '';
-    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const days = WEEK_DAYS;
     days.forEach(day => {
       const row = document.createElement('div');
       const hasMeal = !!state.weekPlan[day];
@@ -1728,6 +2014,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         state.weekPlan[day] = sel.value;
         row.classList.toggle('has-meal', !!sel.value);
         save();
+        renderTonight();
       };
       row.appendChild(sel);
       el.appendChild(row);
@@ -1742,19 +2029,19 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    state.selectedDinners = shuffled.slice(0, 5);
-    state.weekPlan = { Monday:'', Tuesday:'', Wednesday:'', Thursday:'', Friday:'' };
-    save(); renderAll(); toast('Picked 5 random dinners');
+    state.selectedDinners = shuffled.slice(0, DINNER_MAX);
+    state.weekPlan = emptyWeekPlan();
+    save(); renderAll(); toast(`Picked ${state.selectedDinners.length} random dinners`);
   };
 
   document.getElementById('clearDinnersBtn').onclick = () => {
     state.selectedDinners = [];
-    state.weekPlan = { Monday:'', Tuesday:'', Wednesday:'', Thursday:'', Friday:'' };
+    state.weekPlan = emptyWeekPlan();
     save(); renderAll(); toast('Dinners cleared');
   };
 
   document.getElementById('fillWeekBtn').onclick = () => {
-    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const days = WEEK_DAYS;
     days.forEach((day, i) => { state.weekPlan[day] = state.selectedDinners[i] || ''; });
     save(); renderWeekPlan(); toast('Week plan filled');
   };
@@ -1773,26 +2060,6 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   document.getElementById('customDinnerInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('addDinnerBtn').click();
   });
-
-  document.getElementById('exportBtn').onclick = () => {
-    document.getElementById('backupBox').value = JSON.stringify(state, null, 2);
-    toast('Data exported — copy the text to back it up');
-  };
-
-  document.getElementById('importBtn').onclick = () => {
-    const box = document.getElementById('backupBox');
-    const text = box.value.trim();
-    if (!text) { toast('Nothing to import'); return; }
-    const link = text.match(/#list=([A-Za-z0-9_-]+)/);
-    if (link) { box.value = ''; openSharedList(link[1]); return; }
-    try {
-      const incoming = JSON.parse(text);
-      if (!incoming || typeof incoming !== 'object') throw new Error('not an object');
-      state = normaliseState(incoming);
-      openGroups = new Set([0]);
-      save(); renderAll(); toast('Import successful');
-    } catch(e) { toast('Invalid data — check your paste'); }
-  };
 
   document.getElementById('resetAllBtn').onclick = () => {
     const msg = cloudUser
@@ -1945,7 +2212,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     document.getElementById('tileShopSub').textContent = unchecked > 0 ? `${unchecked} to get` : (total > 0 ? 'All ticked' : 'Empty');
     document.getElementById('tileBreakfastSub').textContent = `${state.selectedBreakfasts.length} picked`;
     document.getElementById('tileLunchSub').textContent = `${state.selectedLunches.length} picked`;
-    document.getElementById('tileDinnerSub').textContent = `${state.selectedDinners.length} of 5`;
+    document.getElementById('tileDinnerSub').textContent = `${state.selectedDinners.length} of ${DINNER_MAX}`;
 
     // Home nav badge — show total outstanding routine items
     let routineLeft = 0;
@@ -1975,6 +2242,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     renderMealChoices(DINNER_OPTS);
     renderSelectedMeals(DINNER_OPTS);
     renderWeekPlan();
+    renderTonight();
     updateBadges();
   }
 
@@ -1982,6 +2250,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
       renderHeaderDate();
+      renderTonight();
       checkRoutineReset();
       renderRoutines();
       updateBadges();
@@ -2260,7 +2529,19 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       ? Object.keys(val).sort().reduce((o, key) => { o[key] = val[key]; return o; }, {})
       : val);
   }
-  const itemPrint = it => JSON.stringify([it.name, !!it.checked, it.created || 0]);
+  const itemPrint = it => JSON.stringify([it.name, !!it.checked, it.created || 0, it.qty || 1, it.by || '']);
+  function itemToCloud(it) {
+    const d = { name: it.name.slice(0, 200), checked: !!it.checked, created: it.created };
+    if (it.qty > 1) d.qty = it.qty;
+    if (it.by) d.by = it.by;
+    return d;
+  }
+  function itemFromCloud(id, d) {
+    const it = { id, name: d.name, checked: !!d.checked, created: d.created || 0 };
+    if (Number.isInteger(d.qty) && d.qty > 1) it.qty = d.qty;
+    if (typeof d.by === 'string' && d.by) it.by = d.by;
+    return it;
+  }
 
   // Meal libraries are {category: [meals]}; stored as a list so category order survives
   const LIBS = ['breakfasts', 'lunches', 'dinners'];
@@ -2270,6 +2551,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       customBreakfasts: src.customBreakfasts, customLunches: src.customLunches, customDinners: src.customDinners
     };
     LIBS.forEach(k => { out[k] = Object.entries(src[k]).map(([name, items]) => ({ name, items })); });
+    out.ingredients = Object.entries(src.ingredients || {}).map(([name, items]) => ({ name, items }));
     return out;
   }
   function libraryFromCloud(d) {
@@ -2277,7 +2559,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       usualGroups: d.usualGroups,
       customBreakfasts: d.customBreakfasts, customLunches: d.customLunches, customDinners: d.customDinners
     };
-    LIBS.forEach(k => {
+    [...LIBS, 'ingredients'].forEach(k => {
       if (Array.isArray(d[k])) out[k] = Object.fromEntries(d[k].filter(c => c && typeof c.name === 'string').map(c => [c.name, c.items]));
     });
     return out;
@@ -2319,7 +2601,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       const print = itemPrint(it);
       if (syncedItems.get(it.id) === print) return;
       syncedItems.set(it.id, print);
-      ops.push(b => b.set(itemRef(it.id), { name: it.name.slice(0, 200), checked: !!it.checked, created: it.created }));
+      ops.push(b => b.set(itemRef(it.id), itemToCloud(it)));
     });
     if (itemsReady || force) [...syncedItems.keys()].forEach(id => {
       if (present.has(id)) return;
@@ -2348,7 +2630,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     chip.dataset.state = kind;
     document.getElementById('syncChipText').textContent = text;
     const dot = document.getElementById('syncCardDot');
-    dot.style.background = { synced: '#6fd39b', saving: 'var(--amber)', error: 'var(--red)' }[kind] || '';
+    dot.style.background = { synced: 'var(--ok)', saving: 'var(--amber)', error: 'var(--red)' }[kind] || '';
     document.getElementById('syncCardStatus').textContent = text;
   }
 
@@ -2441,7 +2723,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     cloudUnsubs.push(fb.f.onSnapshot(itemsQuery, { includeMetadataChanges: true }, snap => {
       const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         .filter(it => typeof it.name === 'string')
-        .map(it => ({ id: it.id, name: it.name, checked: !!it.checked, created: it.created || 0 }));
+        .map(it => itemFromCloud(it.id, it));
       syncedItems = new Map(items.map(it => [it.id, itemPrint(it)]));
       let next = items;
       const firstLoad = !itemsReady;
@@ -2486,6 +2768,15 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       }, cloudError));
     });
   }
+
+  document.getElementById('syncMyName').value = myName();
+  document.getElementById('syncMyName').onchange = e => {
+    const name = e.target.value.trim().slice(0, 20);
+    e.target.value = name;
+    try { localStorage.setItem('shopMyName', name); } catch(err) {}
+    renderShoppingList();
+    toast(name ? `Items you add will show “${name}”` : 'Your name won’t be shown');
+  };
 
   // The email is hidden until the eye is tapped, so it isn't on show when the phone is handed round
   function showSyncEmail(reveal) {
@@ -2599,6 +2890,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   renderAll();
   checkShareHash();
   captureSyncBase();
+  // Keep a copy of the app on the phone so it opens with no signal (see sw.js)
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
   // Only fetch Firebase if this phone has signed in before
   try { if (localStorage.getItem(SYNC_FLAG)) loadFirebase().catch(() => setSyncStatus('offline', 'Offline')); } catch(e) {}
 </script>
