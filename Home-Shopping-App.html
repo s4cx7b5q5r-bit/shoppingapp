@@ -296,7 +296,7 @@
     .btn-sm { padding: 7px 10px; font-size: 0.8rem; }
 
     .input-row { display: flex; gap: 8px; }
-    input[type="text"], select, textarea {
+    input[type="text"], input[type="email"], input[type="password"], select, textarea {
       width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border2);
@@ -309,11 +309,11 @@
       transition: border-color 0.15s;
       -webkit-appearance: none;
     }
-    input[type="text"]:focus, select:focus, textarea:focus {
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-glow);
     }
-    input[type="text"]::placeholder { color: var(--text3); }
+    input::placeholder { color: var(--text3); }
     select { appearance: none; -webkit-appearance: none; cursor: pointer; }
     textarea { min-height: 100px; resize: vertical; }
 
@@ -692,6 +692,28 @@
     @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+    /* ── FAMILY SYNC ── */
+    .sync-chip {
+      font-size: 0.62rem; font-family: var(--mono); letter-spacing: 0.04em;
+      color: var(--text3); display: flex; align-items: center; gap: 5px; white-space: nowrap;
+    }
+    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+    .sync-chip[data-state="synced"] .sync-dot { background: #6fd39b; }
+    .sync-chip[data-state="saving"] .sync-dot { background: var(--amber); }
+    .sync-chip[data-state="error"] .sync-dot { background: var(--red); }
+    .sync-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .sync-form .btn { justify-content: center; }
+    .sync-status-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+      font-size: 0.9rem; font-weight: 600;
+    }
+    .sync-msg { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin: 0 0 10px; min-height: 0; }
+    .sync-msg:empty { display: none; }
+    .sync-msg.error { color: #ff8fa4; }
+    details.sync-details { margin-bottom: 10px; }
+    details.sync-details summary { cursor: pointer; font-size: 0.84rem; color: var(--text2); padding: 6px 0; }
+    details.sync-details .sync-form { margin-top: 8px; }
+
     .routine-complete {
       text-align: center;
       padding: 14px;
@@ -720,6 +742,7 @@
         <div class="badge-num" id="headerBadge">0</div>
         <div class="badge-lbl">to get</div>
       </div>
+      <div class="sync-chip" id="syncChip" hidden><span class="sync-dot"></span><span id="syncChipText"></span></div>
     </div>
   </div>
 
@@ -932,6 +955,37 @@
 
   <!-- SETTINGS -->
   <section id="panel-settings" class="panel">
+    <div class="card" id="syncCard">
+      <div class="card-title">☁️ Family sync</div>
+
+      <div id="syncSignedOut">
+        <div class="card-sub">Sign in to share one live shopping list and meal plan across your phones. Routines always stay on this phone.</div>
+        <form class="sync-form" id="syncSignInForm" autocomplete="on">
+          <input type="email" id="syncEmail" placeholder="Email" autocomplete="username" autocapitalize="off" required />
+          <input type="password" id="syncPassword" placeholder="Password" autocomplete="current-password" required />
+          <button type="submit" class="btn btn-primary" id="syncSignInBtn">Sign in</button>
+        </form>
+        <div class="sync-msg" id="syncSignedOutMsg"></div>
+        <button class="btn btn-ghost btn-sm" id="syncForgotBtn">Forgot password?</button>
+      </div>
+
+      <div id="syncSignedIn" hidden>
+        <div class="sync-status-row"><span class="sync-dot" id="syncCardDot"></span><span id="syncCardStatus">Connecting…</span></div>
+        <div class="card-sub" style="margin-bottom:10px">Signed in as <b id="syncWho"></b>. Your list, meals and usual items are shared. Routines stay on this phone.</div>
+        <div class="sync-msg" id="syncSignedInMsg"></div>
+        <details class="sync-details">
+          <summary>Change password</summary>
+          <form class="sync-form" id="syncPasswordForm">
+            <input type="password" id="syncCurrentPw" placeholder="Current password" autocomplete="current-password" required />
+            <input type="password" id="syncNewPw" placeholder="New password (8+ characters)" autocomplete="new-password" minlength="8" required />
+            <input type="password" id="syncNewPw2" placeholder="New password again" autocomplete="new-password" minlength="8" required />
+            <button type="submit" class="btn btn-secondary">Update password</button>
+          </form>
+        </details>
+        <button class="btn btn-secondary btn-sm" id="syncSignOutBtn">Sign out</button>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-title">📲 Share the app</div>
       <div class="card-sub">Let someone scan this with their phone camera to get their own copy of the app. Your list and settings stay on your phone.</div>
@@ -1195,7 +1249,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     return {
       shoppingList: (Array.isArray(p.shoppingList) ? p.shoppingList : [])
         .filter(x => x && typeof x.name === 'string')
-        .map(x => ({ id: x.id || uid(), name: x.name, checked: !!x.checked })),
+        .map(x => {
+          const item = { id: /^[A-Za-z0-9_-]{1,40}$/.test(x.id) ? x.id : uid(), name: x.name, checked: !!x.checked };
+          if (typeof x.created === 'number') item.created = x.created;
+          return item;
+        }),
       usualGroups: Array.isArray(p.usualGroups)
         ? p.usualGroups.filter(g => g && typeof g.name === 'string' && Array.isArray(g.items))
             .map(g => ({ name: g.name, icon: typeof g.icon === 'string' ? g.icon : '📦', items: strings(g.items, []) }))
@@ -1227,13 +1285,20 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   let state = loadState();
   let saveWarned = false;
-  function save() {
+  function saveLocal() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
     } catch(e) {
       // Private browsing or a full disk — tell them once rather than failing silently
       if (!saveWarned) { saveWarned = true; toast("Couldn't save — storage is full or blocked"); }
     }
+  }
+  function save() {
+    // Give every item a creation time so all phones show the list in the same order
+    const now = Date.now();
+    state.shoppingList.forEach((x, i) => { if (typeof x.created !== 'number') x.created = now + i; });
+    saveLocal();
+    if (typeof pushToCloud === 'function') pushToCloud();
   }
 
   function uid() { return Math.random().toString(36).slice(2, 10); }
@@ -1718,7 +1783,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   };
 
   document.getElementById('resetAllBtn').onclick = () => {
-    if (!confirm('Reset everything? This will wipe all your customisations and shopping list.')) return;
+    const msg = cloudUser
+      ? 'Reset everything? This wipes your customisations and the shopping list — including the shared list on everyone\'s phone.'
+      : 'Reset everything? This will wipe all your customisations and shopping list.';
+    if (!confirm(msg)) return;
     state = clone(DEFAULTS);
     openGroups = new Set([0]);
     save(); renderAll(); toast('Reset to defaults');
@@ -2146,8 +2214,359 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
   window.addEventListener('hashchange', checkShareHash);
 
+  /* ── FAMILY SYNC (Firebase) ──
+     Cloud layout (one household, locked to two accounts by the security rules):
+       households/home/items/{id}     one doc per shopping item {name, checked, created}
+       households/home/data/library   usual items + breakfast/lunch/dinner ideas
+       households/home/data/meals     this week's picks + week plan
+     Routines are never uploaded. localStorage stays the on-phone copy, so the
+     app works exactly as before when signed out or if Firebase can't load. */
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDyUGQ1aE01FPEzJkdiNXWU1ApoHc-X1wk",
+    authDomain: "home-shopping-3b696.firebaseapp.com",
+    projectId: "home-shopping-3b696",
+    storageBucket: "home-shopping-3b696.firebasestorage.app",
+    messagingSenderId: "1582601756",
+    appId: "1:1582601756:web:9b485ebec7b798368b71d9"
+  };
+  const FIREBASE_SDK = 'https://www.gstatic.com/firebasejs/12.19.0/';
+  const SYNC_FLAG = 'shopCloudEnabled';     // set while signed in, so we only load Firebase when needed
+  const JOINED_FLAG = 'shopCloudJoined:';   // + uid: this phone's list has been merged into the cloud once
+
+  let fb = null;              // { auth, db, a: auth module, f: firestore module }
+  let cloudUser = null;
+  let cloudUnsubs = [];
+  let itemsReady = false;     // the cloud has answered for the list…
+  let docsReady = { library: false, meals: false };  // …and for each shared doc
+  let syncedItems = new Map(); // id -> fingerprint of what the cloud last held
+  let syncedDocs = {};         // 'library' | 'meals' -> fingerprint
+  let syncBase = null;         // this phone's state when it last matched the cloud
+
+  // JSON with sorted keys, because Firestore hands maps back in its own key order
+  function stable(v) {
+    return JSON.stringify(v, (k, val) => (val && typeof val === 'object' && !Array.isArray(val))
+      ? Object.keys(val).sort().reduce((o, key) => { o[key] = val[key]; return o; }, {})
+      : val);
+  }
+  const itemPrint = it => JSON.stringify([it.name, !!it.checked, it.created || 0]);
+
+  // Meal libraries are {category: [meals]}; stored as a list so category order survives
+  const LIBS = ['breakfasts', 'lunches', 'dinners'];
+  function libraryToCloud(src) {
+    const out = {
+      usualGroups: src.usualGroups,
+      customBreakfasts: src.customBreakfasts, customLunches: src.customLunches, customDinners: src.customDinners
+    };
+    LIBS.forEach(k => { out[k] = Object.entries(src[k]).map(([name, items]) => ({ name, items })); });
+    return out;
+  }
+  function libraryFromCloud(d) {
+    const out = {
+      usualGroups: d.usualGroups,
+      customBreakfasts: d.customBreakfasts, customLunches: d.customLunches, customDinners: d.customDinners
+    };
+    LIBS.forEach(k => {
+      if (Array.isArray(d[k])) out[k] = Object.fromEntries(d[k].filter(c => c && typeof c.name === 'string').map(c => [c.name, c.items]));
+    });
+    return out;
+  }
+  function mealsToCloud(src) {
+    return { selectedBreakfasts: src.selectedBreakfasts, selectedLunches: src.selectedLunches,
+             selectedDinners: src.selectedDinners, weekPlan: src.weekPlan };
+  }
+  const DOC_BUILDERS = { library: libraryToCloud, meals: mealsToCloud };
+
+  // Take some fields from the cloud, cleaned up the same way an import is
+  function adoptFromCloud(partial) {
+    const clean = normaliseState(Object.assign({}, state, partial));
+    Object.keys(partial).forEach(k => { state[k] = clean[k]; });
+  }
+
+  // Snapshot of what this phone held when it last agreed with the cloud, so anything
+  // changed while connecting can be told apart from changes made on the other phone
+  function captureSyncBase() {
+    syncBase = {
+      items: new Map(state.shoppingList.map(it => [it.id, itemPrint(it)])),
+      library: stable(libraryToCloud(state)),
+      meals: stable(mealsToCloud(state))
+    };
+  }
+  const byCreated = (x, y) => (x.created || 0) - (y.created || 0) || x.id.localeCompare(y.id);
+
+  function itemRef(id) { return fb.f.doc(fb.db, 'households', 'home', 'items', id); }
+  function dataRef(name) { return fb.f.doc(fb.db, 'households', 'home', 'data', name); }
+
+  // Send whatever changed since the cloud last told us its state.
+  // force: used when joining, before the live listeners are running.
+  function pushToCloud(force) {
+    if (!cloudUser) return;
+    const ops = [];
+    const present = new Set();
+    if (itemsReady || force) state.shoppingList.forEach(it => {
+      present.add(it.id);
+      const print = itemPrint(it);
+      if (syncedItems.get(it.id) === print) return;
+      syncedItems.set(it.id, print);
+      ops.push(b => b.set(itemRef(it.id), { name: it.name.slice(0, 200), checked: !!it.checked, created: it.created }));
+    });
+    if (itemsReady || force) [...syncedItems.keys()].forEach(id => {
+      if (present.has(id)) return;
+      syncedItems.delete(id);
+      ops.push(b => b.delete(itemRef(id)));
+    });
+    Object.entries(DOC_BUILDERS).forEach(([name, build]) => {
+      if (!docsReady[name] && !force) return;
+      const data = build(state);
+      const print = stable(data);
+      if (syncedDocs[name] === print) return;
+      syncedDocs[name] = print;
+      ops.push(b => b.set(dataRef(name), data));
+    });
+    // Firestore batches cap at 500 writes
+    for (let i = 0; i < ops.length; i += 400) {
+      const batch = fb.f.writeBatch(fb.db);
+      ops.slice(i, i + 400).forEach(op => op(batch));
+      batch.commit().catch(cloudError);
+    }
+  }
+
+  function setSyncStatus(kind, text) {
+    const chip = document.getElementById('syncChip');
+    chip.hidden = !cloudUser;
+    chip.dataset.state = kind;
+    document.getElementById('syncChipText').textContent = text;
+    const dot = document.getElementById('syncCardDot');
+    dot.style.background = { synced: '#6fd39b', saving: 'var(--amber)', error: 'var(--red)' }[kind] || '';
+    document.getElementById('syncCardStatus').textContent = text;
+  }
+
+  function cloudError(e) {
+    console.error('Sync error', e);
+    if (e && e.code === 'permission-denied') {
+      setSyncStatus('error', 'Not allowed');
+      syncMsg('signedIn', "This account isn't allowed to use the shared list. Check the Firebase security rules include it.", true);
+    } else {
+      setSyncStatus('error', 'Sync problem');
+    }
+  }
+
+  function syncMsg(which, text, isError) {
+    const el = document.getElementById(which === 'signedIn' ? 'syncSignedInMsg' : 'syncSignedOutMsg');
+    el.textContent = text || '';
+    el.classList.toggle('error', !!isError);
+  }
+
+  async function loadFirebase() {
+    if (fb) return fb;
+    const [appMod, a, f] = await Promise.all([
+      import(FIREBASE_SDK + 'firebase-app.js'),
+      import(FIREBASE_SDK + 'firebase-auth.js'),
+      import(FIREBASE_SDK + 'firebase-firestore.js')
+    ]);
+    const app = appMod.initializeApp(FIREBASE_CONFIG);
+    const auth = a.getAuth(app);
+    const db = f.initializeFirestore(app, {
+      // Keep a copy on the phone so the list works with no signal and catches up later
+      localCache: f.persistentLocalCache({ tabManager: f.persistentMultipleTabManager() }),
+      ignoreUndefinedProperties: true
+    });
+    if (window.__FIREBASE_EMULATOR__) {  // automated tests only
+      a.connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+      f.connectFirestoreEmulator(db, '127.0.0.1', 8080);
+    }
+    fb = { auth, db, a, f };
+    a.onAuthStateChanged(auth, user => { user ? startSync(user) : stopSync(); });
+    return fb;
+  }
+
+  // First sign-in on this phone: fold its list into the shared one, or seed the cloud if it's empty
+  async function joinCloud(user) {
+    const [libSnap, mealsSnap, itemsSnap] = await Promise.all([
+      fb.f.getDoc(dataRef('library')), fb.f.getDoc(dataRef('meals')),
+      fb.f.getDocs(fb.f.collection(fb.db, 'households', 'home', 'items'))
+    ]);
+    syncedItems = new Map();
+    syncedDocs = {};
+    if (libSnap.exists()) {
+      // Someone's already set up the household — their library and meals win
+      adoptFromCloud(libraryFromCloud(libSnap.data()));
+      syncedDocs.library = stable(libraryToCloud(state));
+      if (mealsSnap.exists()) {
+        adoptFromCloud(mealsSnap.data());
+        syncedDocs.meals = stable(mealsToCloud(state));
+      }
+      // …but keep anything on this phone's list that the shared list doesn't have yet
+      const cloudItems = itemsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const cloudNames = new Set(cloudItems.map(it => String(it.name).toLowerCase()));
+      cloudItems.forEach(it => syncedItems.set(it.id, itemPrint(it)));
+      const extras = state.shoppingList.filter(it => !cloudNames.has(it.name.toLowerCase()));
+      adoptFromCloud({ shoppingList: [...cloudItems, ...extras] });
+      saveLocal();
+      renderAll();
+    }
+    // Send this phone's extras (or everything, for a brand-new household) before listening,
+    // so the first snapshot already includes them
+    pushToCloud(true);
+    captureSyncBase();
+    localStorage.setItem(JOINED_FLAG + user.uid, '1');
+  }
+
+  async function startSync(user) {
+    cloudUser = user;
+    try { localStorage.setItem(SYNC_FLAG, '1'); } catch(e) {}
+    document.getElementById('syncSignedOut').hidden = true;
+    document.getElementById('syncSignedIn').hidden = false;
+    document.getElementById('syncWho').textContent = user.email || 'your account';
+    syncMsg('signedIn', '');
+    setSyncStatus('saving', 'Connecting…');
+
+    try {
+      if (!localStorage.getItem(JOINED_FLAG + user.uid)) await joinCloud(user);
+    } catch(e) { cloudError(e); return; }
+    if (cloudUser !== user) return;  // signed out while we were busy
+
+    const itemsQuery = fb.f.collection(fb.db, 'households', 'home', 'items');
+    cloudUnsubs.push(fb.f.onSnapshot(itemsQuery, { includeMetadataChanges: true }, snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .filter(it => typeof it.name === 'string')
+        .map(it => ({ id: it.id, name: it.name, checked: !!it.checked, created: it.created || 0 }));
+      syncedItems = new Map(items.map(it => [it.id, itemPrint(it)]));
+      let next = items;
+      const firstLoad = !itemsReady;
+      if (firstLoad) {
+        // Keep anything added, ticked or removed on this phone while we were connecting
+        const merged = new Map(items.map(it => [it.id, it]));
+        const localIds = new Set(state.shoppingList.map(it => it.id));
+        syncBase.items.forEach((print, id) => { if (!localIds.has(id)) merged.delete(id); });
+        state.shoppingList.forEach(it => { if (syncBase.items.get(it.id) !== itemPrint(it)) merged.set(it.id, it); });
+        next = [...merged.values()];
+        itemsReady = true;
+      }
+      next.sort(byCreated);
+      if (JSON.stringify(next) !== JSON.stringify(state.shoppingList)) {
+        state.shoppingList = next;
+        saveLocal(); renderShoppingList(); updateBadges();
+      }
+      if (firstLoad) pushToCloud();
+
+      const m = snap.metadata;
+      if (m.hasPendingWrites) setSyncStatus('saving', 'Saving…');
+      else if (m.fromCache) setSyncStatus('offline', navigator.onLine ? 'Connecting…' : 'Offline — will catch up');
+      else setSyncStatus('synced', 'Synced');
+    }, cloudError));
+
+    Object.entries({ library: libraryFromCloud, meals: d => d }).forEach(([name, fromCloud]) => {
+      cloudUnsubs.push(fb.f.onSnapshot(dataRef(name), snap => {
+        const build = DOC_BUILDERS[name];
+        const before = stable(build(state));
+        const firstLoad = !docsReady[name];
+        docsReady[name] = true;
+        if (!snap.exists() || (firstLoad && before !== syncBase[name])) {
+          // Nothing in the cloud yet, or this phone changed it while connecting: send ours
+          syncedDocs[name] = null;
+          pushToCloud();
+          return;
+        }
+        adoptFromCloud(fromCloud(snap.data()));
+        const after = stable(build(state));
+        syncedDocs[name] = after;
+        if (before !== after) { saveLocal(); renderAll(); }
+      }, cloudError));
+    });
+  }
+
+  function stopSync() {
+    cloudUnsubs.forEach(u => u());
+    cloudUnsubs = [];
+    cloudUser = null;
+    itemsReady = false;
+    docsReady = { library: false, meals: false };
+    syncedItems = new Map();
+    syncedDocs = {};
+    captureSyncBase();
+    document.getElementById('syncSignedOut').hidden = false;
+    document.getElementById('syncSignedIn').hidden = true;
+    document.getElementById('syncChip').hidden = true;
+  }
+
+  function authMessage(e) {
+    const code = (e && e.code) || '';
+    if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email')
+      return 'That email or password is wrong.';
+    if (code === 'auth/too-many-requests') return 'Too many attempts — wait a few minutes and try again.';
+    if (code === 'auth/network-request-failed') return 'No connection — try again when you have signal.';
+    if (code === 'auth/weak-password') return 'Choose a longer password.';
+    if (code === 'auth/user-disabled') return 'This account has been switched off.';
+    return "Something went wrong — please try again.";
+  }
+
+  async function loadOrExplain(which) {
+    try { return await loadFirebase(); }
+    catch(e) { syncMsg(which, "Couldn't reach the sync service — check your connection.", true); return null; }
+  }
+
+  document.getElementById('syncSignInForm').onsubmit = async e => {
+    e.preventDefault();
+    const email = document.getElementById('syncEmail').value.trim();
+    const pw = document.getElementById('syncPassword').value;
+    const btn = document.getElementById('syncSignInBtn');
+    syncMsg('signedOut', '');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      if (!await loadOrExplain('signedOut')) return;
+      await fb.a.signInWithEmailAndPassword(fb.auth, email, pw);
+      document.getElementById('syncPassword').value = '';
+      toast('Signed in — your list is now shared');
+    } catch(err) {
+      syncMsg('signedOut', authMessage(err), true);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign in';
+    }
+  };
+
+  document.getElementById('syncForgotBtn').onclick = async () => {
+    const email = document.getElementById('syncEmail').value.trim();
+    if (!email) { syncMsg('signedOut', 'Type your email above first, then tap "Forgot password?" again.', true); return; }
+    if (!await loadOrExplain('signedOut')) return;
+    try {
+      await fb.a.sendPasswordResetEmail(fb.auth, email);
+      syncMsg('signedOut', `If ${email} has an account, a reset link is on its way. Check your junk folder too.`);
+    } catch(err) { syncMsg('signedOut', authMessage(err), true); }
+  };
+
+  document.getElementById('syncPasswordForm').onsubmit = async e => {
+    e.preventDefault();
+    const current = document.getElementById('syncCurrentPw').value;
+    const next = document.getElementById('syncNewPw').value;
+    if (next !== document.getElementById('syncNewPw2').value) { syncMsg('signedIn', "The new passwords don't match.", true); return; }
+    if (next.length < 8) { syncMsg('signedIn', 'Use at least 8 characters.', true); return; }
+    try {
+      const user = fb.auth.currentUser;
+      // Firebase wants proof it's really you before changing a password
+      await fb.a.reauthenticateWithCredential(user, fb.a.EmailAuthProvider.credential(user.email, current));
+      await fb.a.updatePassword(user, next);
+      e.target.reset();
+      e.target.closest('details').open = false;
+      syncMsg('signedIn', '');
+      toast('Password changed');
+    } catch(err) {
+      syncMsg('signedIn', err.code === 'auth/invalid-credential' ? 'Your current password is wrong.' : authMessage(err), true);
+    }
+  };
+
+  document.getElementById('syncSignOutBtn').onclick = async () => {
+    if (!confirm('Sign out? Your list stays on this phone but stops syncing.')) return;
+    const uidWas = cloudUser && cloudUser.uid;
+    try { localStorage.removeItem(SYNC_FLAG); if (uidWas) localStorage.removeItem(JOINED_FLAG + uidWas); } catch(e) {}
+    await fb.a.signOut(fb.auth);
+    toast('Signed out');
+  };
+
   renderAll();
   checkShareHash();
+  captureSyncBase();
+  // Only fetch Firebase if this phone has signed in before
+  try { if (localStorage.getItem(SYNC_FLAG)) loadFirebase().catch(() => setSyncStatus('offline', 'Offline')); } catch(e) {}
 </script>
 </body>
 </html>

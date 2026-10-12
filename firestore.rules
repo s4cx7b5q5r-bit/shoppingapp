@@ -1,0 +1,62 @@
+rules_version = '2';
+
+// Security rules for the Home Shopping App's family sync.
+// Paste these into Firebase → Firestore Database → Rules, then press Publish.
+//
+// Only the two accounts listed in isFamily() can read or change anything.
+// Everyone else — strangers, signed-out visitors, any other account — is refused,
+// and anything not matched below is closed by default.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The only accounts allowed in: the User UIDs from Firebase → Authentication → Users
+    function isFamily() {
+      return request.auth != null
+        && request.auth.uid in ['3Vh0HLOvvgQgidmhalXAqZHjhcL2', 'hsG8kkamEMT2UmK0I1sXIZ3drS53'];
+    }
+
+    // One shopping list item: exactly a name, a ticked flag and a creation time
+    function isValidItem() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'checked', 'created'])
+        && d.keys().hasAll(['name', 'checked', 'created'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 200
+        && d.checked is bool
+        && d.created is number;
+    }
+
+    match /households/home/items/{itemId} {
+      allow read, delete: if isFamily();
+      allow create, update: if isFamily() && isValidItem();
+    }
+
+    // Usual items and breakfast / lunch / dinner ideas
+    match /households/home/data/library {
+      allow read: if isFamily();
+      allow create, update: if isFamily()
+        && request.resource.data.keys().hasOnly([
+             'usualGroups', 'breakfasts', 'lunches', 'dinners',
+             'customBreakfasts', 'customLunches', 'customDinners'])
+        && request.resource.data.usualGroups is list
+        && request.resource.data.breakfasts is list
+        && request.resource.data.lunches is list
+        && request.resource.data.dinners is list
+        && request.resource.data.customBreakfasts is list
+        && request.resource.data.customLunches is list
+        && request.resource.data.customDinners is list;
+    }
+
+    // This week's picks and the week plan
+    match /households/home/data/meals {
+      allow read: if isFamily();
+      allow create, update: if isFamily()
+        && request.resource.data.keys().hasOnly([
+             'selectedBreakfasts', 'selectedLunches', 'selectedDinners', 'weekPlan'])
+        && request.resource.data.selectedBreakfasts is list
+        && request.resource.data.selectedLunches is list
+        && request.resource.data.selectedDinners is list
+        && request.resource.data.weekPlan is map;
+    }
+  }
+}
