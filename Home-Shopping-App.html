@@ -673,6 +673,7 @@
       display: flex; align-items: center; justify-content: center;
     }
     .qr-frame svg { width: 100%; height: 100%; display: block; }
+    .qr-frame.qr-sm { width: min(100%, 220px); }
     .qr-msg { color: #4a2418; text-align: center; font-size: 0.86rem; line-height: 1.5; padding: 16px; }
     .sheet-note { text-align: center; color: var(--text2); font-size: 0.84rem; margin-bottom: 12px; line-height: 1.5; }
     .sheet-warn {
@@ -931,6 +932,20 @@
 
   <!-- SETTINGS -->
   <section id="panel-settings" class="panel">
+    <div class="card">
+      <div class="card-title">📲 Share the app</div>
+      <div class="card-sub">Let someone scan this with their phone camera to get their own copy of the app. Your list and settings stay on your phone.</div>
+      <div class="qr-frame qr-sm" id="appQrFrame"></div>
+      <div class="sheet-warn" id="appShareWarn" hidden>
+        You've opened the app as a file, so this code won't work on other phones. Open it from its web address instead.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="appCopyBtn" style="flex:1;justify-content:center">🔗 Copy link</button>
+        <button class="btn btn-secondary" id="appNativeBtn" style="flex:1;justify-content:center" hidden>Share…</button>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text3);text-align:center">To share your shopping list instead, use the button on the Shop tab.</div>
+    </div>
+
     <div class="card">
       <div class="card-title">Overview</div>
       <div class="stat-row">
@@ -2112,6 +2127,17 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   document.getElementById('receiveReplaceBtn').onclick = () => acceptShare(true);
   document.getElementById('receiveCopyBtn').onclick = () => {
     if (pendingShare) copyText(location.href.split('#')[0] + '#list=' + pendingShare.code);
+  };
+
+  /* ── SHARE THE APP ITSELF (Settings) ──
+     Just the page address: no list, no #hash, no ?cache-busting query */
+  const appUrl = location.origin + location.pathname;
+  document.getElementById('appQrFrame').innerHTML = qrSvg(appUrl) || '';
+  document.getElementById('appShareWarn').hidden = /^https?:$/.test(location.protocol);
+  document.getElementById('appCopyBtn').onclick = () => copyText(appUrl);
+  document.getElementById('appNativeBtn').hidden = typeof navigator.share !== 'function';
+  document.getElementById('appNativeBtn').onclick = () => {
+    navigator.share({ title: 'Home Shopping App', text: 'Here’s the shopping app I use', url: appUrl }).catch(() => {});
   };
 
   function checkShareHash() {
