@@ -710,6 +710,11 @@
     .sync-msg { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin: 0 0 10px; min-height: 0; }
     .sync-msg:empty { display: none; }
     .sync-msg.error { color: #ff8fa4; }
+    .sync-who { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; }
+    .sync-who-btn {
+      background: var(--surface2); border: 1px solid var(--border2); color: var(--text2);
+      border-radius: 8px; padding: 2px 8px; font-size: 0.8rem; cursor: pointer; line-height: 1.4;
+    }
     details.sync-details { margin-bottom: 10px; }
     details.sync-details summary { cursor: pointer; font-size: 0.84rem; color: var(--text2); padding: 6px 0; }
     details.sync-details .sync-form { margin-top: 8px; }
@@ -960,7 +965,10 @@
 
       <div id="syncSignedOut">
         <div class="card-sub">Sign in to share one live shopping list and meal plan across your phones. Routines always stay on this phone.</div>
-        <form class="sync-form" id="syncSignInForm" autocomplete="on">
+        <!-- iPhone only offers to save a password when it sees a form really submit. After a
+             successful sign-in the form submits into this blank frame, so nothing is sent anywhere. -->
+        <iframe name="syncPwFrame" id="syncPwFrame" src="about:blank" hidden tabindex="-1" title="Password saving helper"></iframe>
+        <form class="sync-form" id="syncSignInForm" autocomplete="on" method="post" action="about:blank" target="syncPwFrame">
           <input type="email" id="syncEmail" placeholder="Email" autocomplete="username" autocapitalize="off" required />
           <input type="password" id="syncPassword" placeholder="Password" autocomplete="current-password" required />
           <button type="submit" class="btn btn-primary" id="syncSignInBtn">Sign in</button>
@@ -971,7 +979,11 @@
 
       <div id="syncSignedIn" hidden>
         <div class="sync-status-row"><span class="sync-dot" id="syncCardDot"></span><span id="syncCardStatus">Connecting…</span></div>
-        <div class="card-sub" style="margin-bottom:10px">Signed in as <b id="syncWho"></b>. Your list, meals and usual items are shared. Routines stay on this phone.</div>
+        <div class="card-sub" style="margin-bottom:10px">
+          Signed in as
+          <span class="sync-who"><b id="syncWho">••••••••</b><button type="button" class="sync-who-btn" id="syncWhoBtn" aria-label="Show email" aria-pressed="false">👁 Show</button></span>.
+          Your list, meals and usual items are shared. Routines stay on this phone.
+        </div>
         <div class="sync-msg" id="syncSignedInMsg"></div>
         <details class="sync-details">
           <summary>Change password</summary>
@@ -2416,7 +2428,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     try { localStorage.setItem(SYNC_FLAG, '1'); } catch(e) {}
     document.getElementById('syncSignedOut').hidden = true;
     document.getElementById('syncSignedIn').hidden = false;
-    document.getElementById('syncWho').textContent = user.email || 'your account';
+    showSyncEmail(false);
     syncMsg('signedIn', '');
     setSyncStatus('saving', 'Connecting…');
 
@@ -2475,6 +2487,18 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     });
   }
 
+  // The email is hidden until the eye is tapped, so it isn't on show when the phone is handed round
+  function showSyncEmail(reveal) {
+    const btn = document.getElementById('syncWhoBtn');
+    document.getElementById('syncWho').textContent = reveal ? ((cloudUser && cloudUser.email) || 'your account') : '••••••••';
+    btn.textContent = reveal ? '🙈 Hide' : '👁 Show';
+    btn.setAttribute('aria-label', reveal ? 'Hide email' : 'Show email');
+    btn.setAttribute('aria-pressed', String(reveal));
+  }
+  document.getElementById('syncWhoBtn').onclick = () => {
+    showSyncEmail(document.getElementById('syncWhoBtn').getAttribute('aria-pressed') !== 'true');
+  };
+
   function stopSync() {
     cloudUnsubs.forEach(u => u());
     cloudUnsubs = [];
@@ -2487,6 +2511,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     document.getElementById('syncSignedOut').hidden = false;
     document.getElementById('syncSignedIn').hidden = true;
     document.getElementById('syncChip').hidden = true;
+    showSyncEmail(false);
   }
 
   function authMessage(e) {
@@ -2506,6 +2531,14 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   }
 
   document.getElementById('syncSignInForm').onsubmit = async e => {
+    const form = e.target;
+    if (form.dataset.signedIn === '1') {
+      // Second, real submission after success: let it go to the blank frame so the
+      // phone offers to save the password, then tidy up
+      delete form.dataset.signedIn;
+      setTimeout(() => { document.getElementById('syncPassword').value = ''; }, 1500);
+      return;
+    }
     e.preventDefault();
     const email = document.getElementById('syncEmail').value.trim();
     const pw = document.getElementById('syncPassword').value;
@@ -2515,7 +2548,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     try {
       if (!await loadOrExplain('signedOut')) return;
       await fb.a.signInWithEmailAndPassword(fb.auth, email, pw);
-      document.getElementById('syncPassword').value = '';
+      form.dataset.signedIn = '1';
+      if (form.requestSubmit) form.requestSubmit(); else document.getElementById('syncPassword').value = '';
       toast('Signed in — your list is now shared');
     } catch(err) {
       syncMsg('signedOut', authMessage(err), true);
